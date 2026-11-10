@@ -327,7 +327,7 @@ def test_exact_parameter_boundary_and_release_defaults(template):
         value = item["defaultValue"]
         assert isinstance(value, str)
         assert item.get("minLength", 0) <= len(value) <= item.get("maxLength", len(value))
-        if name not in ("participantObjectIdOverride", "sourceRevision", "travelApiImageRef"):
+        if name != "participantObjectIdOverride":
             assert value
     for model in ("primary", "evaluation", "embedding"):
         assert parameters[f"{model}ModelVersion"]["minLength"] >= 1
@@ -341,12 +341,25 @@ def test_exact_parameter_boundary_and_release_defaults(template):
     assert parameters["participantObjectIdOverride"]["defaultValue"] == ""
     assert parameters["bootstrapRunId"]["defaultValue"] == "1"
 
-    assert parameters["sourceRevision"]["defaultValue"] == ""
-    assert parameters["travelApiImageRef"]["defaultValue"] == ""
+    assert parameters["sourceRevision"]["defaultValue"] == (
+        "0900bcbad443b055d6c4b7aefc0cfb55420ceaaa"
+    )
+    assert parameters["travelApiImageRef"]["defaultValue"] == (
+        "ghcr.io/jnkknd/travel-ops-api@sha256:"
+        "cc196ae1ca215a52f9d83f2a497401a48da76e6899d0617223a1c13f6d644b62"
+    )
     inputs = InputExpressions(template)
-    for variable in ("validatedSourceRevision", "sourceBase", "validatedTravelApiImageRef"):
-        with pytest.raises(InputFailure, match="English release is not ready"):
-            inputs.variable(variable)
+    assert (
+        inputs.variable("validatedSourceRevision") == parameters["sourceRevision"]["defaultValue"]
+    )
+    assert inputs.variable("sourceBase") == (
+        "https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/blob/"
+        "0900bcbad443b055d6c4b7aefc0cfb55420ceaaa"
+    )
+    assert (
+        inputs.variable("validatedTravelApiImageRef")
+        == parameters["travelApiImageRef"]["defaultValue"]
+    )
 
 
 def test_parameter_example_matches_all_release_defaults(template):

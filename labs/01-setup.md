@@ -3,11 +3,11 @@
 Use Azure Portal. This lab does not use a CLI or notebooks.
 
 > [!WARNING]
-> **Do not deploy this unreleased English branch yet.** English artifacts have not been published;
-> source revision and API image defaults remain empty with fail guards until an administrator
-> pins a published English source SHA and GHCR digest. Branch download links are mutable,
-> not release pins. Existing Azure environments are not automatically English.
-> The steps below remain the procedure for a future pinned release.
+> **Live acceptance is not yet complete.** Published English source and API image defaults
+> are pinned; see the [release evidence](../infra/README.md#english-release-artifacts).
+> Administrators must verify all Labs, redeployment, and cleanup before participant distribution.
+> Branch download links are mutable, not release pins.
+> Existing Azure environments are not automatically English.
 
 ## Overall flow
 
@@ -16,7 +16,7 @@ Azure then provisions resources, prepares data, validates the environment, and o
 Verify success of the entire process, including data preparation and validation, before continuing.
 
 The existing [deployment flow diagram](../docs/images/azure-architecture-02.png)
-is historical/illustrative, not English instructions or current-revision success evidence.
+has English labels and illustrates the procedure; it is not current-revision success evidence.
 
 ## Before you begin
 

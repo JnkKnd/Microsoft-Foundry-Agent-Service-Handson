@@ -23,13 +23,13 @@ param evaluationModelVersion string = '2026-04-24'
 @maxLength(64)
 param embeddingModelVersion string = '1'
 
-@description('English release pending: an administrator must publish and pin ghcr.io/jnkknd/travel-ops-api@sha256:<64 lowercase hexadecimal characters> before distribution. Empty defaults fail; never use tags or private registry credentials.')
+@description('Published English Travel API image, pinned to its verified public GHCR digest. Empty values fail; never use tags or private registry credentials.')
 @maxLength(256)
-param travelApiImageRef string = ''
+param travelApiImageRef string = 'ghcr.io/jnkknd/travel-ops-api@sha256:cc196ae1ca215a52f9d83f2a497401a48da76e6899d0617223a1c13f6d644b62'
 
-@description('English release pending: an administrator must pin a published lowercase 40-character commit SHA in JnkKnd/Microsoft-Foundry-Agent-Service-Handson before distribution. Empty defaults fail; bootstrap source and policy citations use this exact commit.')
+@description('Published English source commit in JnkKnd/Microsoft-Foundry-Agent-Service-Handson. Bootstrap source and policy citations use this exact immutable commit; empty values fail.')
 @maxLength(40)
-param sourceRevision string = ''
+param sourceRevision string = '0900bcbad443b055d6c4b7aefc0cfb55420ceaaa'
 
 @description('Intended participant Entra User object ID. Leave empty only when the participant deploys personally. Specify the same participant for administrator/automation redeployment.')
 @maxLength(36)

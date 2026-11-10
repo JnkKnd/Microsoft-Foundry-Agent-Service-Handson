@@ -6,11 +6,11 @@ Build a travel and expense assistant for the fictional company Contoso in nine l
 Explore retrieval, tools, evaluation, optimization, and Hosted Agents.
 
 > [!WARNING]
-> **This English branch is not yet deployment-ready.** English source and API image artifacts
-> have not been published. An administrator must publish and pin an English source SHA and
-> GHCR image digest before distributing a release. Links to the `English` branch are mutable
-> browsing/download links, not release pins. Existing Azure environments are not automatically
-> converted to English. The lab steps below describe the future pinned release.
+> **English artifacts are published and pinned, but live acceptance is not complete.**
+> See the [source SHA, API digest, and publication evidence](infra/README.md#english-release-artifacts).
+> All Labs, redeployment, and cleanup must pass before participant distribution.
+> Links to the `English` branch are mutable browsing/download links, not release pins.
+> Existing Azure environments are not automatically converted to English.
 
 [**Start with Lab 1**](labs/01-setup.md) ·
 [Prerequisites](docs/participant/prerequisites.md) ·
@@ -22,7 +22,7 @@ See [architecture and communication paths](docs/development/architecture.md).
 The existing [architecture PNG](docs/images/azure-architecture-01.png),
 [editable PowerPoint (2 slides)](docs/diagrams/azure-architecture.pptx), and
 [deployment and initialization diagram](docs/images/azure-architecture-02.png)
-are historical/illustrative assets, not English instructions or evidence of success on this revision.
+have English labels and are explanatory assets, not evidence of live success on this revision.
 
 ## Workshop flow
 

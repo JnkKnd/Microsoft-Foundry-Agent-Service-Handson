@@ -5,8 +5,9 @@ English is the source language on this branch. The primary
 and documentation index. This file remains as a compatibility entry for existing English links.
 
 > [!WARNING]
-> This English branch is not yet deployment-ready. English source and API image artifacts
-> must be published and pinned by an administrator before release distribution.
+> English source and API image artifacts are published and pinned, but live acceptance is incomplete.
+> See the [release evidence](infra/README.md#english-release-artifacts).
+> All Labs, redeployment, and cleanup must pass before participant distribution.
 > Branch links are mutable, and existing Azure environments are not automatically translated.
 
 [**Start with Lab 1**](labs/01-setup.md) ·

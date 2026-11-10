@@ -56,7 +56,8 @@ pinned English source / API image and an environment that has passed the full
 [same-revision acceptance](runbook.md#real-environment-validation-scope).
 Obtain any required target, cost, and personal-authentication approvals before
 live operations. This agenda records no executed demo or validation result;
-the English release remains unpublished.
+English artifacts are [published and pinned](../infra/README.md#english-release-artifacts),
+but full live acceptance is incomplete.
 
 If a live demonstration is unavailable or fails, continue with an explanation
 of the documented procedure. Label historical screenshots as illustrative and
@@ -81,5 +82,5 @@ release checks.
 
 Explain core safety precautions at the start. Distinguish real UI operation results
 from reference materials; never use simulated assets as proof of success.
-The English source release / API image remain unpublished; separately approved
-release publication and verification must precede distribution.
+The English source / API image are published and pinned; full live verification
+must precede participant distribution. See the [release evidence](../infra/README.md#english-release-artifacts).

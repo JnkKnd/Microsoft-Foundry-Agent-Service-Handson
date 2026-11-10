@@ -1,10 +1,11 @@
 # Before you join
 
 > [!WARNING]
-> The English release is not yet deployment-ready. Source and API image artifacts have not
-> been published. The administrator must pin a published English source SHA and GHCR image
-> digest before distributing the template. `English` branch links are mutable references,
-> not release pins; existing Azure environments are not automatically translated.
+> English source and API image artifacts are published and pinned, but full live acceptance
+> is not complete. The administrator must verify all Labs, redeployment, and cleanup before
+> distributing the template. See the [release evidence](../../infra/README.md#english-release-artifacts).
+> `English` branch links are mutable references, not release pins;
+> existing Azure environments are not automatically translated.
 
 ## Accounts and PC
 

@@ -15,10 +15,10 @@
       "value": "1"
     },
     "travelApiImageRef": {
-      "value": ""
+      "value": "ghcr.io/jnkknd/travel-ops-api@sha256:cc196ae1ca215a52f9d83f2a497401a48da76e6899d0617223a1c13f6d644b62"
     },
     "sourceRevision": {
-      "value": ""
+      "value": "0900bcbad443b055d6c4b7aefc0cfb55420ceaaa"
     },
     "participantObjectIdOverride": {
       "value": ""

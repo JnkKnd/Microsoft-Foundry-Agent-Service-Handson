@@ -7,8 +7,8 @@
 2. Distribute template / material references only after the same guide's publication
    checks, and identify the subscription to use. Do not ask participants to manually
    enter model versions, image digests, or source SHAs.
-   The English release is not yet published; a separately approved release operation
-   and verification are required before distribution.
+   English artifacts are [published and pinned](../infra/README.md#english-release-artifacts);
+   full live acceptance is still required before distribution.
 3. Give local participants the [Dev Container prerequisites](../docs/participant/environments/local-dev-container.md).
 4. Assign budget / alert and cleanup owners and failure contacts.
 

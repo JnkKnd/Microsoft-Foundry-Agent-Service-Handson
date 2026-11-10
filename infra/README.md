@@ -7,11 +7,26 @@ compiled ARM template for Portal, not a separately maintained implementation.
 Portal environment creation requires no local CLI. Labs 7–8 run in the shared Dev Container.
 
 > [!IMPORTANT]
-> The English source release and API image have not yet been published.
-> A separately approved publication and verification are required before distributing
-> a ready-to-deploy English release. Operative source references use
-> `JnkKnd/Microsoft-Foundry-Agent-Service-Handson`. Never invent a SHA / digest or
-> substitute a mutable English branch for the bootstrap commit pin.
+> English source and API image artifacts are published and pinned.
+> Full live acceptance of all Labs, redeployment, and cleanup is not complete;
+> do not describe publication or CI as successful participant-path verification.
+> Operative source references use `JnkKnd/Microsoft-Foundry-Agent-Service-Handson`.
+> Never substitute a mutable English branch for the bootstrap commit pin.
+
+## English release artifacts
+
+| Artifact | Verified reference |
+|---|---|
+| English source | [`0900bcbad443b055d6c4b7aefc0cfb55420ceaaa`](https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/commit/0900bcbad443b055d6c4b7aefc0cfb55420ceaaa) |
+| Public API image | `ghcr.io/jnkknd/travel-ops-api@sha256:cc196ae1ca215a52f9d83f2a497401a48da76e6899d0617223a1c13f6d644b62` |
+| Source validation | [Validate: all six jobs succeeded](https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/actions/runs/42769945248) |
+| Image publication | [Publish Travel Ops API](https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/actions/runs/42770607231), from the same source commit |
+
+Anonymous image pull by this digest was verified on 2026-11-10 using an empty
+Docker credential directory. Publication includes provenance and an SBOM.
+These checks do not prove Azure deployment or any Lab's live acceptance.
+The distribution commit containing this template may differ from the source
+commit above; bootstrap data, code, and policy citations use the pinned source.
 
 ## Deployment target and operations
 
@@ -43,10 +58,9 @@ For a published release, all 9 parameters have release defaults in `main.bicep`,
 reflected in `azuredeploy.json`. Self-deploying participants select only
 **Subscription** and an existing **Resource group**; they need not investigate
 model versions, image digests, source SHAs, or their own object ID.
-English source / image defaults are empty strings (`""`) in both Bicep and the
-parameter example. This branch is unreleased and not deploy-ready: existing
-`fail()` guards explicitly reject these empty values. No additional release flag
-or parameter is used.
+English source / image defaults use the published references above in both Bicep
+and the parameter example. Existing `fail()` guards still reject empty or mutable
+values. No additional release flag or parameter is used.
 
 `azuredeploy.parameters.example.json` reflects defaults without invented or
 account-specific values. It is an optional administrator reference, not an
@@ -58,8 +72,8 @@ additional file participants load.
 | `primaryModelVersion` | `2026-07-09` for Japan East / GlobalStandard `gpt-5.6-luna`. |
 | `evaluationModelVersion` | `2026-04-24` for Japan East / GlobalStandard `gpt-5.5`. |
 | `embeddingModelVersion` | `1` for Japan East / GlobalStandard `text-embedding-3-small`. |
-| `travelApiImageRef` | Empty string (`""`) pending separately approved English image publication. Set only a verified public GHCR digest reference (`ghcr.io/jnkknd/...@sha256:...`), never a tag, private registry secret, or substitute image. |
-| `sourceRevision` | Empty string (`""`) pending separately approved English source publication. Set only a public, 40-character lowercase hexadecimal commit SHA in `JnkKnd/Microsoft-Foundry-Agent-Service-Handson`, never a branch name or another repository. |
+| `travelApiImageRef` | Published English API digest in [release artifacts](#english-release-artifacts). Never use a tag, private registry secret, or substitute image. |
+| `sourceRevision` | Published English source SHA in [release artifacts](#english-release-artifacts), never a branch name or another repository. |
 | `participantObjectIdOverride` | Empty by default; root `deployer().objectId` identifies the participant. For administrator / automated deployment or redeployment, specify the intended participant's Entra **User** object ID. |
 | `bootstrapRunId` | Default `1`. Keep for normal redeployment; change to intentionally rerun initialization. |
 | `enableBootstrapPolicyExclusion` | Default `true` for workshop environments where the organization approves `SecurityControl=Ignore`. Set `false` where exclusions are not used. Add the tag only to the bootstrap Deployment Script. |

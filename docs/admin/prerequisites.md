@@ -5,9 +5,9 @@ a verified template. Do not guess model versions, image hashes, or material SHAs
 use published, operationally verified values.
 
 > [!IMPORTANT]
-> The English source release and API image have not yet been published. A separately
-> approved release publication and verification are required before participant distribution.
-> Translation alone is not release readiness. Operative distribution uses
+> English source and API image artifacts are [published and pinned](../../infra/README.md#english-release-artifacts).
+> Full live verification is still required before participant distribution.
+> Translation and publication alone are not release readiness. Operative distribution uses
 > `JnkKnd/Microsoft-Foundry-Agent-Service-Handson`; do not reuse an upstream release
 > as proof of the English release or use a mutable branch as the bootstrap pin.
 
@@ -66,19 +66,18 @@ Model defaults pin the **latest available Japan East / GlobalStandard versions v
 | `primaryModelVersion` | `2026-07-09` |
 | `evaluationModelVersion` | `2026-04-24` |
 | `embeddingModelVersion` | `1` |
-| `travelApiImageRef` | Empty string (`""`) until approved publication of a verified public English Travel API GHCR image pinned with `@sha256:`. Upstream `v1.0.4` is historical provenance, not an English release. |
-| `sourceRevision` | Empty string (`""`) until approved publication of an English material commit SHA, pinned to 40 lowercase hexadecimal characters. |
+| `travelApiImageRef` | Verified public English API digest in [release artifacts](../../infra/README.md#english-release-artifacts). Upstream `v1.0.4` is historical provenance, not an English release. |
+| `sourceRevision` | Published English source SHA in [release artifacts](../../infra/README.md#english-release-artifacts), pinned to 40 lowercase hexadecimal characters. |
 | `participantObjectIdOverride` | Empty for self-deployment. For deployment on behalf of someone else or redeployment by another person, the intended participant's Entra object ID. |
 | `bootstrapRunId` | `1`. Change only to intentionally rerun initialization. |
 | `enableBootstrapPolicyExclusion` | `true` for approved workshop environments. Set to `false` where exclusions are not used. |
 
 See [template parameters](../../infra/README.md#template-parameters) for all defaults,
-their concrete release values, and update instructions. Pending English release
-values must not be invented. This English branch is unreleased and not deploy-ready:
-the existing Bicep guards explicitly reject the empty source / image defaults.
-After separately approved publication, a release administrator sets the public
-JnkKnd source SHA and public GHCR digest (`ghcr.io/jnkknd/...`), synchronizes the
-parameter example, and regenerates ARM. No additional release flag or parameter is used.
+their concrete release values, and update instructions. English release values must
+not be invented. The existing Bicep guards reject empty or mutable source / image inputs.
+For each approved release, synchronize the public JnkKnd source SHA, public GHCR
+digest, parameter example, and generated ARM. No additional release flag or parameter
+is used. Publication does not replace full live verification.
 
 ### When bootstrap policy exclusion is approved
 

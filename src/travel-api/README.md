@@ -109,8 +109,7 @@ Published tags do not use `latest`. Set the workshop Bicep `travelApiImageRef` t
 the immutable digest reference printed in the job summary.
 See the [infrastructure implementation guide](../../infra/README.md) for updates.
 
-The English release source SHA and API image have not yet been published.
-Publication requires a separately approved release operation; documentation
-translation does not publish an image or establish release readiness. Use the
-approved JnkKnd English release only after its public source SHA and image digest
-have been verified; do not substitute a mutable branch for the bootstrap pin.
+The English source and API image are [published and pinned](../../infra/README.md#english-release-artifacts).
+Source CI and anonymous image pull were verified; full Azure / Lab acceptance is
+still incomplete. Future publication requires separate approval. Do not substitute
+a mutable branch for the bootstrap pin.

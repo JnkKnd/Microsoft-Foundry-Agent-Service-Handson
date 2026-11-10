@@ -217,6 +217,6 @@ Distinguish local edits, local commits, and remote updates in reports.
 Later stages outside the request are out of scope; requested stages that cannot
 be performed are incomplete, with necessary checks identified.
 
-The English release source SHA and API image remain unpublished. A separately
-approved publication and verification are required; do not invent pins or replace
-the bootstrap commit pin with a mutable branch.
+The English source SHA and API image are [published and pinned](../../infra/README.md#english-release-artifacts).
+Full live acceptance remains incomplete. Future publication requires separate
+approval; do not invent pins or replace the bootstrap commit pin with a mutable branch.
