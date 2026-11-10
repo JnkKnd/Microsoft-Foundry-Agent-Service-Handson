@@ -39,15 +39,16 @@ It discovers needed definitions with `tool_search` and executes a selected tool 
 **Save these shared files to your PC** from GitHub.
 Links point to file content. Upload ZIPs without extracting them.
 
-These `English` branch links are mutable browsing/download references, not release pins.
-Before distributing a workshop release, the administrator must provide published English
-artifacts pinned to a fixed source SHA. The branch is not yet deployment-ready.
+Any `English` branch links are mutable browsing/download references, not release pins.
+The published English artifacts below are pinned to a fixed source SHA matching the
+[API release](../infra/README.md#english-release-artifacts).
+Full live acceptance is still required before participant distribution.
 
 | File | Purpose |
 |---|---|
-| [travel-estimation.zip](https://raw.githubusercontent.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/English/assets/skills/travel-estimation.zip) | Estimate Skill |
-| [preapproval-simulation.zip](https://raw.githubusercontent.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/English/assets/skills/preapproval-simulation.zip) | Approval simulation Skill |
-| [travel-ops.openapi.json](https://raw.githubusercontent.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/English/assets/openapi/travel-ops.openapi.json) | Shared OpenAPI definition |
+| [travel-estimation.zip](https://raw.githubusercontent.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/0900bcbad443b055d6c4b7aefc0cfb55420ceaaa/assets/skills/travel-estimation.zip) | Estimate Skill |
+| [preapproval-simulation.zip](https://raw.githubusercontent.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/0900bcbad443b055d6c4b7aefc0cfb55420ceaaa/assets/skills/preapproval-simulation.zip) | Approval simulation Skill |
+| [travel-ops.openapi.json](https://raw.githubusercontent.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/0900bcbad443b055d6c4b7aefc0cfb55420ceaaa/assets/openapi/travel-ops.openapi.json) | Shared OpenAPI definition |
 
 Each Skill ZIP contains `SKILL.md` at its root. Choose the ZIP, not the standalone `SKILL.md`.
 The browser file picker reads your local PC.

@@ -2,6 +2,8 @@
 
 Open each file on GitHub and select **Download raw file**.
 Use the Skill ZIP for Skill upload in Foundry Portal without extracting it.
+For release-fixed downloads matching the API image, use the
+[pinned Lab 4 links](../labs/04-tools-toolbox.md#1-prepare-files-to-paste-and-upload).
 
 | Material | Shared file |
 | --- | --- |

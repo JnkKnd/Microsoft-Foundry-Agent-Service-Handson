@@ -1,8 +1,9 @@
 # Environment setup guide
 
 > [!WARNING]
-> This English branch is not yet deployment-ready. Before these steps can be used,
-> an administrator must publish English artifacts and pin the source SHA and GHCR image digest.
+> English source and API image artifacts are published and pinned.
+> Full live acceptance of all Labs, redeployment, and cleanup is not yet complete;
+> see the [release evidence](../../../infra/README.md#english-release-artifacts).
 > Mutable `English` branch links are not release-fixed downloads; existing Azure data is not automatically English.
 
 **Follow the steps in [Lab 1](../../../labs/01-setup.md) in order.**
