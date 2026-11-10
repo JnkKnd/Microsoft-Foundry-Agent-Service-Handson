@@ -41,6 +41,8 @@ In Lab 1's deployment **Outputs > resourceOutputs**, find `foundry_project_name`
 2. Select **Build** at the top, then **Agents** on the left.
 3. Select **New agent**.
 4. Select **Build an agent**. Do not use **Code an agent** in this lab.
+   If **Use the Microsoft Copilot harness** appears, leave it unchecked.
+   This is not Lab 7's Agent Framework Harness Agent.
 5. Replace the generated **Agent name** with `contoso-travel-assistant`.
 6. Select **Create and open playground**.
 
@@ -55,8 +57,20 @@ In Lab 1's deployment **Outputs > resourceOutputs**, find `foundry_project_name`
 New agents may include **Web search**. Remove it before asking questions because
 this workshop initially uses only the supplied policies and API.
 
-1. In **Tools**, open **Actions for Web search** at the right of the **Web search** row.
-2. Select **Remove**.
+1. If **Tools** contains an automatically created `contoso-travel-assistant-toolbox`,
+   open **Actions for contoso-travel-assistant-toolbox toolbox > Opt out**.
+   In **Stop using a toolbox?**, select **Opt out**.
+   This keeps the tools attached directly to this agent, where they can be edited.
+   The **Remove** action on a tool inside the automatically attached toolbox is disabled.
+   Skip this step if tools are already attached directly.
+2. In **Tools**, open **Actions for Web search** at the right of the direct **Web search** row.
+3. Select **Remove** and verify Web search is no longer listed.
+
+The **Toolbox off** message is expected; do not select **Turn on**.
+This opts out of this agent's automatically managed toolbox only.
+Lab 4 separately creates `contoso-travel-toolbox`, enables Tool Search **inside that
+published Toolbox**, and connects its MCP endpoint to this agent.
+Keep that distinction when following Lab 4; do not turn off its server-side Tool Search.
 
 If Tools has no Web search entry, no action is needed. Leave other settings, such as **Guardrail**, unchanged.
 

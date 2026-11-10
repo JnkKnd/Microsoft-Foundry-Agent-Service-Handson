@@ -67,6 +67,10 @@ and change only `servers[0].url` in the shared OpenAPI to the participant's `tra
 | [Lab 5](../labs/05-evaluation.md) | Run all 7 evaluation rows; inspect each evaluator's results, reason, Error, and traces for tool-using rows. |
 | [Lab 6](../labs/06-optimization.md) | Run optimization with 1 candidate; after completion, compare scores, changes, and rubric details against the baseline. |
 
+In Lab 2, verify the [automatic-toolbox opt-out and Web search removal](../labs/02-prompt-agent.md#3-remove-automatically-added-web-search)
+when the current Portal creates an agent-managed toolbox. Direct tool configuration
+on the Prompt Agent is separate from Lab 4's published Toolbox and its server-side Tool Search.
+
 Registration of evaluation data or rubrics alone does not complete Labs 5 / 6.
 For **Partial** evaluations, record unscorable rows and causes.
 Distinguish protection-triggered blocks / answer Fail results from unresolved
