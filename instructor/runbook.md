@@ -81,6 +81,17 @@ do not infer them from documented defaults or use SDK / REST operations to force
 This procedure correction still requires the complete corrected-revision validation above.
 
 Registration of evaluation data or rubrics alone does not complete Labs 5 / 6.
+Record current Lab 3 / 4 UI differences explicitly: **Improve retrieval** contains
+the IQ model and reasoning effort, **Output mode** may be absent, Toolbox creation
+may use **Create**, and Skill upload may use **Upload**. Keep Portal-created IQ
+settings and inspect retrieved document contents rather than assuming an output mode.
+Native Toolbox Skill configuration may require a separately approved billable
+environment and create a new Toolbox version. Record the actual versions and
+Skill execution independently.
+If scoped persistent MCP approval is unavailable, an **Approve once** estimate
+is diagnostic only; do not submit unattended evaluation or optimization jobs.
+Tool search **On** plus a correct downstream API call is not proof of the required
+`tool_search` / `call_tool` sequence.
 For **Partial** evaluations, record unscorable rows and causes.
 Distinguish protection-triggered blocks / answer Fail results from unresolved
 execution errors; remaining execution errors mean incomplete.

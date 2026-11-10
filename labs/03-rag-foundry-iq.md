@@ -27,18 +27,20 @@ Create the knowledge base under **Build > Knowledge** before attaching it to the
 2. Set **Connection** to `contoso-travel-search`.
 3. Select **Create a knowledge base**.
 4. In Lab 1's deployment **Outputs > resourceOutputs**, check `evaluation_model_deployment_name.value`.
-5. Set **Basic configuration** as follows:
+5. Set **Name**, then expand **Improve retrieval** to set the model and reasoning effort:
 
    | Field | Value |
    |---|---|
    | Name | `contoso-travel-knowledge-lab` |
    | Chat completions model | Value of `evaluation_model_deployment_name` (normally `gpt-5.5`) |
    | Retrieval reasoning effort | **Medium** |
-   | Output mode | **Extractive data** |
 
 Select `gpt-5.5` from **Deployments** for **Chat completions model**.
 Change **Retrieval reasoning effort** from its default Minimal to **Medium**.
 Leave **Description** and **Retrieval instructions** empty for this exercise.
+The current Portal does not expose **Output mode**. Keep the Portal-created
+setting; do not use an SDK or REST request to force it. Verify the retrieved
+documents in Trace instead of inferring the effective mode from a service default.
 
 6. Select **Knowledge sources (Foundry IQ) > Add sources > Azure AI Search Index**.
 7. Configure the dialog and select **Create**:
@@ -102,16 +104,20 @@ Compare the answer and citations against:
 
 ## 4. Check the evidence behind the answer
 
-Verify that the **Supporting documents** at the end of the answer include flight
-and approval process policies, with categories `flights` and `approval_process`.
+Verify that the citations or **Supporting documents** include flight
+and approval process policies. Check categories `flights` and `approval_process`
+in the retrieved documents in Trace.
 Additional sources such as FAQs are acceptable.
 
 For Search-index-based Foundry IQ, citations may appear as internal identifiers
-such as `mcp://searchindex/...`. These are not ordinary web URLs;
-opening them directly in a browser is not a success criterion.
-Use the source links in the comparison table above.
+such as `mcp://searchindex/...`, or as authenticated Search document URLs.
+An internal identifier is not an ordinary web URL, and a Search document URL
+may require authentication. Do not make the index public or change authentication
+to open a citation. Compare document contents in Trace with the source links
+in the comparison table above.
 
-1. In **Traces**, open this run's **Trace ID**.
+1. Select **Traces** below the answer to open its conversation.
+   Alternatively, find the corresponding conversation under the agent's **Traces**.
 2. Under **Trajectories > Find in trace**, search for `knowledge_base_retrieve`
    and open the matching operation's **Input + Output**.
 3. Check the question in **Input** and documents with `flights` / `approval_process` in **Output**.

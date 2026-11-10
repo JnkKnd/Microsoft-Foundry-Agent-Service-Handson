@@ -93,8 +93,11 @@ Set **Create an OpenAPI tool** as follows:
 | **Name** | `travel_ops_api` |
 | **Description** | `Travel Ops API for Contoso per diem queries, cost estimates, and preapproval simulations.` |
 | **Authentication method** | `Anonymous` |
+| **Connection** | Create `contoso-travel-ops-api` with **Anonymous** authentication and the same Lab 1 API endpoint |
 | **OpenAPI 3.0+ schema** | Entire `travel-ops.openapi.json` with the modified `servers[0].url` |
 
+The current Portal requires a project connection even for Anonymous authentication.
+Use only the synthetic workshop API endpoint; do not enter credentials.
 Select **Create tool** and verify it appears in Included.
 Then set **Tool search** to **On**.
 
@@ -126,6 +129,9 @@ The two Skills are MCP Resources, not tools, and are not Tool Search candidates.
 2. Do the same for **Web Search**. Do not create an external connection or duplicate a tool type.
 3. Verify Tool Search remains **On**.
 
+If Code Interpreter opens an optional **Upload files** dialog, select **Attach**
+without adding files. No participant files are needed for this exercise.
+
 Limit Code Interpreter to comparing, aggregating, and tabulating numbers returned by Travel Ops.
 Use Web Search only for explicit requests for current public travel information,
 and include source URLs and retrieval time in the answer.
@@ -137,11 +143,12 @@ Neither should run for ordinary policy questions or estimates.
 2. Under **Select a skill > Configured**, select **Add skill**.
 3. Select **Upload skill** from the menu.
 4. Select **Browse**, then the `travel-estimation.zip` saved on your PC.
-5. Verify the filename and **Name = travel-estimation**, then select **Create**.
+5. Verify the filename and **Name = travel-estimation**, then select **Upload**
+   (**Create** in earlier Portal versions).
    Name and Description are read from `SKILL.md` inside the ZIP.
 6. Return to Toolbox and verify the Skill appears in Included.
 7. Repeat **Add skill > Upload skill** with `preapproval-simulation.zip`.
-   Verify **Name = preapproval-simulation** and select **Create**.
+   Verify **Name = preapproval-simulation** and select **Upload**.
 
 Uploaded Skills enter Included automatically. To use an already registered Skill,
 select it from **Configured** in the same project and select **Add**.
@@ -163,8 +170,10 @@ Read `SKILL.md` before and after upload to check this separation of responsibili
 
 1. Verify Included contains **travel_ops_api / Code Interpreter / Web Search /
    travel-estimation / preapproval-simulation** and Tool search is **On**.
-2. Select **Publish** at the top right.
-3. Reopen the published Toolbox and verify the five entries, Tool search On, and published version.
+2. Select **Create** at the top right (**Publish** in earlier Portal versions).
+3. Reopen the saved Toolbox and verify the five entries, Tool search On,
+   version, and MCP endpoint. A versioned endpoint, not the button label alone,
+   is the checkpoint for the next step.
 
 ## 6. Connect the Prompt Agent using Microsoft Entra
 
@@ -188,6 +197,16 @@ Agents call Toolbox through the common MCP protocol.
 6. Check each field and select **Connect**.
 7. Verify the connection appears in Tools and `contoso-travel-knowledge-lab` remains in Knowledge,
    then select **Save**.
+
+The current Portal can display the connection as a native
+**contoso-travel-toolbox v...** group instead of the entered MCP connection name.
+Record the displayed Toolbox and agent versions.
+If either Skill shows **Needs configuration**, open its **Configure** dialog.
+An **Auto-provisioned container** environment incurs additional charges: obtain
+approval before selecting it and saving. Do not upload files or change the
+agent's Harness or Guardrail to bypass configuration. Saving these settings
+can create another Toolbox version; recheck both versions after **Save**.
+Configuration alone does not prove that the Skill was loaded or executed.
 
 Do not use API keys or manually obtained bearer tokens.
 
@@ -231,6 +250,12 @@ Do not apply it to general business APIs or pre-added management tools.
    **Always auto-approve all tools**.
 3. Select **Apply**, then **Save** on the agent.
 
+If the native Toolbox group does not expose this scoped setting, stop before
+Labs 5 / 6. Do not assume the chat menu's **Always approve all tools** has the
+same scope. For a diagnostic estimate only, inspect the displayed operation
+and arguments and use **Approve once**. This verifies that invocation, not
+persistent auto-approval or unattended evaluation readiness.
+
 The [approval setting screenshot](../docs/images/lab04-batch-approval-setting.png) is historical/illustrative.
 This controls confirmation when the model calls tools. It neither disables Microsoft Entra
 authentication/RBAC nor grants actual travel approval.
@@ -245,7 +270,8 @@ for 1 traveler in business class. Do not make a booking or run an approval simul
 ```
 
 Verify a final answer with a cost breakdown and total.
-If a confirmation dialog appears, return to section 7 because auto-approval was not saved.
+If a confirmation dialog appears, persistent auto-approval has not been verified;
+follow section 7 rather than starting unattended evaluation or optimization.
 
 After the answer, inspect tool calls in **Traces**:
 
@@ -265,6 +291,9 @@ After the answer, inspect tool calls in **Traces**:
 Depending on the Portal version, the actual tool may appear inside `call_tool`,
 at another level, or as `execute_tool`. Check the tool name in **Input + Output**,
 not just the display name.
+If only the downstream operation appears, record the API invocation separately:
+Tool search **On** and a correct API answer do not prove the
+`tool_search` / `call_tool` sequence. Do not report the complete checklist as passed.
 
 ### Optional: Check purpose-specific tool selection
 

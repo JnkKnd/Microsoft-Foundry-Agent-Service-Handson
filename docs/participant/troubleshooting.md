@@ -38,6 +38,10 @@ Do not open it as a web page; compare the document ID in **Traces** with the wor
 If internal `cite` markers remain visible in a Portal response, record a citation-rendering mismatch
 and check retrieved documents in **Traces** against the source material.
 Search settings alone may not fix rendering; do not count this as success.
+The current Foundry IQ creation form places model and reasoning effort under
+**Improve retrieval** and may omit **Output mode**. Keep Portal-created settings
+and verify retrieved document contents in Trace. Authenticated Search citation
+URLs do not require making the index public.
 
 ## Evaluation and optimization
 
@@ -45,5 +49,9 @@ Do not resubmit while status is **In progress**. Distinguish 429 errors and time
 from an evaluation result of **Fail**.
 `content_filter` indicates a safety block. Share the error with the administrator without weakening guardrails.
 If **No supported optimization model** appears, ask for a check rather than adding another model.
+If the native Toolbox group does not expose the workshop-scoped MCP approval
+setting from Lab 4, stop before submitting unattended jobs. A successful
+**Approve once** invocation does not establish persistent auto-approval.
+Do not substitute a broader chat approval setting without confirming its scope.
 
 [Back to setup: Lab 1](../../labs/01-setup.md)
