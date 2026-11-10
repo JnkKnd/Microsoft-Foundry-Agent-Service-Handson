@@ -1,5 +1,5 @@
 """Cross-check that travel_api.domain.rates (src/travel-api/**) exactly
-mirrors the per-diem/lodging numbers published in the Japanese policy
+mirrors the per-diem/lodging numbers published in the English policy
 Markdown (data/policies/03-hotels.md and 04-per-diem-meals.md).
 
 The two workstreams intentionally do not share code at runtime (the API is
@@ -10,10 +10,13 @@ numeric drift between the corpus and the API's deterministic fixtures.
 
 import re
 
+import pytest
+
 TIER_TABLE_ROW = re.compile(
     r"^\|\s*(?P<tier>domestic_tier1|domestic_tier2|international_tier_a"
     r"|international_tier_b|international_tier_c)\s*\|[^|]*\|\s*"
-    r"(?P<value1>[\d,]+)\s*円\s*\|(?:\s*(?P<value2>[\d,]+)\s*円\s*\|)?\s*$",
+    r"JPY\s+(?P<value1>[0-9]+(?:,[0-9]{3})*)\s*\|"
+    r"(?:\s*JPY\s+(?P<value2>[0-9]+(?:,[0-9]{3})*)\s*\|)?\s*$",
     re.MULTILINE,
 )
 
@@ -73,8 +76,8 @@ def test_day_trip_meal_allowance_matches_markdown(data_dir):
     from travel_api.domain.rates import DAY_TRIP_MEAL_ALLOWANCE
 
     per_diem_text = (data_dir / "policies" / "04-per-diem-meals.md").read_text(encoding="utf-8")
-    domestic_match = re.search(r"国内日帰り:\s*([\d,]+)\s*円", per_diem_text)
-    international_match = re.search(r"海外日帰り:\s*([\d,]+)\s*円", per_diem_text)
+    domestic_match = re.search(r"Domestic day trip:\s*JPY\s+([\d,]+)", per_diem_text)
+    international_match = re.search(r"International day trip:\s*JPY\s+([\d,]+)", per_diem_text)
 
     assert domestic_match is not None, "could not find domestic day-trip allowance in markdown"
     assert international_match is not None, (
@@ -110,3 +113,32 @@ def test_known_cities_in_rates_module_match_a_declared_tier(data_dir):
 
     assert set(PER_DIEM_TABLE) == documented_tiers
     assert set(_TIER_BY_CITY.values()) == documented_tiers
+
+
+def test_english_jpy_tables_parse_daily_and_nightly_amounts() -> None:
+    assert _parse_hotels_table("| domestic_tier1 | Tokyo | JPY 15,000 |") == {
+        "domestic_tier1": 15_000
+    }
+    assert _parse_per_diem_table("| domestic_tier1 | Tokyo | JPY 3,000 | JPY 15,000 |") == {
+        "domestic_tier1": {"meal_allowance": 3_000, "lodging_cap": 15_000}
+    }
+
+
+@pytest.mark.parametrize(
+    "amount",
+    ["USD 15,000", "15,000", "15,000 JPY", "JPY 15,00", "JPY -15,000", "JPY 15,000.50"],
+)
+def test_table_parser_rejects_non_jpy_or_malformed_amounts(amount: str) -> None:
+    assert _parse_hotels_table(f"| domestic_tier1 | Tokyo | {amount} |") == {}
+
+
+def test_policy_amount_mutation_does_not_silently_match_api(data_dir) -> None:
+    from travel_api.domain.rates import PER_DIEM_TABLE
+
+    text = (data_dir / "policies" / "03-hotels.md").read_text(encoding="utf-8")
+    mutated = text.replace("JPY 15,000", "JPY 15,001", 1)
+    assert mutated != text
+    assert (
+        _parse_hotels_table(mutated)["domestic_tier1"]
+        != (PER_DIEM_TABLE["domestic_tier1"]["lodging_cap"])
+    )

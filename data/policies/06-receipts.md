@@ -1,6 +1,6 @@
 ---
 id: policy-receipts-001
-title: 領収書に関する規程
+title: Receipt Policy
 category: receipts
 effective_date: 2026-04-01
 applies_to:
@@ -8,37 +8,37 @@ applies_to:
 source_url: "{{WORKSHOP_SOURCE_BASE}}/data/policies/06-receipts.md"
 ---
 
-# 領収書に関する規程
+# Receipt Policy
 
-## 領収書の提出
+## Submitting receipts
 
-- 1 件あたり 3,000 円以上の経費（宿泊、フライト、陸上交通、その他実費
-  精算項目）は、Contoso Expense に領収書の画像またはPDFを添付してください。
-- 日当（per diem）は定額支給のため領収書は不要です
-  （[日当・食事に関する規程](04-per-diem-meals.md)参照）。
-- 領収書には、日付・金額・支払先・内容が判読できることが必要です。
+- Attach a receipt image or PDF in Contoso Expense for each expense of JPY 3,000 or more
+  (hotels, flights, ground transport, and other actual-cost reimbursement items).
+- Fixed per diem requires no receipt
+  (see the [Per Diem and Meals Policy](04-per-diem-meals.md)).
+- The date, amount, payee, and description must be legible.
 
-## 領収書を紛失した場合
+## Lost receipts
 
-領収書を紛失した場合は、以下の手順に従ってください。
+If you lose a receipt:
 
-1. Contoso Expense 上で「紛失申告書 (Lost Receipt Affidavit)」を作成し、
-   金額・支払先・日付・用途を記載します。
-2. マネージャーの共同署名（電子承認）を受けます。
-3. 紛失申告書による精算は、**1 回の出張につき上限 2 件**、
-   **1 件あたり上限 5,000 円**までとします。
-4. 上記の上限を超える紛失は、Travel Ops チームへ個別に相談してください。
+1. Create a Lost Receipt Affidavit in Contoso Expense, stating the amount, payee,
+   date, and purpose.
+2. Obtain your manager's co-signature (electronic approval).
+3. Reimbursement using affidavits is limited to **2 items per trip** and
+   **JPY 5,000 per item**.
+4. Consult the Travel Ops team individually for losses exceeding these limits.
 
-紛失申告書を悪用した虚偽申請は、就業規則上の懲戒対象となります。
+Fraudulent claims using lost-receipt affidavits are subject to disciplinary action
+under the employment rules.
 
-## 外貨建て領収書
+## Foreign-currency receipts
 
-- 外貨建ての領収書は、支払日の参考レート（Contoso Expense が提示する
-  レート、または支払時のカード明細レート）を用いて日本円に換算します。
-- 換算に用いたレートの根拠（カード明細のスクリーンショット等）を
-  添付してください。
+- Convert foreign-currency receipts to Japanese yen using the reference rate on the
+  payment date (the rate provided by Contoso Expense or the card statement's payment rate).
+- Attach evidence of the rate used, such as a card-statement screenshot.
 
-## 保管期間
+## Retention
 
-- 提出済みの領収書データは、経理規程に基づき 7 年間保管されます。
-- 出張者は精算完了後、自身の控えを速やかに廃棄して構いません。
+- Submitted receipt data is retained for 7 years under accounting policy.
+- Travelers may promptly discard their own copies after reimbursement is complete.

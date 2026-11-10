@@ -1,36 +1,46 @@
-# 参加前に用意するもの
+# Before you join
 
-## アカウントと PC
+> [!WARNING]
+> The English release is not yet deployment-ready. Source and API image artifacts have not
+> been published. The administrator must pin a published English source SHA and GHCR image
+> digest before distributing the template. `English` branch links are mutable references,
+> not release pins; existing Azure environments are not automatically translated.
 
-- 管理者指定の Azure アカウントとサブスクリプション。
-- 専用 RG の作成・削除権限と、その RG 内でロール割り当てができる **Owner 相当の権限**。
-- Labs 7〜8 を Codespaces で実施する場合のみ、[GitHub Codespaces](https://github.com/codespaces) を利用できる GitHub アカウントと利用枠。
+## Accounts and PC
 
-標準の Codespaces 経路では、PC への CLI・Docker・Python のインストールは不要です。
-Azure の利用枠・組織ポリシーと、利用する場合は Codespaces の利用枠・組織ポリシーを管理者に確認してもらいます。
+- The Azure account and subscription designated by the administrator.
+- Permission to create and delete a dedicated RG, and **Owner-equivalent permissions**
+  to assign roles within that RG.
+- Only if using Codespaces for Labs 7–8: a GitHub account with access and available
+  usage allowance for [GitHub Codespaces](https://github.com/codespaces).
 
-## テンプレートと共通教材
+The standard Codespaces route requires no CLI, Docker, or Python installation on your PC.
+Ask the administrator to check Azure quotas and organizational policies, and,
+if applicable, Codespaces allowances and organizational policies.
 
-使用するファイルと参照先を確認します。
+## Template and shared materials
 
-- **Lab 1**：[既定値を設定済みの `azuredeploy.json`](https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson/blob/main/infra/azuredeploy.json)を PC に保存します。
-  モデルのバージョンやハッシュを自分で調べて入力する必要はありません。
-  既定値の詳細は[管理者向けガイド](../admin/prerequisites.md)を参照してください。
-- **Lab 4**：[共通教材](../../assets/README.md)から Skill ZIP と OpenAPI を取得します。
-  取得方法と使用手順は Lab 4 で確認します。
+Check the files and references you will use.
 
-## 開始する
+- **Lab 1**: Save the [preconfigured `azuredeploy.json`](https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/blob/English/infra/azuredeploy.json)
+  to your PC. You do not need to look up and enter model versions or hashes yourself.
+  See the [administrator guide](../admin/prerequisites.md) for default values.
+- **Lab 4**: Obtain Skill ZIPs and OpenAPI from the [shared materials](../../assets/README.md).
+  Lab 4 explains how to download and use them.
 
-[Lab 1](../../labs/01-setup.md) に従い、Azure Portal で RG を **1 個手動作成した後**、
-作成済み RG にテンプレートを実行します。**Subscription** と **Resource group** 以外は
-既定値のまま進めます。Notebook の準備は Lab 7 の
-[Codespaces ガイド](environments/codespaces.md)で行います。
+## Get started
 
-| 使う画面 | 用途 |
+Follow [Lab 1](../../labs/01-setup.md): **manually create exactly one RG** in Azure Portal,
+then run the template against that existing RG. Keep all defaults except
+**Subscription** and **Resource group**. Prepare notebooks in Lab 7 using the
+[Codespaces guide](environments/codespaces.md).
+
+| Interface | Purpose |
 |---|---|
-| [Azure Portal](https://portal.azure.com) | 環境作成、初期化の確認、RG の削除 |
-| [Microsoft Foundry Portal](https://ai.azure.com) | Labs 2〜6 |
-| GitHub / Codespaces | 共通教材、Labs 7〜8 の Notebook |
+| [Azure Portal](https://portal.azure.com) | Provisioning, initialization checks, and RG deletion |
+| [Microsoft Foundry Portal](https://ai.azure.com) | Labs 2–6 |
+| GitHub / Codespaces | Shared materials and notebooks for Labs 7–8 |
 
-ローカルで実施する場合は、[Dev Container の前提条件](environments/local-dev-container.md)を確認してください。
-利用時の安全上の注意は [README](../../README.md)、終了手順は [Lab 9](../../labs/09-observability-cleanup.md) にまとめています。
+For local execution, check the [Dev Container prerequisites](environments/local-dev-container.md).
+See the [README](../../README.md) for safety guidance and [Lab 9](../../labs/09-observability-cleanup.md)
+for cleanup.

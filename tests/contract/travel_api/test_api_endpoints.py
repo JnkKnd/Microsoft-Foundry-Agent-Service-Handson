@@ -123,7 +123,7 @@ def test_preapproval_is_always_a_simulation():
     body = response.json()
     assert body["simulation"] is True
     assert body["decision"].startswith("simulated_")
-    assert "シミュレーション" in body["disclaimer"]
+    assert "simulation" in body["disclaimer"]
     assert body["decision"] == "simulated_auto_eligible"
 
 
@@ -136,13 +136,13 @@ def test_preapproval_business_class_pending_vp_review():
             "start_date": "2026-09-01",
             "end_date": "2026-09-06",
             "cabin_class": "business",
-            "justification": "監査対応のため",
+            "justification": "For audit support",
         },
     )
     assert response.status_code == 200
     body = response.json()
     assert body["decision"] == "simulated_pending_vp_review"
-    assert body["justification"] == "監査対応のため"
+    assert body["justification"] == "For audit support"
 
 
 def test_preapproval_requester_alias_must_be_synthetic_pattern():

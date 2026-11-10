@@ -1,32 +1,42 @@
 ---
-description: 参加者向け手順、実画面、構成図と編集元の整合を維持する規約。
+description: Keep participant procedures, real UI images, architecture diagrams, and editable sources consistent.
 applyTo: "**/*.md,docs/diagrams/**,docs/images/**"
 ---
 
-# 文書・画像の変更
+# Documentation and image changes
 
-- 読者と言語、配置は [共通Instructions](../copilot-instructions.md) に従います。
-  本文・図・画面・Notebook の同時更新先は
-  [変更対象と確認先](../../docs/development/README.md#変更対象と確認先) で確認します。
-- 参加者向け手順は、開始状態、入力値の取得元・既定値、操作、成功の確認を示します。
-  「管理者から受け取る」だけで未定義の入力を残さず、難しい設定に説明を集中します。
-  内部実装や例外時の対処は既存の開発者・管理者向け文書へ分けます。
-- 製品の対応状況は現行の一次情報と対象バージョンを確認します。
-  モデルのデプロイ成功から、IQ・評価・最適化・Hosted の全用途への対応を推測しません。
-  未確認の用途は未確認とし、固定値は既存の正本から参照します。
-- 画面操作の説明には実際の UI を撮影した画像を使い、生成画像を操作画面として掲載しません。
-  UI の正式ラベルと入力値の説明を本文にも残し、画像だけで手順を成立させません。
-- 強調は迷いやすい入力・設定箇所の赤枠に絞り、不要な赤い番号や回答のネタバレを加えません。
-  加工後の画像で赤枠の欠け、文字切れ、本文との対応を確認します。
-  資格情報や個人・実環境の識別情報は、不透明なマスクで読めない状態にします。
-- 画像を追加・差し替えしたら [画像・アイコンの出典](../../docs/images/ATTRIBUTION.md) に
-  撮影元・出典と加工内容を記録します。説明用の過去画像や公式の例は、現行 revision の成功証跡にしません。
-- 構成図は [構成図の編集](../../docs/development/architecture.md#構成図の編集) に従います。
-  実装と各 Lab に照合し、編集元・PowerPoint・掲載 PNG・本文を同じ変更で揃えます。
-  手編集した PowerPoint を未反映の JSON で上書きせず、旧図を現行の再生成元にしません。
-- 論理境界、通信経路、処理順序、作成する担当と時点を区別します。
-  図から省略した実行環境や機能を、本編から廃止したとは解釈しません。
-  掲載画像と編集用ファイルの表示確認を分け、プレビューの描画欠落をデータ消失と断定しません。
-- 文書のリンク・構造の検査と、参加者の実操作経路での検証を区別します。
-  通し検証が必要な場合の範囲・中断・完了判定は
-  [講師向けrunbook](../../instructor/runbook.md#実環境検証の範囲) に従います。
+- Follow the [shared instructions](../copilot-instructions.md) for audience,
+  language, and placement. See
+  [change targets and checks](../../docs/development/README.md#change-targets-and-checks)
+  for related prose, diagrams, screenshots, and Notebook updates.
+- Participant procedures must state the starting state, input sources/defaults,
+  actions, and success checks. Do not leave undefined inputs with only "ask the
+  administrator"; focus explanation on difficult settings. Put implementation
+  details and exception handling in existing developer/administrator guides.
+- Verify product support against current primary sources and target versions.
+  A successful model deployment does not establish support for all IQ, evaluation,
+  optimization, and Hosted uses. Label unverified uses and refer to existing
+  sources of truth for pinned values.
+- Use real UI captures for operating instructions, never generated mock screenshots.
+  Keep official UI labels and input explanations in prose as well; images alone
+  must not be required to complete the procedure.
+- Limit emphasis to red boxes around confusing inputs/settings. Avoid unnecessary
+  red numbering or revealing answers. Check cropped boxes, text clipping, and
+  correspondence with prose after processing. Opaquely mask credentials and
+  personal or live environment identifiers.
+- Record capture sources and processing in
+  [image and icon attribution](../../docs/images/ATTRIBUTION.md) when adding or
+  replacing images. Historical examples and official sample images are not proof
+  of success at the current revision. Do not relabel Japanese or obsolete captures
+  as current English results.
+- Follow [editing architecture diagrams](../../docs/development/architecture.md#editing-architecture-diagrams).
+  Compare with implementation and Labs; update editable source, PowerPoint, PNG,
+  and prose together. Do not overwrite manual PowerPoint edits with stale JSON
+  or use historical diagrams to regenerate the current design.
+- Distinguish logical boundaries, communication paths, processing order, ownership,
+  and creation time. A runtime or feature omitted from a diagram is not necessarily
+  removed from the core workshop. Check published images and editable files
+  separately; preview rendering gaps do not prove data loss.
+- Distinguish document link/structure checks from participant-path verification.
+  Follow the [instructor runbook](../../instructor/runbook.md#real-environment-validation-scope)
+  for end-to-end scope, interruption, and completion.

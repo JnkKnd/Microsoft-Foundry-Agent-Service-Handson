@@ -160,7 +160,7 @@ def test_is_external_link_classifies_correctly() -> None:
     assert is_external_link("#section") is True
     assert is_external_link("../../docs/development/architecture.md") is False
     assert is_external_link("work-iq.md") is False
-    assert is_external_link("../../README.md#core-と-optional-の境界") is False
+    assert is_external_link("../../README.md#core-and-optional-boundary") is False
 
 
 def test_resolve_link_path_strips_fragment_and_joins_relative(tmp_path: Path) -> None:

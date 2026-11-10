@@ -1,25 +1,30 @@
-# 環境準備ガイド
+# Environment setup guide
 
-**操作は [Lab 1](../../../labs/01-setup.md) の順に進めてください。**
+> [!WARNING]
+> This English branch is not yet deployment-ready. Before these steps can be used,
+> an administrator must publish English artifacts and pin the source SHA and GHCR image digest.
+> Mutable `English` branch links are not release-fixed downloads; existing Azure data is not automatically English.
 
-専用 RG を 1 個手動作成 → 作成済み RG にテンプレートを実行 →
-データ投入・検証の成功を確認 → Foundry Portal、という流れです。
-`workshopContext.setup_status` が `complete` になるまで次の Lab へ進みません。
+**Follow the steps in [Lab 1](../../../labs/01-setup.md) in order.**
 
-テンプレートでは **Subscription** と作成済みの **Resource group** だけを選び、
-その他は既定値のまま進めます。本人のデプロイでは **Participant Object Id Override** は空欄です。
+Manually create one dedicated RG → run the template against that existing RG →
+verify successful data loading and validation → open Foundry Portal.
+Do not proceed until `workshopContext.setup_status` is `complete`.
 
-Cloud ShellとJupyterLabを使う旧ガイドは履歴資料です。現行の環境作成はこのガイド、
-Labs 7〜8の実行環境は下表のCodespacesまたはローカルDev Containerを参照してください。
+Select only **Subscription** and the existing **Resource group**, keeping other defaults.
+Leave **Participant Object Id Override** empty when deploying for yourself.
 
-| 確認したいこと | 参照先 |
+The old Cloud Shell / JupyterLab guide is historical material. Use this guide for current provisioning
+and Codespaces or the local Dev Container below for Labs 7–8.
+
+| What to check | Reference |
 |---|---|
-| 参加前に必要なもの | [参加条件](../prerequisites.md) |
-| 画面操作と初期化の確認 | [Lab 1](../../../labs/01-setup.md) |
-| 共通 Skill ZIP と OpenAPI | [Lab 4](../../../labs/04-tools-toolbox.md) |
-| テンプレートの既定値 | [管理者向けガイド](../../admin/prerequisites.md) |
-| エラーへの対処 | [トラブルシューティング](../troubleshooting.md) |
-| ノートブックの準備（標準） | [Codespaces](codespaces.md) |
-| ローカルで受講する場合 | [同じ Dev Container を使う](local-dev-container.md) |
-| 終了時の片付け | [Lab 9](../../../labs/09-observability-cleanup.md) |
-| 詳細な構成・権限 | [infra/README.md](https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson/blob/main/infra/README.md) |
+| Before joining | [Prerequisites](../prerequisites.md) |
+| UI steps and initialization checks | [Lab 1](../../../labs/01-setup.md) |
+| Shared Skill ZIPs and OpenAPI | [Lab 4](../../../labs/04-tools-toolbox.md) |
+| Template defaults | [Administrator guide](../../admin/prerequisites.md) |
+| Handling errors | [Troubleshooting](../troubleshooting.md) |
+| Notebook preparation (standard) | [Codespaces](codespaces.md) |
+| Local participation | [Use the same Dev Container](local-dev-container.md) |
+| Cleanup | [Lab 9](../../../labs/09-observability-cleanup.md) |
+| Detailed architecture and permissions | [infra/README.md](https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/blob/English/infra/README.md) |

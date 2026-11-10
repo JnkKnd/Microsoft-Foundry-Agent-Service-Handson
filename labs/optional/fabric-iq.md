@@ -1,162 +1,146 @@
-# 選択ラボ — Fabric IQ（Contoso 出張・経費データを Fabric で公開する）
+# Optional lab — Fabric IQ (expose Contoso travel and expense data in Fabric)
 
-## この文書の位置づけ
+## Scope of this document
 
-このラボは**本編の所要時間に含まれません**。[ハンズオンの構成](../../docs/development/architecture.md)
-の方針どおり、本ハンズオンの core custom template は Microsoft Fabric の容量・ワークスペース・
-ontology・data agent を一切作成しません。ここで説明する手順は、**別途 Fabric 容量とワーク
-スペースを持つ組織**が、本編の Contoso 出張・経費シナリオを Fabric IQ 経由で Foundry agent に
-つなぐ場合の**設計と接続手順**です。実際に手を動かす場合は、この文書の前提条件をすべて満たす
-Fabric 管理者と一緒に進めてください。
+This lab is **not included in the main workshop duration**.
+As described in the [architecture](../../docs/development/architecture.md), the core custom template
+creates no Microsoft Fabric capacity, workspaces, ontologies, or data agents.
+This document covers **design and connection steps** for an organization with **separate Fabric
+capacity and a workspace** to connect the Contoso travel/expense scenario to Foundry agents through Fabric IQ.
+For practical execution, work with a Fabric administrator who meets every prerequisite below.
 
 > [!WARNING]
-> **Preview**: Fabric IQ は現時点で public preview です。SLA なしで提供され、本番ワークロード
-> には推奨されません。接続すると、モデルのトークン課金とは別に料金が発生し、データが Azure の
-> コンプライアンス境界の外に送信される場合があります。責任は利用者側にあります
-> （[Fabric IQ 公式ドキュメント](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric-iq)
-> の Warning 節）。
+> **Preview**: Fabric IQ is public preview, without an SLA, and is not recommended for production workloads.
+> Connections incur charges beyond model tokens and may send data outside Azure compliance boundaries.
+> Users are responsible for this; see the [official Warning](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric-iq).
 
-## 1. ゴール
+## 1. Goal
 
-`contoso-travel-assistant`（本編 Lab 2〜6 で使った Prompt Agent）に、Azure AI Search の
-`contoso-travel-policy` index（規程文書、本編 Lab 3）とは別に、**Fabric IQ** を経由して
-「Contoso の出張・経費**実績データ**（架空）」を問い合わせられるようにします。Lab 3 の
-Foundry IQ が「規程文書に対する agentic retrieval」だったのに対し、Fabric IQ は
-「Fabric 上の構造化データ（ontology・semantic model・data agent）に対する自然言語アクセス」
-である違いを体験することが目的です。
+Allow `contoso-travel-assistant` (the Prompt Agent from Labs 2–6) to query
+**fictional Contoso travel/expense actuals** through **Fabric IQ**, separately from
+the Azure AI Search `contoso-travel-policy` index (policy documents used in Lab 3).
+Contrast Lab 3's Foundry IQ agentic retrieval over policy documents with Fabric IQ's
+natural-language access to structured Fabric data (ontologies, semantic models, and data agents).
 
-## 2. 前提条件（すべて必須。resource group Owner だけでは不足します）
+## 2. Prerequisites (all required; resource group Owner is insufficient)
 
 > [!IMPORTANT]
-> 本編の参加者権限（既存 resource group の **Owner**）は、Fabric IQ の準備には**一切使えません**。
-> Fabric IQ が必要とするのは Fabric テナント・容量・ワークスペース側の権限であり、Azure
-> resource group の権限とは別系統です。以下はすべて、本編とは別の Fabric 管理者が事前に
-> 準備しているという前提で読んでください。
+> Main-workshop **Owner** permissions on an existing resource group do **not** prepare Fabric IQ.
+> Fabric tenant, capacity, and workspace permissions are separate from Azure RG permissions.
+> Assume a separate Fabric administrator has prepared everything below.
 
-### 2.1 呼び出すすべてのユーザーに Fabric ライセンスが必要
+### 2.1 Fabric licenses for every caller
 
-Fabric IQ を Foundry agent 経由で呼び出す**すべてのユーザー**（開発者だけでなく、agent を
-使うエンドユーザー全員）が、問い合わせ対象の Fabric item にアクセスできる
-[Microsoft Fabric ライセンス](https://www.microsoft.com/microsoft-fabric)を持っている必要が
-あります。「agent の呼び出し元の資格情報でアクセス制御される」という Fabric の仕組み上、
-ライセンス不足のユーザーは agent 経由でも Fabric データにアクセスできません。
+**Every user** calling Fabric IQ through a Foundry agent, including end users, not just developers,
+needs a [Microsoft Fabric license](https://www.microsoft.com/microsoft-fabric) allowing access to the target item.
+Fabric access is controlled using the caller's credentials; an agent does not bypass missing licenses.
 
-### 2.2 有償 Fabric 容量（F2 以上）または Power BI Premium（P1 以上）
+### 2.2 Paid Fabric F2+ or Power BI Premium P1+
 
-Fabric data agent を使う場合は、**有償の F2 以上の Fabric 容量**、または **Microsoft Fabric
-が有効化された Power BI Premium P1 以上の容量**の上に公開されている必要があります。
-無償の Fabric トライアル容量や、Fabric が無効な Power BI 容量では動作しません。
+Fabric data agents must be published on **paid Fabric F2 or higher capacity**, or
+**Power BI Premium P1 or higher capacity with Microsoft Fabric enabled**.
+Free Fabric trial capacity and Power BI capacity without Fabric do not work.
 
-### 2.3 リージョン: 「Power BI のみ」の地域では利用不可
+### 2.3 Regions: unavailable in Power BI-only regions
 
-Fabric IQ は、その地域で **Power BI のみが Fabric ワークロードとして提供されている**場合は
-利用できません。Fabric のフルスタック（lakehouse、eventhouse、OneLake など）が提供されている
-リージョンの Fabric ワークスペースが必要です。ワークスペースの地域が対象かどうかは
-[Microsoft Fabric region availability](https://learn.microsoft.com/fabric/admin/region-availability#power-bi)
-で確認してください。
+Fabric IQ is unavailable where **Power BI is the only Fabric workload offered**.
+The workspace must be in a region offering the full Fabric stack (lakehouse, eventhouse, OneLake, etc.).
+Check [Microsoft Fabric region availability](https://learn.microsoft.com/fabric/admin/region-availability#power-bi).
 
-### 2.4 公開済みの Fabric item（ontology・Fabric data agent・Power BI semantic model のいずれか）
+### 2.4 Published Fabric item (ontology, data agent, or Power BI semantic model)
 
-問い合わせ対象は次のいずれかで、**あらかじめ公開（publish）済み**である必要があります。
+The target must be one of these, **published in advance**:
 
-| Fabric item | 用途 | 追加要件 |
+| Fabric item | Purpose | Additional requirements |
 |---|---|---|
-| **Ontology** | エンティティ・プロパティ・関係性に基づく質問 | — |
-| **Power BI semantic model** | メジャー・階層に基づく分析的な質問 | この環境ではほかの LLM 操作と同じ `gpt-5.6-luna` を使用 |
-| **Fabric data agent** | 会話形式の Q&A、長時間実行のクエリ | 有償 F2 以上または Power BI Premium P1 以上の容量上に公開済み。テナント設定で cross-geo processing/storage が必要な場合は有効化。data agent とそのデータソースは**同一リージョンの容量**上にあること |
+| **Ontology** | Questions based on entities, properties, and relationships | — |
+| **Power BI semantic model** | Analytical questions based on measures/hierarchies | Uses the same `gpt-5.6-luna` as other LLM operations in this environment |
+| **Fabric data agent** | Conversational Q&A and long-running queries | Published on paid F2+ or Power BI Premium P1+ capacity; enable tenant cross-geo processing/storage where required; data agent and its sources must use capacity in the **same region** |
 
-さらに、呼び出し元ユーザーまたはサービスプリンシパルが、対象の item と各データソースへの
-**読み取り権限**を Fabric 側で持っている必要があります。
+The calling user or service principal also needs Fabric-side **read access**
+to the item and each data source.
 
-### 2.5 Azure RBAC ロール（Foundry 側）
+### 2.5 Azure RBAC roles (Foundry)
 
-| ロール | 対象 | 用途 |
+| Role | Assigned to | Purpose |
 |---|---|---|
-| **Foundry User** | 開発者本人、agent の実行時 identity、OAuth フローに関わるユーザー identity | Fabric IQ ツールを使う agent の作成・実行 |
-| **Foundry Project Manager** | 接続を作成する担当者 | Fabric IQ エンドポイントへの Foundry connection 作成 |
+| **Foundry User** | Developer, agent runtime identity, user identities involved in OAuth | Create/run agents using Fabric IQ |
+| **Foundry Project Manager** | Connection creator | Create Foundry connections to Fabric IQ endpoints |
 
-これらは本編 Lab 4/5 と同じ Foundry project 上のロールですが、本編の template は Fabric IQ
-connection 用の追加権限を管理しません。本ラボを行う場合は、Fabric 管理者と Foundry project
-管理者が individually にロールを付与する必要があります。
+These are roles on the same Foundry project as Labs 4/5, but the main template
+does not manage extra Fabric IQ connection permissions.
+Fabric and Foundry project administrators must assign roles individually for this lab.
 
-### 2.6 認証方式: managed OAuth と BYO（Bring Your Own）Entra app の違い、および admin consent
+### 2.6 Authentication: managed OAuth, BYO Entra apps, and admin consent
 
-Fabric IQ への接続には、item の種類ごとに次の認証方式があります。
+Authentication depends on the item:
 
-| Fabric item | 最初のクエリで使える認証 |
+| Fabric item | Authentication available for the initial query |
 |---|---|
-| Ontology | BYO Entra app または managed OAuth connection 経由の delegated user authentication |
-| Power BI semantic model | 同上 |
-| Fabric data agent | Foundry connection 経由は BYO Entra app または managed OAuth。data agent の MCP エンドポイントに**直接**アクセスするクライアントに限り、user token または service-principal token も使用可 |
+| Ontology | Delegated user authentication through a BYO Entra app or managed OAuth connection |
+| Power BI semantic model | Same as above |
+| Fabric data agent | BYO Entra app or managed OAuth through Foundry connections; user/service-principal tokens are also available only for clients accessing the data agent MCP endpoint **directly** |
 
-- **Managed OAuth**: Foundry が Entra アプリ登録と同意フローを代行して管理する方式です。
-  セットアップは速い一方、テナントによっては「マルチテナントアプリへの同意」を許可する
-  ポリシーが必要になる場合があります。
-- **BYO Entra app**: 組織自身が Entra アプリ registration を作成し、delegated permission を
-  設定した上で、テナント管理者が **admin consent** を明示的に許可する方式です。組織のアプリ
-  ガバナンスに従いたい場合はこちらを選びます。
+- **Managed OAuth**: Foundry manages Entra app registration and consent flow.
+  Setup is faster, but tenant policy may need to allow consent to multitenant applications.
+- **BYO Entra app**: The organization registers its own Entra app and delegated permissions,
+  and a tenant administrator explicitly grants **admin consent**. Choose this for organizational app governance.
 
-どちらの方式でも、初回セットアップ時にテナント管理者による同意（またはテナントのユーザー
-同意ポリシーの確認）が必要になり得ます。resource group Owner ロールはこの同意を代替しません。
+Either approach may require tenant administrator consent or checking tenant user-consent policy during setup.
+Resource group Owner does not substitute for consent.
 
-### 2.7 Foundry Toolkit（VS Code 拡張機能）
+### 2.7 Foundry Toolkit (VS Code extension)
 
-[Visual Studio Code](https://code.visualstudio.com/) と
+Installing [Visual Studio Code](https://code.visualstudio.com/) and
 [Foundry Toolkit for Visual Studio Code](https://code.visualstudio.com/docs/intelligentapps/overview#_install-and-setup)
-をインストールしておくと、Toolbox 経由で Fabric IQ ツールを追加する UI フローが使えます
-（後述）。
-これは任意の Toolkit 経路で、本編の Dev Container の必須要件ではありません。
-必要な場合は、拡張機能が対応する承認済みの VS Code 環境を管理者と確認してください。
+provides the Toolbox UI route for adding Fabric IQ below.
+This optional Toolkit route is not required by the main Dev Container.
+If needed, confirm an approved, extension-compatible VS Code environment with the administrator.
 
-## 3. Contoso シナリオでの適用イメージ（架空・本リポジトリでは構築しません）
+## 3. Contoso scenario (fictional; not provisioned by this repository)
 
-Fabric 管理者がすでに次を準備している状況を想定します（すべて架空のデータで、本リポジトリの
-`data/` とは別に Fabric ワークスペース上へ手動で作られたものです）。
+Assume a Fabric administrator has already prepared the following fictional data,
+manually created in Fabric separately from this repository's `data/`:
 
-- Fabric ワークスペース `contoso-travel-fabric-ws`（フル Fabric スタックが提供されるリージョン、
-  有償 F2 以上の容量）。
-- ontology `ContosoTravelOntology`。エンティティ `Employee`・`Trip`・`ExpenseReport` と、
-  それぞれの関係性（`Employee` が複数の `Trip` を持つ、など）を OneLake 上の lakehouse に
-  バインドしたもの。
-- 公開済みの Fabric data agent `contoso-expense-fabric-agent`。上記 ontology を基盤にした
-  会話型 Q&A エンドポイント。
+- Workspace `contoso-travel-fabric-ws` in a full-Fabric-stack region on paid F2+ capacity.
+- Ontology `ContosoTravelOntology`, binding `Employee`, `Trip`, and `ExpenseReport`
+  entities and relationships (such as one Employee having multiple Trips) to a OneLake lakehouse.
+- Published data agent `contoso-expense-fabric-agent`, a conversational Q&A endpoint based on that ontology.
 
-この状態に対して、`contoso-travel-assistant` から次のような**架空のプロンプト**で問い合わせる
-デモを想定します。
+Example **fictional prompts** from `contoso-travel-assistant`:
 
-- 「先週、経費規程の日当上限を超えて申請された Trip の件数は？」
-- 「今四半期、承認待ちのままになっている経費申請を部署別に集計して」
+- "How many Trips submitted last week exceeded the expense policy per diem cap?"
+- "Aggregate this quarter's pending expense requests by department."
 
-いずれも Contoso 社内の合成データに関する質問であり、実在の従業員・経費情報は一切含みません。
+These concern synthetic Contoso data only, with no real employee or expense information.
 
-## 4. 接続手順（概念。実施は Fabric 管理者と一緒に）
+## 4. Connection steps (conceptual; work with a Fabric administrator)
 
-### 4.1 Fabric IQ サーバー URL を確認する
+### 4.1 Find the Fabric IQ server URL
 
-Fabric item の種類ごとに MCP エンドポイントの URL パターンが異なります。
+MCP endpoint patterns vary by item:
 
-| Fabric item | `server_url` パターン |
+| Fabric item | `server_url` pattern |
 |---|---|
 | Power BI semantic model | `https://api.fabric.microsoft.com/v1/mcp/fabricaihub/integrations/m365` |
 | Ontology | `https://api.fabric.microsoft.com/v1/mcp/dataPlane/workspaces/{workspaceId}/items/{itemId}/ontologyEndpoint` |
 | Fabric data agent | `https://api.fabric.microsoft.com/v1/mcp/workspaces/{workspaceId}/dataagents/{dataAgentId}/agent` |
 
-`{workspaceId}` / `{itemId}` / `{dataAgentId}` は Fabric portal で対象の item を開いた際の
-ブラウザ URL から取得します。
+Obtain `{workspaceId}`, `{itemId}`, and `{dataAgentId}` from the browser URL when opening the item in Fabric Portal.
 
-### 4.2 Foundry Toolkit で Toolbox 経由に追加する（推奨パターン）
+### 4.2 Add through Toolbox in Foundry Toolkit (recommended)
 
-本編 Lab 4 と同様、Fabric IQ ツールも**直接 agent に追加するのではなく Toolbox 経由**にすると、
-複数の agent での再利用や、認証情報・バージョン・ポリシーの一元管理がしやすくなります
-（[公式ドキュメントの Tip](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric-iq)）。
+As in Lab 4, add Fabric IQ **through Toolbox rather than directly to the agent**
+for reuse across agents and centralized credentials, versions, and policies;
+see the [official Tip](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric-iq).
 
-1. Foundry Toolkit の **My Resources > Tools** から Toolbox を作成または開く。
-2. **Add tools** → **Configured** タブ → **Fabric IQ (OneLake Catalog)** を選択。
-   Fabric IQ の接続自体（Ontology 用の OAuth 接続など）は Foundry Toolkit からは直接
-   作成できないため、先に Foundry portal でその接続を作成してから Toolkit に戻ります。
-3. **Publish**（新規 Toolbox）または **Save Changes**（既存 Toolbox）。
+1. In Foundry Toolkit **My Resources > Tools**, create/open a Toolbox.
+2. Select **Add tools > Configured > Fabric IQ (OneLake Catalog)**.
+   Fabric IQ connections themselves, such as ontology OAuth connections, cannot be created
+   directly in Toolkit. Create the connection in Foundry Portal first, then return to Toolkit.
+3. Select **Publish** for a new Toolbox or **Save Changes** for an existing one.
 
-### 4.3 SDK で確認する場合（参考。本編スクリプトは変更しません）
+### 4.3 SDK inspection (reference; do not change main scripts)
 
 ```python
 from azure.ai.projects import AIProjectClient
@@ -174,47 +158,43 @@ with (
     agent = project_client.agents.create_version(
         agent_name="contoso-travel-assistant-fabriciq-demo",
         definition=PromptAgentDefinition(
-            model=PRIMARY_MODEL_DEPLOYMENT_NAME,  # .workshop/context.json の primary_model_deployment_name
-            instructions="Fabric IQ を使って Contoso の出張・経費実績に関する質問に答えてください。",
+            model=PRIMARY_MODEL_DEPLOYMENT_NAME,  # primary_model_deployment_name from .workshop/context.json
+            instructions="Use Fabric IQ to answer questions about Contoso travel and expense actuals.",
             tools=[tool_payload],
         ),
     )
 ```
 
-`FABRIC_IQ_PROJECT_CONNECTION_ID` は Fabric 管理者と Foundry Project Manager が事前に作成した
-connection の完全なリソース ID です。本編の `.workshop/context.json` にはこの値は含まれません
-（本編の custom template は Fabric connection を作らないためです）。このコードは**参考実装**であり、
-`scripts/` 配下には追加しません — 実行する場合は自分のスクラッチファイルとして保存してください。
+`FABRIC_IQ_PROJECT_CONNECTION_ID` is the full resource ID of the connection prepared by
+the Fabric administrator and Foundry Project Manager.
+It is absent from the main `.workshop/context.json` because the template creates no Fabric connections.
+This is a **reference implementation**, not an addition to `scripts/`; save your own scratch file if executing it.
 
-## 5. 検証する
+## 5. Validate
 
-1. Fabric item へのアクセス権を持つユーザーで、上記の架空プロンプトを Playground から送り、
-   ontology の用語（`Trip`、`ExpenseReport` など）を使った質問に、Fabric 側のデータに基づく
-   応答が返ることを確認します。
-2. 同じ質問を、Fabric item へのアクセス権を**持たない**ユーザーで試し、権限がない場合は
-   結果が返らない（または拒否される）ことを確認します。これは Fabric 側の permission
-   enforcement が実際に効いていることの確認であり、Foundry 側でアクセス制御を作り込んで
-   いるわけではないことを理解する目的です。
+1. As a user with item access, send the fictional prompts in Playground.
+   Verify questions using ontology terms such as `Trip` and `ExpenseReport`
+   receive answers grounded in Fabric data.
+2. Repeat as a user **without** item access and verify results are withheld or access denied.
+   This demonstrates Fabric permission enforcement, not custom access control built in Foundry.
 
-## 6. Cleanup（本編の専用 resource group cleanup 対象外）
+## 6. Cleanup outside the main dedicated resource group
 
-- Fabric IQ 用に作成した Foundry connection と、それを使った agent version は、Foundry
-  project 内のオブジェクトなので、本編と同様 Foundry portal または SDK
-  （`project_client.agents.delete_version(...)`）から削除できます。
-- Fabric ワークスペース側の ontology・data agent・容量そのものは、Fabric 管理者が Fabric
-  portal から個別に削除・凍結してください。Lab 9 は Fabric 側のリソースを
-  管理しません。
+- Fabric IQ Foundry connections and agent versions are project objects; delete them through
+  Foundry Portal or the SDK (`project_client.agents.delete_version(...)`), as in the main workshop.
+- The Fabric administrator must separately delete or suspend Fabric-side ontologies,
+  data agents, and capacity in Fabric Portal. Lab 9 does not manage Fabric resources.
 
-## 7. データ境界とコストの再確認
+## 7. Recheck data boundaries and costs
 
 > [!WARNING]
-> Fabric IQ に接続すると、コストが発生し、データが Azure のコンプライアンス境界の外に
-> 送信される場合があります。データがどの境界を越えるか、組織のコンプライアンス・地理的
-> 境界にどう影響するかを判断し、必要な許可・境界・承認を得るのは利用者の責任です
-> （[公式ドキュメントの Warning 節](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric-iq)）。
-> 本ラボで送ってよいのは、架空の Contoso シナリオに関するプロンプトのみです。
+> Fabric IQ incurs charges and may send data outside Azure compliance boundaries.
+> Users must assess crossed boundaries and effects on organizational compliance/geographic boundaries,
+> obtaining required permissions and approvals; see the
+> [official Warning](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric-iq).
+> Only fictional Contoso-scenario prompts are allowed in this lab.
 
-## 公式参照
+## Official references
 
 - [Connect agents to Microsoft Fabric with Fabric IQ (preview)](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric-iq)
 - [Fabric IQ overview](https://learn.microsoft.com/fabric/iq/overview)
@@ -223,8 +203,8 @@ connection の完全なリソース ID です。本編の `.workshop/context.jso
 - [Microsoft Fabric region availability](https://learn.microsoft.com/fabric/admin/region-availability#power-bi)
 - [Curate intent-based toolbox in Foundry](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/toolbox)
 
-## 関連リンク
+## Related links
 
-- [選択ラボ index](README.md)
-- [本編 Lab 3 — Foundry IQ](../03-rag-foundry-iq.md)（Foundry IQ との違いの比較対象）
-- [本編 Lab 4 — Tools・Toolbox](../04-tools-toolbox.md)
+- [Optional lab index](README.md)
+- [Lab 3 — Foundry IQ](../03-rag-foundry-iq.md) (comparison with Foundry IQ)
+- [Lab 4 — Tools and Toolbox](../04-tools-toolbox.md)

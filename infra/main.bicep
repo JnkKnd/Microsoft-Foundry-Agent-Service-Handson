@@ -23,15 +23,13 @@ param evaluationModelVersion string = '2026-04-24'
 @maxLength(64)
 param embeddingModelVersion string = '1'
 
-@description('Release-pinned public GHCR Travel Ops API image. Keep the default; administrator overrides must use ghcr.io/<owner>/<image>@sha256:<64 lowercase hexadecimal characters>, never tags or private registry credentials.')
-@minLength(83)
+@description('English release pending: an administrator must publish and pin ghcr.io/jnkknd/travel-ops-api@sha256:<64 lowercase hexadecimal characters> before distribution. Empty defaults fail; never use tags or private registry credentials.')
 @maxLength(256)
-param travelApiImageRef string = 'ghcr.io/matayuuu/travel-ops-api@sha256:173f7e954cd284057bf2a2fe10d53efae83547a060ec2ac23172dd5458816dcf'
+param travelApiImageRef string = ''
 
-@description('Release-pinned published lowercase 40-character commit SHA in matayuuu/Microsoft-Foundry-Agent-Service-Handson. Keep the default; it supplies bootstrap source and policy citations.')
-@minLength(40)
+@description('English release pending: an administrator must pin a published lowercase 40-character commit SHA in JnkKnd/Microsoft-Foundry-Agent-Service-Handson before distribution. Empty defaults fail; bootstrap source and policy citations use this exact commit.')
 @maxLength(40)
-param sourceRevision string = '05bd80776c0091ae03d8cfae9312a14b0db00b5f'
+param sourceRevision string = ''
 
 @description('Intended participant Entra User object ID. Leave empty only when the participant deploys personally. Specify the same participant for administrator/automation redeployment.')
 @maxLength(36)
@@ -53,7 +51,7 @@ var sourceRevisionIsImmutable = length(sourceRevision) == 40 && empty(filter(
 ))
 var validatedSourceRevision = sourceRevisionIsImmutable
   ? sourceRevision
-  : fail('sourceRevision must be a published lowercase 40-character hexadecimal commit SHA.')
+  : fail('English release is not ready: sourceRevision must be a published lowercase 40-character hexadecimal commit SHA in JnkKnd/Microsoft-Foundry-Agent-Service-Handson.')
 
 var imageParts = split(travelApiImageRef, '@sha256:')
 var imageRepository = first(imageParts)
@@ -74,11 +72,11 @@ var imageDigestIsValid = length(imageDigest) == 64 && empty(filter(
 var imageReferenceIsImmutable = length(imageParts) == 2 && imageRepositoryIsValid && imageDigestIsValid
 var validatedTravelApiImageRef = imageReferenceIsImmutable
   ? travelApiImageRef
-  : fail('travelApiImageRef must be a public ghcr.io/<owner>/<image>@sha256:<64 lowercase hexadecimal characters> reference without a tag.')
+  : fail('English release is not ready: travelApiImageRef must be a published public ghcr.io/<owner>/<image>@sha256:<64 lowercase hexadecimal characters> reference without a tag.')
 
 // Resolve the deployer only at this root boundary, never inside the script.
 var participantObjectId = toLower(empty(participantObjectIdOverride) ? deployer().objectId : participantObjectIdOverride)
-var sourceBase = 'https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson/blob/${validatedSourceRevision}'
+var sourceBase = 'https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/blob/${validatedSourceRevision}'
 var nameSuffix = uniqueString(resourceGroup().id, location)
 var names = {
   foundry: 'aif-fdyws-${nameSuffix}'

@@ -9,7 +9,7 @@
     "country": "Japan",
     "start_date": "2026-05-11",
     "end_date": "2026-05-12",
-    "purpose": "顧客訪問",
+    "purpose": "Customer visit",
     "cabin_class_requested": "economy",
     "preapproval_status": "simulated_not_required"
   },
@@ -23,7 +23,7 @@
     "country": "Japan",
     "start_date": "2026-06-01",
     "end_date": "2026-06-03",
-    "purpose": "社内カンファレンス登壇",
+    "purpose": "Presenting at an internal conference",
     "cabin_class_requested": "economy",
     "preapproval_status": "simulated_not_required"
   },
@@ -37,7 +37,7 @@
     "country": "United States",
     "start_date": "2026-07-10",
     "end_date": "2026-07-15",
-    "purpose": "展示会出展",
+    "purpose": "Exhibiting at a trade show",
     "cabin_class_requested": "business",
     "preapproval_status": "simulated_pending_vp_review"
   },
@@ -51,7 +51,7 @@
     "country": "Singapore",
     "start_date": "2026-05-20",
     "end_date": "2026-05-22",
-    "purpose": "技術検証ワークショップ",
+    "purpose": "Technical validation workshop",
     "cabin_class_requested": "premium_economy",
     "preapproval_status": "simulated_pending_manager_review"
   },
@@ -65,7 +65,7 @@
     "country": "Japan",
     "start_date": "2026-08-03",
     "end_date": "2026-08-04",
-    "purpose": "採用イベント",
+    "purpose": "Recruiting event",
     "cabin_class_requested": "economy",
     "preapproval_status": "simulated_not_required"
   },
@@ -79,7 +79,7 @@
     "country": "United Kingdom",
     "start_date": "2026-09-01",
     "end_date": "2026-09-06",
-    "purpose": "監査対応",
+    "purpose": "Audit support",
     "cabin_class_requested": "business",
     "preapproval_status": "simulated_pending_vp_review"
   },
@@ -93,7 +93,7 @@
     "country": "Hong Kong",
     "start_date": "2026-05-25",
     "end_date": "2026-05-27",
-    "purpose": "商談",
+    "purpose": "Business meeting",
     "cabin_class_requested": "economy",
     "preapproval_status": "simulated_pending_manager_review"
   },
@@ -107,7 +107,7 @@
     "country": "Japan",
     "start_date": "2026-06-15",
     "end_date": "2026-06-15",
-    "purpose": "オンサイトサポート",
+    "purpose": "On-site support",
     "cabin_class_requested": "economy",
     "preapproval_status": "simulated_not_required"
   }

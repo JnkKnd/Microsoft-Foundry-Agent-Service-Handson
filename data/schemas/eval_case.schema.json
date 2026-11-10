@@ -37,7 +37,7 @@
     "query": {
       "type": "string",
       "minLength": 1,
-      "description": "Japanese-first user query presented to the agent under evaluation."
+      "description": "English user query presented to the agent under evaluation."
     },
     "expected_behavior": {
       "type": "string",

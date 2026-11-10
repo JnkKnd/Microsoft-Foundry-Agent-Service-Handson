@@ -31,7 +31,7 @@ DEFAULT_CONTEXT_PATH = REPO_ROOT / ".workshop" / "context.json"
 DEFAULT_SEARCH_INDEX_NAME = "contoso-travel-policy"
 DEFAULT_AGENT_NAME = "contoso-travel-assistant"
 DEFAULT_TOOLBOX_NAME = "contoso-travel-toolbox"
-SOURCE_REPOSITORY = "https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson"
+SOURCE_REPOSITORY = "https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson"
 CONTEXT_SCHEMA_VERSION = "2.0"
 CONTEXT_KEYS = frozenset(
     {

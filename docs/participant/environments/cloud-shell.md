@@ -1,200 +1,201 @@
-# 旧Cloud Shellガイドの参照先
+# Legacy Cloud Shell guide references
 
-このページの旧手順は現行構成では使用しません。Cloud ShellとJupyterLabを使った
-旧構成の履歴資料です。環境作成は [環境準備ガイド](custom-template.md) から
-[Lab 1](../../../labs/01-setup.md) へ進んでください。
-Labs 7〜8は [Codespaces](codespaces.md) または
-[ローカルDev Container](local-dev-container.md) で実行します。
+The old procedure on this page is **not used by the current configuration**.
+It is historical documentation for the former Cloud Shell / JupyterLab environment.
+For provisioning, follow the [environment setup guide](custom-template.md) to
+[Lab 1](../../../labs/01-setup.md). Run Labs 7–8 in
+[Codespaces](codespaces.md) or the [local Dev Container](local-dev-container.md).
 
-旧本文は経緯を確認するために保持しています。本文中のコマンド、画面説明、リンクは
-当時の構成を前提としており、現在の利用可能性を保証しません。
-現行の操作や権限の判断には、上記のガイドを参照してください。
+The old body is retained to explain earlier decisions. Its commands, UI descriptions,
+and links assume the configuration at that time and do not guarantee current availability.
+Use the guides above for current operations and permission decisions.
 
 <details>
-<summary>旧手順の履歴資料</summary>
+<summary>Historical procedure</summary>
 
 <!-- historical-content:start -->
-# 実行環境ガイド — Azure Cloud Shell Bash + JupyterLab
+# Execution environment guide — Azure Cloud Shell Bash + JupyterLab
 
-Azure portal の **Cloud Shell** と、**Web preview** で開く JupyterLab を使います。
-PC に開発ツールをインストールせず、Codespaces と**同じ Lab 7 / 8 の Notebook**を
-ブラウザーで実行します。Notebook を CLI 演習へ置き換える経路ではありません。
+Use Azure Portal **Cloud Shell** and JupyterLab through **Web preview**.
+Run the **same Lab 7 / 8 notebooks** as Codespaces in a browser without installing
+development tools on your PC. This is not a CLI replacement for notebook exercises.
 
-このページで準備を完了したら、[Lab 1 の手順 2](../../../labs/01-setup.md#2-事前確認を実行する)に戻ります。
-Lab 2〜9 の Terraform、Portal 操作、教材ファイル、Azure resources は共通です。
-[実行環境の選択へ戻る](../prerequisites.md)
+After preparing this environment, return to Lab 1 step 2.
+The former preflight step no longer exists; [current Lab 1](../../../labs/01-setup.md)
+uses a different provisioning procedure. In the historical configuration,
+Labs 2–9 shared Terraform, Portal operations, materials, and Azure resources.
+[Back to environment prerequisites](../prerequisites.md)
 
 > [!IMPORTANT]
-> **永続ストレージ付きの Bash が必須です。** **No storage account required** の
-> ephemeral session では Terraform を実行しません。
-> Cloud Shell は非対話20分で終了することがあり、実行中のプロセスや kernel のメモリーは失われます。
-> 開催管理者は **tenant あたり既定20同時ユーザー**の制限を事前確認します。
+> **Bash with persistent storage is mandatory.** Do not run Terraform in an ephemeral
+> **No storage account required** session.
+> Cloud Shell may terminate after 20 minutes of inactivity, losing running processes and kernel memory.
+> Organizers must check the default limit of **20 concurrent users per tenant** in advance.
 
 > [!WARNING]
-> Cloud Shell の計算環境は無料ですが、Storage account / Azure Files と教材の Azure 利用は有料です。
-> `exit` やブラウザー終了では storage と Azure resources は削除されません。
-> state を失わないよう、必ず [終了手順](#stop)の順序を守ってください。
+> Cloud Shell compute is free, but Storage accounts / Azure Files and workshop Azure usage are billable.
+> `exit` or closing the browser does not delete storage or Azure resources.
+> Follow the [shutdown order](#stop) to avoid losing state.
 
-### 自動作成で簡単になる範囲
+### What automatic creation simplifies
 
-初回画面の **We will create a storage account for you** を使うと、Storage用のRG、
-Storage account、Azure Files shareを個別に作る操作は不要になります。
-一方、JupyterLabをCloud Shellで使うための次の構築は残ります。
+Choosing **We will create a storage account for you** on first use avoids separately
+creating the storage RG, Storage account, and Azure Files share.
+The following JupyterLab setup is still required:
 
-| 構築 | 必要な理由 |
+| Setup | Why it is needed |
 |---|---|
-| 永続HOMEの確認 | Terraform state、教材、2つのPython環境を切断後も保持する |
-| standalone CPython 3.13 | Cloud Shellのsystem Pythonとは分離して教材の対象版を使う |
-| root / Hostedの2つの`.venv` | `azure-ai-projects==2.5.0`とHosted Agentの`<2.4`を混在させない |
-| JupyterLab / Jupyter Server / 2 kernelspec | 同じLab 7 / 8 Notebookを2つの依存環境で実行する |
-| native Graphviz | Lab 8で実際のworkflow SVGを描画する |
-| Web preview / 認証 / relay互換処理 | 実preview URL、port、password、Host / Origin / XSRF、kernel channelを安全に接続する |
-| 2つのTerminalと再接続手順 | Jupyterを実行したまま通常コマンドを使い、20分切断後に安全に再開する |
+| Verify persistent HOME | Retain Terraform state, materials, and two Python environments after disconnection |
+| Standalone CPython 3.13 | Use the workshop version separately from Cloud Shell system Python |
+| Root / Hosted `.venv` environments | Avoid mixing `azure-ai-projects==2.5.0` and Hosted Agent `<2.4` |
+| JupyterLab / Jupyter Server / two kernelspecs | Run the same Lab 7 / 8 notebooks in separate dependency environments |
+| Native Graphviz | Render the actual workflow SVG in Lab 8 |
+| Web preview / authentication / relay compatibility | Safely connect the actual preview URL, port, password, Host / Origin / XSRF, and kernel channels |
+| Two Terminals and reconnection steps | Run normal commands while Jupyter stays active and safely resume after a 20-minute disconnect |
 
-したがって、自動Storage作成は有効な簡略化ですが、Jupyter固有の準備・通信・運用は省略しません。
+Automatic Storage creation is useful simplification, but does not eliminate
+Jupyter-specific setup, communication, or operations.
 
-## 1. 入力する値と組織の許可を確認する
+## 1. Check input values and organizational permission
 
-次を講師・管理者と確認し、秘密を含まない値だけを手元に控えます。
-この記録はストレージの再接続と、最後の削除対象の照合に使います。
+Check these with the instructor/administrator and record only nonsecret values.
+Use the record to reconnect storage and verify deletion targets at the end.
 
-| 値 | 確認する内容 |
+| Value | What to check |
 |---|---|
-| Subscription ID | ハンズオンに割り当てられた subscription |
-| Workload resource group | 参加者向け前提条件の冒頭で作成した自分専用RG。そのRGに対する自分の**Owner**権限 |
-| Cloud Shell Storage作成権限 | 個人検証、またはCloud Shellが専用の新規RG / Storage accountを作成できるサブスクリプションレベルの権限。例: Contributorまたは同等のカスタムロール |
-| 自動生成されたStorage | 作成後に専用RG、Storage account、File share、locationを記録する。Workload RGやTerraformの管理対象と混同しない |
-| 教材 URL / branch | 講師が指定する公開 GitHub repository の HTTPS clone URL と branch |
-| 作成・削除の区分 | Cloud Shellが今回自動作成した専用RG一式か、管理者が割り当てた既存Storageか。削除を許可された対象 |
-| 既存の Cloud Shell 設定 | 利用済みの場合は元の `preferredLocation`、subscription / RG / account / share と個人設定を本人の安全な保存先に控える。既存 storage は今回の削除対象にしない |
+| Subscription ID | Subscription assigned to the workshop |
+| Workload resource group | Your dedicated RG created at the start of participant prerequisites, with your own **Owner** permissions |
+| Cloud Shell Storage creation permissions | Personal testing, or subscription-level permission allowing Cloud Shell to create a dedicated RG / Storage account, such as Contributor or an equivalent custom role |
+| Automatically generated Storage | Record the dedicated RG, Storage account, File share, and location after creation; do not confuse them with the Workload RG or Terraform-managed resources |
+| Workshop URL / branch | Public GitHub repository HTTPS clone URL and branch designated by the instructor |
+| Creation/deletion ownership | Whether Cloud Shell created a new dedicated RG for this workshop or an administrator assigned existing Storage; exactly what may be deleted |
+| Existing Cloud Shell settings | If already used, securely record original `preferredLocation`, subscription / RG / account / share, and personal settings. Existing storage is not a deletion target |
 
-管理者は `Microsoft.CloudShell` / `Microsoft.Storage` の登録、Storage の権限・policy、
-ブラウザーの HTTPS / WSS、GitHub・GHCR・パッケージ配布先の通信を事前確認します。
-詳細は[管理者向け前提条件](../../admin/prerequisites.md#実行環境の選択と-cloud-shell-の開催条件)にあります。
-公開 repository の clone に GitHub account は不要ですが、GitHub への通信許可は必要です。
-Codespaces の禁止と、GitHub / パッケージ配布先への通信禁止は別です。
+Administrators check `Microsoft.CloudShell` / `Microsoft.Storage` registration,
+Storage permissions/policies, browser HTTPS / WSS, and access to GitHub, GHCR, and package sources.
+See [administrator prerequisites](../../admin/prerequisites.md);
+the historical Cloud Shell-specific subsection is no longer part of the current guide.
+A public clone needs no GitHub account, but does need network access to GitHub.
+Prohibiting Codespaces and prohibiting GitHub/package downloads are separate policies.
 
-共有キーアクセスや public network が組織で禁止され、標準 Cloud Shell のストレージを
-マウントできない場合は、管理者へ戻してください。policy、firewall、認証制限を弱めて進みません。
-参加者は、Cloud Shellの初回Storage作成以外の provider登録、subscription scopeのrole付与、
-quota変更、`admin-preflight.sh --apply`を行いません。
+If shared-key access or public networking is prohibited and standard Cloud Shell storage
+cannot mount, stop and consult the administrator. Do not weaken policies, firewalls, or authentication.
+Participants do not register providers, assign subscription-scope roles, change quotas,
+or run `admin-preflight.sh --apply`, apart from first-use Cloud Shell Storage creation.
 
 <a id="create-storage"></a>
 
-## 2. Cloud Shell に自分専用の storage を自動作成させる
+## 2. Let Cloud Shell create your dedicated storage
 
-このハンズオンでは、個人検証または上記の作成権限があることを前提に、公式の自動作成経路を使います。
+Assuming personal testing or the creation permissions above, use the official automatic route.
 
-1. [Azure portal](https://portal.azure.com/) に対象のAzureアカウントでサインインします。
-2. 上部の **Cloud Shell** を開き、初回のshell選択で **Bash** を選びます。
-3. **Getting started** で **Mount storage account** を選択します。
-4. **Storage account subscription** で記録したsubscriptionを選び、**Apply**を選択します。
-5. **Mount storage account** で **We will create a storage account for you** を選び、
-   **Next**を選択します。Cloud Shellが専用の新規RG、Storage account、Azure Files shareを作成します。
-6. Bashのプロンプトが表示されたら、**Manage files > Open file share**で自動作成された
-   RG / account / share / locationを開き、終了時の削除対象として記録します。
+1. Sign in to [Azure Portal](https://portal.azure.com/) with the target Azure account.
+2. Open **Cloud Shell** at the top and select **Bash** on first use.
+3. Under **Getting started**, select **Mount storage account**.
+4. Select the recorded **Storage account subscription**, then **Apply**.
+5. In **Mount storage account**, select **We will create a storage account for you**,
+   then **Next**. Cloud Shell creates a dedicated new RG, Storage account, and Azure Files share.
+6. When the Bash prompt appears, use **Manage files > Open file share**
+   to inspect and record RG / account / share / location for final deletion.
 
-公式手順:
+Official steps:
 [Get started with Azure Cloud Shell using persistent storage](https://learn.microsoft.com/azure/cloud-shell/get-started/new-storage)
 
 > [!IMPORTANT]
-> 自動作成先は教材workload用の既存RGではなく、Cloud Shell専用の新規RGです。
-> `setup.sh` / `destroy.sh`の管理対象ではありません。各参加者が自分の専用RG一式だけを記録し、
-> workload cleanup成功後に削除します。
+> The destination is a new Cloud Shell-specific RG, not the existing workshop workload RG.
+> It is not managed by `setup.sh` / `destroy.sh`. Each participant records only their
+> own dedicated RG and deletes it after successful workload cleanup.
 
 <details>
-<summary>新規RGを許可しない組織だけ: 既存RG内にStorageを手動作成する</summary>
+<summary>Only where new RGs are prohibited: manually create Storage in an existing RG</summary>
 
-この代替経路では、管理者が**自分専用**のStorage account / File shareを用意済みなら、
-そのまま[接続手順](#mount-storage)へ進みます。他人のshareや他用途のHOME imageは使いません。
-自分で作成する場合は次を使います。
+If an administrator already prepared a **dedicated** Storage account / File share for you,
+go directly to [mounting](#mount-storage). Do not use another person's share or a HOME image for another purpose.
+For self-creation, follow these steps.
 
-### Storage account を作成する
+### Create a Storage account
 
-1. [Azure portal](https://portal.azure.com/) に Azure アカウントでサインインします。
-2. 上部の検索で **Storage accounts** を開き、**Create** を選びます。
-3. **Basics** で次を設定します。
+1. Sign in to [Azure Portal](https://portal.azure.com/).
+2. Search for **Storage accounts**, then select **Create**.
+3. Under **Basics**, set:
 
-   | 項目 | 設定 |
+   | Field | Setting |
    |---|---|
-   | **Subscription** | 記録した subscription |
-   | **Resource group** | 割り当てられた**既存 RG**を選択。**Create new** は使わない |
-   | **Storage account name** | 記録した自分専用の一意名。使用済みなら別の未使用名を選び、記録を更新 |
-   | **Region** | 選択する対応済み Cloud Shell location と一致する region。RG の region をそのまま流用しない |
+   | **Subscription** | Recorded subscription |
+   | **Resource group** | Assigned **existing RG**; do not use **Create new** |
+   | **Storage account name** | Recorded unique name dedicated to you; if taken, choose an unused name and update your record |
+   | **Region** | Match the supported Cloud Shell location you will select; do not simply reuse the RG region |
    | **Primary service** | `Other (tables and queues)` |
-   | **Performance** | `Standard`。説明に `general-purpose v2 account` と表示される選択肢 |
+   | **Performance** | `Standard`, with `general-purpose v2 account` in its description |
    | **Redundancy** | `Locally-redundant storage (LRS)` |
 
-4. **Primary service** は利用できるストレージの種類を制限しません。
-   `Other (tables and queues)` でも、作成後に Azure Files share を作れます。
-   **この手順では Primary service に Azure Files を選びません。**
-   2026-09-09 の Portal 作成画面では、その選択によって、先に Standard を選んでいても
-   Review が **Account type: File shares**、**Media Tier: HDD**、**Provisioned v2** に
-   変わる事象が確認されています。
-5. セキュリティ・ネットワークのタブは、組織が承認した Cloud Shell 対応の設定を保ちます。
-   secure transfer、TLS 1.2 以上、SMB の転送時暗号化などの保護を弱めず、
-   Blob の anonymous access を有効化しません。
-   共有キーを使う標準マウントが許可されているか不明、または network / policy の拒否がある場合は、
-   その場で制限を解除せず管理者へ連絡してください。
-6. **Review + create** で subscription、既存 RG、名前、Cloud Shell と一致する region を再確認します。
-   **View automation template > Parameters** を開き、
-   **`kind=StorageV2`、`accountType=Standard_LRS`** であることを確認します。値や template は編集しません。
-   2026-09-09 の画面では、正しい Other / Standard の選択でも Review の
-   **Account type が Page blobs と表示される不整合**が確認されています。
-   Review の説明ラベルではなく、**ARM template の kind / accountType を判断根拠**にしてください。
-   値が違う場合は作成せず、**Basics** に戻って選び直します。
-   StorageV2 / Standard_LRS を確認できない場合は管理者へ連絡し、`FileStorage` や Premium で代用しません。
-7. 正しい構成を確認してから **Create** を選び、完了したら **Go to resource** を開きます。
-   実際に作成された kind / SKU / provisioning state は、次の Cloud Shell 接続後にも読み取り専用で確認します。
+4. **Primary service** does not restrict available storage types.
+   `Other (tables and queues)` still allows Azure Files shares after creation.
+   **Do not select Azure Files as Primary service in this procedure.**
+   In the 2026-09-09 Portal UI, that selection was observed to change Review to
+   **Account type: File shares**, **Media Tier: HDD**, **Provisioned v2**,
+   even after selecting Standard.
+5. Keep organization-approved Cloud Shell-compatible security/network settings.
+   Do not weaken secure transfer, TLS 1.2+, or SMB encryption in transit;
+   do not enable anonymous Blob access.
+   If shared-key standard mounts are not clearly permitted, or network/policy blocks occur,
+   contact the administrator rather than removing restrictions.
+6. In **Review + create**, recheck subscription, existing RG, name, and matching region.
+   Open **View automation template > Parameters** and verify
+   **`kind=StorageV2`, `accountType=Standard_LRS`** without editing values/templates.
+   The 2026-09-09 UI was observed to show **Account type: Page blobs** in Review
+   even with correct Other / Standard selections.
+   Use **ARM template kind / accountType**, not Review description labels, as evidence.
+   If different, do not create; return to **Basics** and select again.
+   If StorageV2 / Standard_LRS cannot be confirmed, consult the administrator;
+   do not substitute `FileStorage` or Premium.
+7. After confirming the configuration, select **Create**, then **Go to resource**.
+   Read-only checks after Cloud Shell connection also verify actual kind / SKU / provisioning state.
 
-本編 Terraform の管理タグをこの storage にコピーしません。Storage は実行環境の前提であり、
-`setup.sh` / `destroy.sh` が作成・削除する Foundry workload とは別管理です。
-Storage の **Access keys** を表示したり、キーや SAS をコピーしたりする操作は不要です。
+Do not copy the main Terraform management tags to this storage.
+Storage is an execution prerequisite, managed separately from the workload created/deleted by `setup.sh` / `destroy.sh`.
+No **Access keys** display or key/SAS copying is needed.
 
-### Azure Files share を作成する
+### Create an Azure Files share
 
-1. 作成した Storage account の **Data storage > Classic file shares** を開きます。
-   Blob container ではありません。
-2. toolbar の **New classic file share** を選び、**Name** に記録した名前（例: `cloudshell-handson`）を入力します。
-   小文字英数字と単独のハイフンを使い、先頭・末尾は英数字にします。
-3. **Access tier** は `Transaction optimized` を選びます。StorageV2 の pay-as-you-go share は
-   SMB です。NFS share や別の file-share resource provider を選びません。
-4. **Backup** タブを確認します。**Enable backup** は既定で On になり、
-   新しい Recovery Services vault と backup policy の作成が設定されます。
-   今回の新規・演習専用 share で backup が任意なら、この選択を外して追加 resource を作りません。
-   **組織必須の backup や既存の保護は変更せず**、必要なら管理者と別途調整します。
-5. **Review + create** で **Name** が記録した share 名、**Access Tier** が
-   **TransactionOptimized**、**Protocol** が **SMB** であり、
-   **新しい Vault / backup policy の作成が含まれていないこと**を確認します。
-   追加の vault が残っている場合は **Backup** に戻って設定を確認し、組織必須なら管理者へ相談します。
-   正しい構成を確認してから **Create** を選び、一覧に自分の share があることを確認します。
-6. subscription / RG / Storage account / File share の組み合わせと、新規作成した対象を記録します。
-   quota を設定する場合は、HOME image と教材・依存パッケージを保存できる容量を管理者と確認します。
+1. Open the account's **Data storage > Classic file shares**, not Blob containers.
+2. Select **New classic file share** and enter your recorded **Name**, for example `cloudshell-handson`.
+   Use lowercase letters/numbers and single hyphens; begin/end with a letter or number.
+3. Choose **Access tier = Transaction optimized**. StorageV2 pay-as-you-go shares use SMB.
+   Do not choose NFS or another file-share resource provider.
+4. Check **Backup**. **Enable backup** defaults On and configures a new Recovery Services vault
+   and backup policy. If optional for this new workshop-only share, uncheck it to avoid extra resources.
+   **Do not change required organizational backups or existing protection**; coordinate separately if necessary.
+5. In **Review + create**, verify recorded **Name**, **Access Tier = TransactionOptimized**,
+   **Protocol = SMB**, and **no new Vault / backup policy creation**.
+   If a vault remains, return to **Backup**; consult the administrator if mandatory.
+   Confirm the configuration, select **Create**, and verify your share in the list.
+6. Record subscription / RG / Storage account / File share and newly created targets.
+   If setting a quota, confirm capacity for the HOME image, materials, and dependencies with the administrator.
 
 </details>
 
 <a id="mount-storage"></a>
 
-## 3. 永続 storage と Bash を確認する
+## 3. Verify persistent storage and Bash
 
-自動作成後はBashのプロンプトと **Manage files > Open file share** の対象を確認します。
-Storageを使わない **No storage account required** のsessionへ切り替えません。
+After automatic creation, check the Bash prompt and **Manage files > Open file share** target.
+Do not switch to a storage-free **No storage account required** session.
 
 <details>
-<summary>既存Storageを使う場合だけ: 明示的に選択して接続する</summary>
+<summary>Existing Storage only: explicitly select and mount it</summary>
 
-1. Azure portal上部の **Cloud Shell** を開きます。
-2. shellの選択では **Bash** を選びます。
-3. **Getting started > Mount storage account** で対象subscriptionを選び、**Apply**を選択します。
-4. **Select existing storage account > Next**を選択します。
-5. 記録した **Resource group**、**Storage account name**、**File share**を順に選び、
-   **Select**を選択します。
-6. Bashのプロンプトと **Manage files > Open file share** の対象が一致することを確認します。
+1. Open **Cloud Shell** in Azure Portal.
+2. Select **Bash**.
+3. Under **Getting started > Mount storage account**, choose the subscription and **Apply**.
+4. Select **Select existing storage account > Next**.
+5. Select recorded **Resource group**, **Storage account name**, and **File share**, then **Select**.
+6. Verify the Bash prompt and the target in **Manage files > Open file share** agree.
 
 </details>
 
-既存Storageを手動作成した場合は、次の**読み取り専用**コマンドでも確認できます。
-`kind` が `StorageV2`、`sku` が `Standard_LRS`、`provisioningState` が `Succeeded` であることを確認してください。
+For manually created Storage, also use this **read-only** check:
+verify `kind = StorageV2`, `sku = Standard_LRS`, and `provisioningState = Succeeded`.
 
 ```bash
 az storage account show \
@@ -204,41 +205,39 @@ az storage account show \
   --query "{kind:kind, sku:sku.name, provisioningState:provisioningState}" -o table
 ```
 
-**Bash が開いただけでは永続接続の成功ではありません。**
-上のコマンドはStorage accountの作成結果を確認するもので、HOMEの永続マウントを証明するものではありません。
-既存設定が古い share を参照している場合、マウントに失敗して ephemeral session として開くことがあります。
-そのまま本編へ進まず、元の設定と storage を保全して、以下の明示的な再設定手順を確認してください。
+**A Bash prompt alone does not prove a persistent mount.**
+The command verifies Storage account creation, not HOME persistence.
+An old share reference can fail to mount and leave an ephemeral session.
+Do not continue; preserve original settings/storage and check explicit reconfiguration below.
 
 <details>
-<summary>すでに Cloud Shell を利用している場合だけ: 既存接続を確認する</summary>
+<summary>Existing Cloud Shell users only: check the current connection</summary>
 
-記録した自分の演習用 share に接続済みなら、そのまま使います。設定のリセットは不要です。
-別用途の storage に接続している場合は、そのまま演習を始めたり、無断で切り替えたりしません。
-元の `preferredLocation`、subscription / RG / account / share と個人設定を控え、
-実行中の作業と必要なファイルを保全し、講師・管理者と切替の影響を確認します。
-古い share が割り当て RG の外にあっても、マウント失敗を理由にその storage を削除しません。
+If already connected to your recorded workshop share, use it without resetting settings.
+If connected to storage for another purpose, do not begin or switch without permission.
+Record original `preferredLocation`, subscription / RG / account / share, and personal settings;
+preserve running work/files and review switching impact with the instructor/administrator.
+Do not delete an old share outside the assigned RG just because mounting failed.
 
-以前 **No storage account required** を選んだ場合や、古い share のマウント失敗後に
-ephemeral session になった場合など、接続選択をやり直す必要があり、
-影響を理解して切替を承認した場合に限り、**Settings > Reset User Settings** を使います。
-確認画面で **Reset** すると現在の session と個人設定がリセットされます。
-未永続化のファイルやプロセスは失われるため、保存前に実行しません。
-元の Azure Files share 自体は削除されず、新しい share を選ぶと別の HOME image になります。
-再度この節の **Mount storage account > Select existing storage account** に従い、
-選択する Cloud Shell location と新しい storage の region を一致させます。
-元の設定は後で戻す必要があるか管理者と確認できるよう保全します。
+Use **Settings > Reset User Settings** only if connection selection must be repeated
+(for example, a previous **No storage account required** selection or an ephemeral session after a failed mount),
+and you understand and approve the impact.
+Confirming **Reset** resets the current session/personal settings.
+Unsaved files and processes are lost, so save first.
+The original Azure Files share is not deleted; a new share uses a different HOME image.
+Repeat **Mount storage account** in this section and match Cloud Shell location to the new storage region.
+Preserve original settings to discuss whether they must later be restored.
 
-**Reset User Settings は標準の再接続・cleanup 手順ではありません。**
-以前の設定や他用途の storage を自動で削除・初期化しないでください。
+**Reset User Settings is not standard reconnection or cleanup.**
+Do not automatically delete/reset old settings or storage used for other purposes.
 
 </details>
 
-### 保存先を確認する
+### Verify the storage location
 
-Cloud Shell は Azure Files に HOME の disk image を保存し、share 自体を
-`$HOME/clouddrive` にマウントする方式があります。
-この教材の repository と `.venv` は、Unix のリンク・権限が使える **HOME 内**に置きます。
-**`clouddrive` の SMB share 直下へ clone / venv 作成はしません。**
+Cloud Shell can save a HOME disk image in Azure Files and mount the share at `$HOME/clouddrive`.
+Put the repository and `.venv` **inside HOME**, where Unix links and permissions work.
+**Do not clone or create venvs directly in the `clouddrive` SMB share.**
 
 ```bash
 printf 'HOME=%s\n' "$HOME"
@@ -247,17 +246,17 @@ findmnt -T "$HOME/clouddrive"
 df -h "$HOME" "$HOME/clouddrive"
 ```
 
-`clouddrive` というディレクトリがあるだけでは永続化の証拠になりません。
-準備スクリプトのマウント検査に加え、[実際の再起動による保持確認](#persistence)を行います。
-`.cloudconsole` 内の HOME image、Terraform state、Azure CLI のキャッシュは機密情報です。
-share のアクセス権を他ユーザーへ広げたり、HOME 全体を配布したりしません。
+The existence of a `clouddrive` directory alone does not prove persistence.
+In addition to script mount checks, perform the [actual restart check](#persistence).
+HOME images in `.cloudconsole`, Terraform state, and Azure CLI caches are sensitive.
+Do not broaden share access or distribute the whole HOME directory.
 
 <a id="setup"></a>
 
-## 4. 教材と実行ツールを準備する
+## 4. Prepare materials and tools
 
-Cloud Shell の Bash で、講師指定の URL と branch を置き換えて実行します。
-コマンド中の `<...>` は入力用の目印で、そのまま使う値ではありません。
+In Cloud Shell Bash, substitute the instructor-provided URL and branch.
+`<...>` values are placeholders, not literal inputs.
 
 ```bash
 git clone --branch "<workshop-branch>" --single-branch \
@@ -267,18 +266,18 @@ bash scripts/setup-cloud-shell.sh
 source scripts/activate-cloud-shell.sh
 ```
 
-同じフォルダーが存在する場合は、上書き・削除・再 clone せず、
-元の演習用 repository か確認して [再接続](#resume)へ進みます。
-本編で使う `setup-cloud-shell.sh` はツールの準備であり、Azure workload の `setup.sh` とは別です。
-system Python / Azure CLI を変更せず、利用可能な Python 3.13 を再利用します。
-不足時は uv も利用する公式の standalone CPython 配布物をユーザー領域へ用意します。
-取得するバージョン・配布元・SHA-256 はスクリプト側で管理し、受講者は変更しません。
-native Graphviz がない場合もユーザー所有の micromamba / conda-forge 環境へ導入します。
-`pip install graphviz` だけでは native renderer の代わりになりません。
-初回は HOME に少なくとも3 GiB、準備済み環境の再確認には512 MiB の空きを検査します。
-不足時は他用途のファイルを削除せず、管理者と容量を確認してください。
+If the directory already exists, do not overwrite/delete/reclone it.
+Verify it is the original workshop repository and [resume](#resume).
+`setup-cloud-shell.sh` prepares tools; it is separate from workload `setup.sh`.
+It does not modify system Python / Azure CLI, and reuses an available Python 3.13.
+Otherwise it installs an official standalone CPython distribution, also used by uv, in user-owned storage.
+The script manages versions, sources, and SHA-256; participants do not change them.
+If native Graphviz is missing, it uses a user-owned micromamba / conda-forge environment.
+`pip install graphviz` alone is not a native renderer.
+It checks at least 3 GiB free HOME space initially, or 512 MiB when rechecking an existing setup.
+If insufficient, consult the administrator rather than deleting unrelated files.
 
-準備が成功したら確認します。
+After successful preparation, check:
 
 ```bash
 .venv/bin/python --version
@@ -287,32 +286,33 @@ src/hosted-agent/.venv/bin/python --version
 dot -V
 ```
 
-| 確認対象 | 期待するもの |
+| Target | Expected |
 |---|---|
-| root `.venv` | Python `3.13.x`。共通スクリプト・デプロイ・JupyterLab 用 |
-| `src/hosted-agent/.venv` | Python `3.13.x`。Agent Framework の Lab 7 / 8 用 |
-| kernels | `foundry-workshop` と `foundry-hosted-agent` |
-| `dot` | native Graphviz のバージョンが表示される |
+| Root `.venv` | Python `3.13.x` for shared scripts, deployment, and JupyterLab |
+| `src/hosted-agent/.venv` | Python `3.13.x` for Agent Framework Labs 7 / 8 |
+| Kernels | `foundry-workshop` and `foundry-hosted-agent` |
+| `dot` | Native Graphviz version displayed |
 
-root は `azure-ai-projects==2.5.0`、Hosted Agent は `<2.4` の依存を使うため、
-2つの `.venv` を統合しません。普通の受講手順では設定ファイルや source の編集は不要です。
-不足・容量・通信エラーは講師へ伝え、原因を解消して同じ準備コマンドを再実行します。
-`sudo`、`apt-get`、Docker daemon、system Python への package install は使いません。
+Root uses `azure-ai-projects==2.5.0`; Hosted Agent uses `<2.4`.
+Do not combine the two `.venv` environments. Normal participation needs no configuration/source edits.
+Report missing dependencies, capacity, or network errors to the instructor, resolve the cause,
+then repeat the same preparation command.
+Do not use `sudo`, `apt-get`, Docker daemon, or system-Python package installation.
 
-`source scripts/activate-cloud-shell.sh` は PATH と
-`AZURE_TOKEN_CREDENTIALS=AzureCliCredential` を**この Terminal から起動する教材プロセスだけ**に設定します。
-新しい Terminal や再接続のたびに実行してください。
-この credential 制限を Hosted Agent のデプロイ先へコピーせず、Hosted runtime は managed identity を使います。
+`source scripts/activate-cloud-shell.sh` sets PATH and
+`AZURE_TOKEN_CREDENTIALS=AzureCliCredential` **only for workshop processes launched from this Terminal**.
+Repeat for each new Terminal/reconnection.
+Do not copy this credential restriction to the Hosted deployment; Hosted runtime uses managed identity.
 
 <a id="persistence"></a>
 
-## 5. Azure resources を作る前に保持を確認する
+## 5. Verify persistence before creating Azure resources
 
-**この確認は Lab 1 の `setup.sh` より先に行います。**
-HOME 永続化について公式の storage 文書と FAQ の記述に差があるため、
-文書の説明だけで保存済みと判断しません。
+**Do this before Lab 1's historical `setup.sh`.**
+Official storage documentation and FAQ descriptions of HOME persistence differ;
+do not assume files are saved based on documentation alone.
 
-1. 準備済み repository で、秘密を含まない確認ファイルを作ります。
+1. In the prepared repository, create a nonsecret check file:
 
    ```bash
    cd "$HOME/foundry-agent-service-handson"
@@ -320,10 +320,10 @@ HOME 永続化について公式の storage 文書と FAQ の記述に差があ�
    cat cloud-shell-resume-check.txt
    ```
 
-2. 表示された日時を控え、ほかに実行中の作業がないことを確認します。
-3. Cloud Shell toolbar の **Restart** を選び、container の再起動を待ちます。
-   **New session** は同じ container の別プロセスを開くだけなので、この検証の代わりにはなりません。
-4. 同じ記録済み storage で Bash に戻り、**clone や bootstrap を再実行する前に**次を確認します。
+2. Record the timestamp and verify no other work is running.
+3. Select toolbar **Restart** and wait for container restart.
+   **New session** only starts another process in the same container and is not an equivalent test.
+4. Return to Bash using the same recorded storage and check **before recloning or rerunning bootstrap**:
 
    ```bash
    cd "$HOME/foundry-agent-service-handson"
@@ -337,97 +337,97 @@ HOME 永続化について公式の storage 文書と FAQ の記述に差があ�
    dot -V
    ```
 
-5. 同じ日時、教材、2つの環境と kernel が残っていれば、確認ファイルだけを削除します。
+5. If the timestamp, materials, both environments, and kernels remain, remove only the check file:
 
    ```bash
    rm cloud-shell-resume-check.txt
    ```
 
-フォルダーやファイルが失われた場合はここで止まり、元の share / HOME image とマウントを
-管理者へ確認してもらいます。未確認の保存先で Azure resources を作りません。
-Lab 1 実行後の再接続では、state と `.workshop/context.json` も同じものが保持されている必要があります。
+If anything is missing, stop and ask the administrator to inspect original share / HOME image and mount.
+Do not create Azure resources with unverified persistence.
+After historical Lab 1, reconnection must also retain the same state and `.workshop/context.json`.
 
 <a id="authentication"></a>
 
-## 6. Azure CLI のサインインを確認する
+## 6. Check Azure CLI sign-in
 
-Cloud Shell の既存 Azure CLI サインインを使い、割り当てられた subscription を明示します。
+Use Cloud Shell's existing Azure CLI sign-in and explicitly select the assigned subscription:
 
 ```bash
 az account set --subscription "<subscription-id>"
 az account show --query "{subscriptionId:id, user:user.name}" -o table
 ```
 
-表示されるユーザーが RG の Owner を付与された本人か確認します。
-Foundry / Search の操作で `Audience ... is not a supported MSI token audience` が出た場合は、
-公式 FAQ の回復手順として次を実行し、元の操作を再試行します。
+Verify the displayed user is the person assigned RG Owner.
+If Foundry / Search operations report `Audience ... is not a supported MSI token audience`,
+use the official FAQ recovery steps, then retry the original operation:
 
 ```bash
 az login --use-device-code
 az account set --subscription "<subscription-id>"
 ```
 
-device-code 認証が組織で拒否される場合は、管理者へ相談して止めます。
-device code、token、Storage key を共有しません。API key / client secret への置き換えや
-追加の `azd auth login` は不要です。
+If device-code authentication is prohibited, stop and consult the administrator.
+Do not share device codes, tokens, or Storage keys.
+No API key/client-secret substitution or additional `azd auth login` is required.
 
 <a id="jupyter"></a>
 
-## 7. Web preview で JupyterLab を開く
+## 7. Open JupyterLab through Web preview
 
-Cloud Shell の Terminal を2つ使います。**Terminal A** は Jupyter サーバーを実行したままにし、
-**Terminal B** で Lab のコマンドを入力します。PC の PowerShell を使う手順ではありません。
+Use two Cloud Shell Terminals. Keep Jupyter running in **Terminal A** and enter lab commands
+in **Terminal B**. These are not PC PowerShell steps.
 
-1. Terminal Aでrepository rootへ移動し、次の**1コマンド**を実行します。
-   初回は必要な依存関係を準備し、2回目以降は確認して再利用します。
+1. In Terminal A, enter the repository root and run this **single startup command**.
+   It prepares dependencies initially and checks/reuses them later:
 
    ```bash
    cd "$HOME/foundry-agent-service-handson"
    bash scripts/start-cloud-shell-jupyter.sh
    ```
 
-2. Terminalで、Jupyter専用の12文字以上のpasswordを2回入力します。
-   入力した文字は表示されません。同じpasswordをこのsessionのブラウザーログインで使います。
-3. `Open Cloud Shell Web preview for port 5000` と表示されたら、Cloud Shell toolbarの
-   **Web preview**を開き、portに **5000** を入力します。
-   **Open and browse** で新しいタブを開きます。先に **Open port** を選んだ場合は、
-   メニューの **Preview port 5000** で開きます。
-   **Web preview** が見えなければ **More commands** 内を確認します。
-   対応範囲は `1025–8079` または `8091–49151` です。
-4. previewタブは自身の実HTTPS URLを一時discovery serverへ渡し、
-   JupyterLabの起動後に自動で再読み込みします。URLのコピー、Terminal AのCtrl+C、
-   2回目の起動コマンドは不要です。
-5. Jupyterのログイン画面で、手順2のpasswordを入力してJupyterLabを開きます。
-   起動スクリプトは repository をファイル公開ルートにし、実際の preview origin に限定します。
-   パスワードに加えて内部の token もユーザー専用ファイルで管理し、ログへ表示しません。
-   token 認証や XSRF を無効化したり、すべての Origin を許可したりする設定へ変更しません。
-6. Cloud Shell toolbar の **New session** で Terminal B を開きます。
-   このタブは**同じ container**に接続しますが、Terminal の環境変数は別なので次を実行します。
+2. Enter a Jupyter-specific password of at least 12 characters twice.
+   Input is hidden; use the same password for browser login in this session.
+3. When `Open Cloud Shell Web preview for port 5000` appears, open toolbar **Web preview**
+   and enter port **5000**. Use **Open and browse** for a new tab.
+   If you selected **Open port** first, use **Preview port 5000** from the menu.
+   If Web preview is absent, check **More commands**.
+   Supported ports are `1025–8079` or `8091–49151`.
+4. The preview tab sends its actual HTTPS URL to a temporary discovery server
+   and reloads automatically after JupyterLab starts.
+   No URL copying, Ctrl+C in Terminal A, or second startup command is needed.
+5. At Jupyter login, enter the step 2 password.
+   Startup serves files only from the repository and restricts access to the actual preview origin.
+   An internal token is also stored in a user-only file, never logged.
+   Do not disable token authentication/XSRF or allow every Origin.
+6. Open Terminal B with toolbar **New session**.
+   It connects to the **same container**, but environment variables are separate, so run:
 
    ```bash
    cd "$HOME/foundry-agent-service-handson"
    source scripts/activate-cloud-shell.sh
    ```
 
-port が使用中なら別ポートへ無言で移動せず、自分の既存 Jupyter が動いているか確認します。
-不要な既存サーバーは保存して正常終了し、ほかの人・別用途のプロセスを停止しません。
-既定の待ち受けは `127.0.0.1` です。講師の確認で Cloud Shell の proxy から loopback に
-到達できない場合に限り、discovery と Jupyter の**両方**の起動に `--listen 0.0.0.0` を明示します。
-認証や実際の preview origin 制限は維持します。proxy の path 調整用 `--base-url` は
-実際の URL と転送動作を講師が確認した場合だけ使い、値を推測しません。
-認証、proxy、WebSocket のエラーが続く場合は、保護を弱めず
-[トラブルシューティング](../troubleshooting.md#実行環境と-cloud-shell)へ進みます。
+If the port is occupied, do not silently change ports; check your existing Jupyter process.
+Save and shut down an unneeded server normally; do not stop others' or unrelated processes.
+Default listening is `127.0.0.1`. Only if the instructor confirms Cloud Shell proxy cannot reach
+loopback, explicitly use `--listen 0.0.0.0` for **both** discovery and Jupyter startup.
+Keep authentication and actual-preview-origin restrictions.
+Use `--base-url` only after the instructor confirms the actual URL and proxy forwarding;
+do not guess values.
+For continuing authentication/proxy/WebSocket errors, keep protections and consult
+[troubleshooting](../troubleshooting.md). The historical Cloud Shell subsection is no longer current.
 
 <details>
-<summary>preview URL の自動検出に失敗した場合だけ: 手動 discovery</summary>
+<summary>Only if automatic preview detection fails: manual discovery</summary>
 
-自動検出に失敗した場合は、従来の2段階モードで実URLを確認できます。
+Use the former two-stage mode to determine the actual URL:
 
 ```bash
 bash scripts/start-cloud-shell-jupyter.sh --discover-preview --port 5000
 ```
 
-Web previewで5000を開き、表示された実HTTPS URLを控えてCtrl+Cで停止します。
+Open port 5000 through Web preview, record the displayed actual HTTPS URL, then stop with Ctrl+C.
 
 ```bash
 bash scripts/start-cloud-shell-jupyter.sh \
@@ -435,37 +435,37 @@ bash scripts/start-cloud-shell-jupyter.sh \
   --preview-url "<actual-https-preview-url>"
 ```
 
-URLにquery / fragment / tokenを含めません。この手動経路でも認証とXSRFは維持します。
+Include no query, fragment, or token in the URL. Authentication and XSRF remain enabled.
 
 </details>
 
-### Cloud Shell relay との互換処理
+### Cloud Shell relay compatibility
 
-Cloud Shell の relay は通常の Jupyter と異なり、URL prefix、redirect、HTTP status、
-cookie と browser WebSocket をそのまま転送しません。起動スクリプトはこの環境だけに
-互換処理を適用します。Jupyter のパスワードを確認した後でのみ、Azure の既存の
-Secure / HttpOnly relay cookie に Jupyter session を結び付けます。
-認証 cookie や token を JavaScript や URL へコピーしません。
-読み取り可能な `_xsrf` だけを login form から設定し、変更操作の XSRF 検査を維持します。
+Unlike ordinary Jupyter, Cloud Shell relay does not forward URL prefixes, redirects,
+HTTP status, cookies, and browser WebSockets unchanged.
+Startup applies compatibility behavior only in this environment.
+Only after verifying the Jupyter password does it bind a Jupyter session to Azure's existing
+Secure / HttpOnly relay cookie. It does not copy authentication cookies/tokens to JavaScript or URLs.
+Only readable `_xsrf` is set from the login form, preserving XSRF checks on changes.
 
-Notebook の kernel 通信は、認証・XSRF・利用者分離を維持した HTTP polling を経由し、
-Cloud Shell 内の loopback WebSocket に接続します。通常の WebSocket をブラウザーから
-直接開く手順ではありません。Codespaces の接続方式は変更しません。
-サーバー側の channel と待ち行列には上限・期限があり、logout / shutdown 後は再認証します。
+Kernel communication uses HTTP polling with authentication, XSRF, and user isolation,
+connecting to a loopback WebSocket inside Cloud Shell.
+It is not a direct browser WebSocket connection and does not change Codespaces behavior.
+Server-side channels/queues have limits and expiry; logout/shutdown requires reauthentication.
 
 <a id="notebook"></a>
 
-## Notebook の操作
+## Notebook operations
 
-Portal 中心の Lab 2〜6 の間に Cloud Shell が終了していた場合は、先に
-[再接続手順](#resume)で同じ環境の Jupyter を起動し直してください。
-JupyterLab 左側のファイルブラウザーが repository root を開いていることを確認します。
-`notebooks/07-agent-framework-harness.ipynb` と `notebooks/08-hosted-agent.ipynb` が同じ教材です。
-ここでは開けることと kernel を確認し、Azure を呼ぶ学習セルは該当する Lab で実行します。
+If Cloud Shell ended during Portal-focused Labs 2–6, first [reconnect](#resume)
+and restart Jupyter in the same environment.
+Verify the JupyterLab file browser opens the repository root.
+The shared notebooks are `notebooks/07-agent-framework-harness.ipynb` and `notebooks/08-hosted-agent.ipynb`.
+Here, verify opening and kernels only; run Azure-calling learning cells in their respective labs.
 
-初回の接続確認では **File > New > Console** を開き、
-**Python (Foundry Workshop)** と **Python (Foundry Hosted Agent)** を1つずつ選んで、
-それぞれ次を **Shift+Enter** で実行します。Azure は呼び出しません。
+For first connection checks, use **File > New > Console**, select
+**Python (Foundry Workshop)** and **Python (Foundry Hosted Agent)** one at a time,
+and run this in each with **Shift+Enter**, without Azure calls:
 
 ```python
 import sys
@@ -473,41 +473,42 @@ print(sys.version)
 print(sys.executable)
 ```
 
-両方が Python `3.13.x` で、root `.venv/bin/python` と
-`src/hosted-agent/.venv/bin/python` がそれぞれ表示されれば、両 kernel への接続と実行を確認できます。
-確認用 Console は **Kernel > Shut Down Kernel** で終了して閉じます。
-本編の Notebook を編集して確認セルを追加する必要はありません。
+Both should show Python `3.13.x`, with root `.venv/bin/python` and
+`src/hosted-agent/.venv/bin/python`, respectively, proving both kernels connect and execute.
+End each check Console with **Kernel > Shut Down Kernel**, then close it.
+No extra check cells need to be added to main notebooks.
 
-1. Lab が指定する `.ipynb` をダブルクリックして開きます。
-2. kernel の選択ダイアログ、右上の kernel 名、または **Kernel > Change Kernel…** で
-   **Python (Foundry Hosted Agent)** を選びます。
-3. Lab 7 / 8 では `src/hosted-agent/.venv/bin/python` を使います。
-   root の **Python (Foundry Workshop)** は Lab 4 の任意 SDK 補助 Notebook 用であり、
-   Agent Framework 演習には選びません。
-4. セルを選んで **Run** または **Shift+Enter** で1セルずつ実行し、**Save** で保存します。
-   可視化セルでは Graphviz による実物の SVG が表示されることを確認します。
+1. Double-click the lab's `.ipynb`.
+2. Use the kernel dialog, top-right kernel name, or **Kernel > Change Kernel…**
+   to select **Python (Foundry Hosted Agent)**.
+3. Labs 7 / 8 use `src/hosted-agent/.venv/bin/python`.
+   Root **Python (Foundry Workshop)** is for Lab 4's optional SDK notebook,
+   not Agent Framework exercises.
+4. Run one selected cell at a time with **Run** or **Shift+Enter**, then **Save**.
+   In visualization cells, verify Graphviz renders the actual SVG.
 
-追加のNotebook専用packageが必要な場合は、`!pip`ではなく現在のkernelへ入る`%pip`を使います。
-本編の固定依存関係は起動スクリプトが準備済みなので、通常は追加インストール不要です。
+If additional notebook packages are needed, use `%pip` for the current kernel, not `!pip`.
+Normally no installation is needed; startup prepares fixed dependencies.
 
-両 kernel の名前は `foundry-hosted-agent` / `foundry-workshop` です。
-ブラウザーに Notebook が表示されるだけでなく、上の接続確認セルが実行できる必要があります。
-kernel、保存、描画に問題があれば環境を修復してから続けます。
-Lab 8 の **Run All** は deploy せず、デプロイは共通 Lab の Terminal コマンドで行います。
+Kernel names are `foundry-hosted-agent` / `foundry-workshop`.
+Displaying a notebook in the browser is insufficient; the connection-check cell must execute.
+Repair kernel, saving, or rendering problems before continuing.
+In this historical procedure, Lab 8 **Run All** did not deploy; deployment used the shared lab's Terminal command.
 
-**環境準備中なら [Lab 1 の手順 2](../../../labs/01-setup.md#2-事前確認を実行する)へ戻ります。**
-Lab 7 / 8 から操作方法を参照した場合は、読んでいた Lab の同じ Notebook 演習を続けます。
+**For environment preparation, return to [current Lab 1](../../../labs/01-setup.md);
+the historical step 2 preflight procedure is no longer available.**
+If coming from Labs 7 / 8, resume the same notebook exercise there.
 
 <a id="files"></a>
 
-## Lab 4 の素材を PC にダウンロードする
+## Download Lab 4 materials to your PC
 
-Cloud Shell / JupyterLab と PC は別のファイルシステムです。
-Foundry Portal の **Upload skill** のファイル選択画面は PC を参照します。
-`.workshop` は隠しフォルダーですが、JupyterLab に全隠しファイルを表示させる必要はありません。
+Cloud Shell / JupyterLab and your PC have separate filesystems.
+Foundry Portal **Upload skill** selects PC files.
+Although `.workshop` is hidden, JupyterLab need not display all hidden files.
 
-1. [Lab 4](../../../labs/04-tools-toolbox.md) で素材を生成した後、接続中の Terminal B で
-   ダウンロードする**名前付きの ZIP 2つだけ**の HOME 相対パスを表示します。
+1. After generating historical Lab 4 materials, in connected Terminal B,
+   display HOME-relative paths for **only the two named ZIPs**:
 
    ```bash
    cd "$HOME/foundry-agent-service-handson"
@@ -516,43 +517,42 @@ Foundry Portal の **Upload skill** のファイル選択画面は PC を参照�
      .workshop/toolbox/preapproval-simulation.zip
    ```
 
-2. Cloud Shell toolbar の **Manage files > Download** を選びます。
-3. 入力欄の前に `/home/<自分のユーザー名>/` が表示されていることを確認し、
-   `foundry-agent-service-handson/.workshop/toolbox/travel-estimation.zip` のような
-   **HOME 相対パス**を貼り付け、**Download** を押します。
-   画面の説明が “fully qualified file path” でも、この prefix がある欄に絶対パスを入れると
-   HOME が二重になって `Could not download, try again.` になります。
-   prefix のない UI の場合だけ完全な絶対パスを使います。
-   `~`、`$HOME`、`$PWD` は入力欄では展開されません。
-4. **Download file** 通知に現れた **ZIP ファイル名のリンク**を選んで、PC に保存します。
-   最初の **Download** だけでは取得は完了しません。file explorer の同名の項目とは区別します。
-   同じ操作で `preapproval-simulation.zip` を保存し、PC に2つあることを確認します。
-5. Foundry Portal の **Upload skill** で、PC に保存された該当 ZIP を選びます。
-   生成 ZIP は展開・再圧縮しません。ZIP の直下に `SKILL.md` が入っています。
+2. Select toolbar **Manage files > Download**.
+3. Verify the field prefix is `/home/<your-user-name>/` and paste a **HOME-relative path**
+   such as `foundry-agent-service-handson/.workshop/toolbox/travel-estimation.zip`,
+   then **Download**.
+   Even if described as “fully qualified file path”, an absolute path after that prefix
+   duplicates HOME and causes `Could not download, try again.`
+   Use a full absolute path only in UIs without a prefix.
+   `~`, `$HOME`, and `$PWD` are not expanded in the field.
+4. Select the **ZIP filename link** in the **Download file** notification to save to PC.
+   The first **Download** alone is insufficient; distinguish this from a same-named file-explorer item.
+   Repeat for `preapproval-simulation.zip` and verify both on your PC.
+5. In Foundry Portal **Upload skill**, select the corresponding PC ZIP.
+   Do not extract/recompress generated ZIPs; `SKILL.md` is at the root.
 
-OpenAPI は共通 Lab の `cat .workshop/toolbox/travel-ops.openapi.json` で表示して貼り付けます。
-`.workshop` 全体、Terraform state、HOME image、Jupyter runtime や認証ファイルは取得しません。
-保存した Notebook なども、同じ prefix と相対パスの関係を確認して1つずつダウンロードします。
+Display OpenAPI with historical `cat .workshop/toolbox/travel-ops.openapi.json` and paste it.
+Do not download all `.workshop`, Terraform state, HOME images, Jupyter runtime, or authentication files.
+Download saved notebooks individually using the same prefix/relative-path relationship.
 
-逆に PC のファイルを Cloud Shell へ入れる場合は **Manage files > Upload** で PC 側から選びます。
-Upload は HOME にファイルを置く操作で、Foundry Portal の Skill 登録とは別です。
-本編の公開教材取得には手順 4 の clone を使い、`.git`、`.venv`、state、認証情報の持ち込みは行いません。
+To upload a PC file to Cloud Shell, use **Manage files > Upload**.
+This places a file in HOME; it is not Foundry Portal Skill registration.
+Use step 4 clone for public workshop materials; do not import `.git`, `.venv`, state, or credentials.
 
 <a id="resume"></a>
 
-## 中断・再接続後に再開する
+## Resume after interruption or reconnection
 
-**非対話20分で終了し得る**ため、必要な区切りで Notebook を保存します。
-Notebook の保存はセルと出力の保存であり、Python 変数、AgentSession、todos、memory や
-実行中の Jupyter プロセスの保存ではありません。無限 keepalive で session を維持しません。
-Portal 中心の Lab 2〜6 では、確認用 Notebook を保存して Jupyter を正常終了しておけます。
-再開時の `Directory not found` やダウンロード失敗では、先に Cloud Shell の切断表示を確認します。
-期限切れの preview タブを閉じて同じ storage に再接続し、state を確認してから再試行します。
+Save notebooks at suitable checkpoints because Cloud Shell **may end after 20 minutes of inactivity**.
+Saving preserves cells/outputs, not Python variables, AgentSession, todos, memory, or running Jupyter processes.
+Do not use infinite keepalive. During Portal-focused Labs 2–6, save check notebooks and shut down Jupyter normally.
+For `Directory not found` or download failures on resume, check Cloud Shell disconnection first.
+Close expired preview tabs, reconnect to the same storage, verify state, then retry.
 
-1. Azure portal から Cloud Shell の **Bash** を開きます。
-   storage の選択を求められたら、記録した**同じ subscription / account / share**を選びます。
-   新しい share や HOME image に切り替えません。
-2. 元の repository に移動し、有効化します。
+1. Open Cloud Shell **Bash** from Azure Portal.
+   If prompted, select the recorded **same subscription / account / share**.
+   Do not switch to a new share or HOME image.
+2. Enter and activate the original repository:
 
    ```bash
    cd "$HOME/foundry-agent-service-handson"
@@ -561,73 +561,77 @@ Portal 中心の Lab 2〜6 では、確認用 Notebook を保存して Jupyter �
    az account show --query "{subscriptionId:id, user:user.name}" -o table
    ```
 
-3. Lab 1 の構築を完了済みなら、元の `.workshop/context.json` と Terraform state が保持されていることを
-   確認します。内容を公開・画面共有せず、ファイルの存在を確認します。
-   なければ別の状態で setup を始めず、元の storage / HOME マウントを講師と確認してください。
-   setup が途中だった場合も `.workshop/terraform-inputs.json` と元の state を保持して再開します。
-4. [Jupyter 起動手順](#jupyter)の1コマンドをやり直します。新しいsessionの実preview URLは
-   previewタブが自動検出します。
-   同じ container に既存サーバーが残っている場合は状態を確認し、二重起動しません。
-5. 保存した同じ Notebook を開き、**Python (Foundry Hosted Agent)** を選択します。
-   接続・Agent / workflow 構築セルから必要なセルを順番に再実行します。
-   Lab 7 の plan 確認もやり直し、古い出力があるだけで実行中の session が復元されたと判断しません。
-6. 評価や remote build 待ちだった場合は、まず Portal で既存の run / version の状態を確認します。
-   Azure 側の処理が継続・完了している可能性があるため、同じ評価や deploy を重複送信しません。
+3. If historical Lab 1 provisioning completed, verify original `.workshop/context.json`
+   and Terraform state remain. Check existence without publishing or screen-sharing contents.
+   If missing, do not start setup in another state; check original storage/HOME mount with the instructor.
+   For interrupted setup, preserve `.workshop/terraform-inputs.json` and original state while resuming.
+4. Repeat the one-command [Jupyter startup](#jupyter).
+   The preview tab automatically discovers the new session's actual preview URL.
+   If an existing server remains in the same container, inspect it rather than starting a duplicate.
+5. Open the same saved notebook and select **Python (Foundry Hosted Agent)**.
+   Rerun required cells from connection and Agent/workflow construction in order.
+   Recheck Lab 7's plan; old output does not mean the running session was restored.
+6. If waiting for evaluation or remote build, check existing run/version status in the Portal first.
+   Azure processing may still be running or completed; do not submit duplicate evaluation/deployment.
 
-依存環境が正常なら bootstrap の再実行は不要です。必要な場合だけ同じ repository で
-`setup-cloud-shell.sh` を再実行します。既存ファイルやユーザー設定の削除で復旧しません。
+No bootstrap rerun is needed if dependencies are healthy.
+Only when necessary, rerun `setup-cloud-shell.sh` in the same repository.
+Do not recover by deleting existing files or user settings.
 
 <a id="stop"></a>
 
-## Lab 9 後に終了し、専用 storage を削除する
+## Finish after Lab 9 and delete dedicated storage
 
-**順序: workload の destroy 成功 → 成果物の取得 → Jupyter 停止 →
-Web preview 閉鎖 → Cloud Shell 終了 → 今回専用の新規 storage の削除。**
+**Order: successful workload destroy → download results → stop Jupyter →
+close Web preview → exit Cloud Shell → delete only newly created dedicated storage.**
 
-1. [Lab 9](../../../labs/09-observability-cleanup.md) の共通 `./scripts/destroy.sh` が成功し、
-   Terraform / SDK 管理の教材 resources が残っていないことを確認します。
-   **RG 自体は残します。** 失敗した場合はこの先の storage 削除へ進まず、state と `.workshop` を保全します。
-2. 必要な Notebook を **Save** し、[Manage files > Download](#files) で
-   安全な成果物だけを PC に取得します。PC で保存できたことも確認します。
-   Terraform state、認証情報、Jupyter runtime、HOME 全体は配布・証跡に含めません。
-3. JupyterLab の **File > Shut Down** でサーバーを終了します。
-   または Terminal A で **Ctrl+C** を押し、shutdown の確認が出たら承認します。
-   自分の Jupyter が終了して Bash のプロンプトに戻ったことを確認します。
-4. Cloud Shell の **Web preview > Close port 5000** を選び、preview のタブを閉じます。
-5. Terminal B と Terminal A など、**New session で開いた各 session**で `exit` を実行します。
-   session は独立しているため、1つ閉じただけですべて終了したと判断しません。
-6. Cloud Shellの **Settings > Reset User Settings**、または管理者が承認した解除手順で、
-   今回のshareとの関連付けを外します。これによりsessionは終了しますが、Storageは削除されません。
-7. Azure portalで手順2に記録した**Cloud Shellが自動作成した専用RG**を開き、
-   subscription / RG / account / shareが一致し、その参加者のCloud Shell専用であることを確認します。
-8. 専用RGに他用途のresourceがないことを確認して **Delete resource group** を選び、
-   RG名を照合・入力して削除します。これによりStorage account、share、HOME imageも削除されます。
-   **教材workload用に参加者が作成したRGは、`destroy.sh`では削除しません。**
-9. 両方のRGを再読み込みし、Cloud Shell専用RGがなく、workload用RGと事前からあるresourceが
-   期待どおり残っていることを確認します。
+1. In the historical [Lab 9](../../../labs/09-observability-cleanup.md) workflow,
+   verify shared `./scripts/destroy.sh` succeeded and no Terraform/SDK-managed workshop resources remained.
+   **Leave the RG itself.** If unsuccessful, do not delete storage; preserve state and `.workshop`.
+   The linked current Lab 9 instead deletes the dedicated workload RG.
+2. **Save** needed notebooks and download only safe results via [Manage files > Download](#files).
+   Verify PC copies. Do not distribute or include Terraform state, credentials, Jupyter runtime,
+   or the whole HOME directory as evidence.
+3. Select JupyterLab **File > Shut Down**, or press **Ctrl+C** in Terminal A
+   and confirm shutdown. Verify your Jupyter ends and Bash prompt returns.
+4. Select Cloud Shell **Web preview > Close port 5000** and close the preview tab.
+5. Run `exit` in **every session opened with New session**, including Terminals B and A.
+   Sessions are independent; closing one does not end all.
+6. Use **Settings > Reset User Settings**, or administrator-approved unmounting,
+   to detach this share. This ends the session but does not delete Storage.
+7. In Azure Portal, open the **dedicated RG automatically created by Cloud Shell** in step 2.
+   Match subscription / RG / account / share and verify it is dedicated to this participant's Cloud Shell.
+8. Verify no unrelated resources are present, select **Delete resource group**,
+   check/enter the RG name, and delete. This removes the Storage account, share, and HOME image.
+   **Historical `destroy.sh` did not delete the participant-created workload RG.**
+9. Refresh both RGs. Verify Cloud Shell RG is gone and the workload RG/preexisting resources
+   remain as expected for this historical procedure.
 
-管理者割り当ての既存accountは削除しません。既存Storageの代替で今回shareだけを新規作成した場合も、
-管理者と許可範囲を確認し、**Classic file shares** で記録した自分の share だけを削除します。
-Soft delete / backup の保持中はデータや課金が残る場合があります。保護を無効化して消すのではなく、
-管理者へ保持と終了確認を依頼してください。他ユーザーの share や以前からの HOME image は削除しません。
+Do not delete administrator-assigned existing accounts.
+If only a new share was created in existing Storage, confirm authorized scope with the administrator
+and delete only your recorded share under **Classic file shares**.
+Soft-delete/backup retention may retain data and charges. Do not disable protection to force deletion;
+ask the administrator to confirm retention and completion.
+Do not delete other users' shares or preexisting HOME images.
 
-storage の削除は `destroy.sh` が自動で行う処理ではありません。
-既存の **Cloud Shell user settings を自動リセットしない**でください。
-削除した storage が次回の接続先に残る場合は、記録を確認し、
-[既存接続の切替](#mount-storage)の影響を理解してから、管理者と新しい保存先を選びます。
+Storage deletion is not automatic in `destroy.sh`.
+**Do not automatically reset existing Cloud Shell user settings.**
+If deleted storage remains the next connection target, check your record and understand
+[connection-switching impact](#mount-storage) before selecting new storage with the administrator.
 
-## 公式資料
+## Official references
 
-取得日: **2026-09-09**。以下は UI・制約の参照先であり、各 tenant での動作確認結果を示すものではありません。
-開催前に講師が実ブラウザーで認証・セル実行・保存・Graphviz・再起動後の保持・cleanup を確認します。
+Retrieved: **2026-09-09**. These explain UI/constraints, not verified behavior in every tenant.
+Before an event, instructors must use an actual browser to verify authentication, cell execution,
+saving, Graphviz, post-restart persistence, and cleanup.
 
-- [Cloud Shell の toolbar、Manage files、New session、Web preview](https://learn.microsoft.com/azure/cloud-shell/use-the-shell-window)
-- [Cloud Shell に新しい Storage を自動作成](https://learn.microsoft.com/azure/cloud-shell/get-started/new-storage)
-- [既存ストレージの接続](https://learn.microsoft.com/azure/cloud-shell/get-started/existing-storage)
-- [HOME disk image と Azure Files の永続化](https://learn.microsoft.com/azure/cloud-shell/persisting-shell-storage)
-- [FAQ: 非対話20分、同時20ユーザー、sudo、認証 audience](https://learn.microsoft.com/azure/cloud-shell/faq-troubleshooting)
-- [Storage account の作成](https://learn.microsoft.com/azure/storage/common/storage-account-create?tabs=azure-portal)
-- [StorageV2 の pay-as-you-go Azure Files share の作成](https://learn.microsoft.com/azure/storage/files/create-classic-file-share?tabs=azure-portal)
-- [Jupyter Server の security](https://jupyter-server.readthedocs.io/en/latest/operators/security.html)
+- [Cloud Shell toolbar, Manage files, New session, Web preview](https://learn.microsoft.com/azure/cloud-shell/use-the-shell-window)
+- [Automatically create new Cloud Shell Storage](https://learn.microsoft.com/azure/cloud-shell/get-started/new-storage)
+- [Mount existing storage](https://learn.microsoft.com/azure/cloud-shell/get-started/existing-storage)
+- [HOME disk images and Azure Files persistence](https://learn.microsoft.com/azure/cloud-shell/persisting-shell-storage)
+- [FAQ: 20-minute inactivity, 20 concurrent users, sudo, authentication audience](https://learn.microsoft.com/azure/cloud-shell/faq-troubleshooting)
+- [Create a Storage account](https://learn.microsoft.com/azure/storage/common/storage-account-create?tabs=azure-portal)
+- [Create StorageV2 pay-as-you-go Azure Files shares](https://learn.microsoft.com/azure/storage/files/create-classic-file-share?tabs=azure-portal)
+- [Jupyter Server security](https://jupyter-server.readthedocs.io/en/latest/operators/security.html)
 <!-- historical-content:end -->
 </details>

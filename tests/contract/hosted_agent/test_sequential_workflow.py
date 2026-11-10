@@ -114,18 +114,20 @@ def test_final_reviewer_is_instructed_to_include_simulation_notice() -> None:
 def test_reviewer_final_sentence_instruction_points_only_to_the_notice() -> None:
     final_instruction = REVIEWER_AGENT_INSTRUCTIONS.rsplit("\n\n", 1)[-1]
     assert final_instruction == (
-        f"回答の末尾には、以下の固定文をそのまま一度だけ付けてください。\n{SIMULATION_NOTICE}"
+        "Append the following fixed sentence verbatim exactly once at the end of the answer.\n"
+        f"{SIMULATION_NOTICE}"
     )
     assert REVIEWER_AGENT_INSTRUCTIONS.count(SIMULATION_NOTICE) == 1
 
 
 def test_agent_responsibilities_are_narrow_and_non_overlapping() -> None:
-    assert "規程判断は次の policy_agent に委ねます" in INTAKE_AGENT_INSTRUCTIONS
+    assert "Leave policy decisions to the next policy_agent" in INTAKE_AGENT_INSTRUCTIONS
     assert "knowledge_base_retrieve" in POLICY_AGENT_INSTRUCTIONS
-    assert "費用見積もり、予算計算、予約、申請、承認、精算は実行しない" in (
-        POLICY_AGENT_INSTRUCTIONS
-    )
-    assert "Foundry IQ の根拠がある内容だけ" in REVIEWER_AGENT_INSTRUCTIONS
+    assert (
+        "Do not perform cost estimates, budget calculations, bookings, applications, "
+        "approvals, or reimbursements"
+    ) in " ".join(POLICY_AGENT_INSTRUCTIONS.split())
+    assert "only information supported by Foundry IQ evidence" in REVIEWER_AGENT_INSTRUCTIONS
 
 
 def test_workflow_as_agent_streams_only_the_final_review(
@@ -175,7 +177,7 @@ def test_workflow_preserves_reviewer_answer_when_notice_is_omitted(stream: bool)
         @staticmethod
         def _response_for(instructions: str) -> str:
             if instructions == REVIEWER_AGENT_INSTRUCTIONS:
-                return "依頼の整理\n規程確認\n次のアクション"
+                return "Request summary\nPolicy findings\nNext actions"
             return ScriptedChatClient._response_for(instructions)
 
     client = OmittingNoticeClient()
@@ -191,7 +193,7 @@ def test_workflow_preserves_reviewer_answer_when_notice_is_omitted(stream: bool)
             )
         return (await workflow_agent.run(SAMPLE_REQUEST)).text
 
-    assert asyncio.run(collect()) == "依頼の整理\n規程確認\n次のアクション"
+    assert asyncio.run(collect()) == "Request summary\nPolicy findings\nNext actions"
 
 
 def test_run_workflow_rejects_an_empty_reviewer_response() -> None:
@@ -214,6 +216,6 @@ def test_run_workflow_rejects_an_empty_reviewer_response() -> None:
 
 
 def test_final_reviewer_must_not_invent_policy_or_costs() -> None:
-    assert "規程の文書 ID" in REVIEWER_AGENT_INSTRUCTIONS
-    assert "費用見積もりや予算計算を追加せず" in REVIEWER_AGENT_INSTRUCTIONS
-    assert "成功したように書き換えてはいけません" in REVIEWER_AGENT_INSTRUCTIONS
+    assert "policy document ID" in REVIEWER_AGENT_INSTRUCTIONS
+    assert "Do not add cost estimates or budget calculations" in REVIEWER_AGENT_INSTRUCTIONS
+    assert "Do not rewrite missing information" in REVIEWER_AGENT_INSTRUCTIONS

@@ -1,44 +1,44 @@
-# Lab 9 — トレースの比較と片付け（20分）
+# Lab 9 — Trace comparison and cleanup (20 min)
 
-## 1. トレースを比較する
+## 1. Compare traces
 
-Foundry Portal の **Build > Agents > Traces** で、Lab 4 と Lab 8 の実行を開きます。
+In Foundry Portal **Build > Agents > Traces**, open the Lab 4 and Lab 8 runs.
 
-- Prompt Agent：`tool_search` → `call_tool` → 実際のツール呼び出しを確認。
-- Hosted Agent：`intake_agent` → `policy_agent` → `reviewer_agent` と、
-  `policy_agent` の `knowledge_base_retrieve` を確認。
-- 応答、所要時間、トークン使用量を比較します。
+- Prompt Agent: inspect `tool_search` → `call_tool` → actual tool calls.
+- Hosted Agent: inspect `intake_agent` → `policy_agent` → `reviewer_agent`
+  and `policy_agent`'s `knowledge_base_retrieve`.
+- Compare responses, duration, and token usage.
 
-## 2. 成果物を保存し、Hosted Agent を削除する
+## 2. Save results and delete the Hosted Agent
 
-1. VS Code の **File > Save All** で保存します。Codespaces では、必要なノートブックと結果を
-   Explorer の **Download...** で PC へ保存（Export）します。
-2. Lab 8 のノートブックを **Python (Foundry Hosted Agent)** で開き、削除セルの対象を確認して
-   表示された **Agent 名**（`contoso-travel-hosted-planner`）を入力します。
-   セルは管理用 `foundry-workshop` venv で削除を実行します。
-3. Hosted Agent と全 versions が削除済み、または存在しないことを確認します。
+1. Use VS Code **File > Save All**. In Codespaces, export needed notebooks and results
+   to your PC using Explorer **Download...**.
+2. Open Lab 8's notebook with **Python (Foundry Hosted Agent)**, check the delete-cell target,
+   and enter the displayed **Agent name** (`contoso-travel-hosted-planner`).
+   The cell performs deletion in management `foundry-workshop` venv.
+3. Verify the Hosted Agent and all versions have been deleted or do not exist.
 
-## 3. Codespace を停止・削除する
+## 3. Stop and delete the Codespace
 
-[Your codespaces](https://github.com/codespaces) で、この教材の Codespace を確認します。
+Find this workshop's Codespace in [Your codespaces](https://github.com/codespaces).
 
-1. 対象の **… > Stop codespace** を選び、停止を確認します。
-2. 保存・Export が済んでいることを再確認して **… > Delete** を選びます。
-3. 一覧から消えたことを確認します。停止だけではストレージが残ります。
+1. Select **… > Stop codespace** and verify it stopped.
+2. Reconfirm saving/export is complete, then select **… > Delete**.
+3. Verify it disappears from the list. Stopping alone leaves storage.
 
-ローカル Dev Container の場合は、ファイルを保存してこの教材のコンテナーを停止します。
-他のコンテナー、volume、ホストの Python 環境は削除しません。
+For local Dev Container execution, save files and stop only this workshop's container.
+Do not delete other containers, volumes, or host Python environments.
 
-## 4. 専用 RG を削除する
+## 4. Delete the dedicated RG
 
-1. Azure Portal の **Resource groups** で、Lab 1 で作成した自分の RG を開きます。
-2. サブスクリプションと RG 名を確認し、**Delete resource group** を選びます。
-3. 確認欄に RG 名を入力し、**Delete** で確定します。残るリソースも RG とまとめて削除します。
-4. **Resource groups** の一覧を更新し、RG が消えたことを確認して完了です。
+1. In Azure Portal **Resource groups**, open your RG from Lab 1.
+2. Check subscription and RG name, then select **Delete resource group**.
+3. Enter the RG name and confirm with **Delete**. Remaining resources are deleted with the RG.
+4. Refresh **Resource groups** and verify the RG is gone.
 
-**デプロイ履歴の削除では、リソースは消えません。**
-削除に失敗したら **Activity log** を確認し、管理者へ連絡してください。
+**Deleting deployment history does not delete resources.**
+If deletion fails, check **Activity log** and contact the administrator.
 
 > [!IMPORTANT]
-> 削除するのは **自分の専用 RG だけ**です。必要な成果物の Export と、
-> Hosted Agent・Codespace の削除を済ませてから RG を削除してください。
+> Delete **only your dedicated RG**, after exporting needed results and
+> deleting the Hosted Agent and Codespace.

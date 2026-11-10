@@ -7,7 +7,7 @@
   "location": "japaneast",
   "participant_object_id": "11111111-2222-4333-8444-555555555555",
   "source_revision": "1234abcd1234abcd1234abcd1234abcd1234abcd",
-  "source_base": "https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson/blob/1234abcd1234abcd1234abcd1234abcd1234abcd",
+  "source_base": "https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/blob/1234abcd1234abcd1234abcd1234abcd1234abcd",
   "resource_outputs": {
     "resource_group_name": {"value": "rg-workshop"},
     "location": {"value": "japaneast"},

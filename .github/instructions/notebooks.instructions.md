@@ -1,21 +1,24 @@
 ---
-description: 参加者用 Notebook のカーネル、管理操作、保存内容を維持する規約。
+description: Preserve participant Notebook kernels, management boundaries, and safe saved content.
 applyTo: "notebooks/*.ipynb"
 ---
 
-# Notebook の変更
+# Notebook changes
 
-- [共通開発コンテナー](../../.devcontainer/README.md) と
-  [Hosted Agent の README](../../src/hosted-agent/README.md) を先に確認します。
-  Labs 7〜8 は **Python (Foundry Hosted Agent)** を使い、
-  管理操作には管理用インタープリターを明示します。
-- 接続情報は既存の `.workshop/context.json` と `scripts/lib/` の処理を使います。
-  サブスクリプション、RG、エンドポイントをセルに固定しません。
-- 再利用可能な処理は既存の `scripts/` または `src/hosted-agent/` に置き、
-  Notebook は参加者の入力・操作・結果確認の入口として保ちます。
-- セルの出力・例外・metadata に認証情報や実環境固有値を保存しません。
-  不要な実行出力や実行番号の変更を持ち込まず、無関係なセル ID・metadata を維持します。
-- 対応する Lab、カーネル指定、Notebook 契約テスト、Hosted テストを確認します。
-  参加者の操作や受入条件を変えた場合は [講師向け runbook](../../instructor/runbook.md) も更新します。
-- セル実行は認証・課金・デプロイ・削除を伴い得ます。
-  静的な Notebook 検証と実環境の通し実行を区別し、保存確認だけで成功を主張しません。
+- Read the [shared Dev Container](../../.devcontainer/README.md) and
+  [Hosted Agent README](../../src/hosted-agent/README.md) first.
+  Labs 7-8 use **Python (Foundry Hosted Agent)**; explicitly select the
+  management interpreter for management operations.
+- Reuse `.workshop/context.json` and `scripts/lib/` connection helpers.
+  Do not hardcode subscriptions, RGs, or endpoints in cells.
+- Put reusable logic in existing `scripts/` or `src/hosted-agent/` modules.
+  Keep Notebooks as participant input, operation, and result-checking entry points.
+- Never save credentials or environment-specific values in outputs, exceptions,
+  or metadata. Avoid unnecessary outputs or execution-count changes and preserve
+  unrelated cell IDs and metadata.
+- Check the corresponding Lab, kernel selection, Notebook contracts, and Hosted
+  tests. Update the [instructor runbook](../../instructor/runbook.md) when
+  participant operations or acceptance criteria change.
+- Running cells can authenticate, incur charges, deploy, or delete resources.
+  Distinguish static checks from live end-to-end execution; saving a Notebook
+  alone is not proof of success.

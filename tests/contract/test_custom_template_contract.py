@@ -327,7 +327,7 @@ def test_exact_parameter_boundary_and_release_defaults(template):
         value = item["defaultValue"]
         assert isinstance(value, str)
         assert item.get("minLength", 0) <= len(value) <= item.get("maxLength", len(value))
-        if name != "participantObjectIdOverride":
+        if name not in ("participantObjectIdOverride", "sourceRevision", "travelApiImageRef"):
             assert value
     for model in ("primary", "evaluation", "embedding"):
         assert parameters[f"{model}ModelVersion"]["minLength"] >= 1
@@ -336,23 +336,17 @@ def test_exact_parameter_boundary_and_release_defaults(template):
             r"\d{4}-\d{2}-\d{2}", parameters[f"{model}ModelVersion"]["defaultValue"]
         )
     assert re.fullmatch(r"\d+", parameters["embeddingModelVersion"]["defaultValue"])
-    assert parameters["sourceRevision"]["minLength"] == 40
     assert parameters["sourceRevision"]["maxLength"] == 40
-    assert parameters["travelApiImageRef"]["minLength"] >= 83
     assert parameters["travelApiImageRef"]["maxLength"] <= 256
     assert parameters["participantObjectIdOverride"]["defaultValue"] == ""
     assert parameters["bootstrapRunId"]["defaultValue"] == "1"
 
+    assert parameters["sourceRevision"]["defaultValue"] == ""
+    assert parameters["travelApiImageRef"]["defaultValue"] == ""
     inputs = InputExpressions(template)
-    revision = parameters["sourceRevision"]["defaultValue"]
-    assert inputs.variable("validatedSourceRevision") == revision
-    assert inputs.variable("sourceBase") == (
-        f"https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson/blob/{revision}"
-    )
-    assert (
-        inputs.variable("validatedTravelApiImageRef")
-        == (parameters["travelApiImageRef"]["defaultValue"])
-    )
+    for variable in ("validatedSourceRevision", "sourceBase", "validatedTravelApiImageRef"):
+        with pytest.raises(InputFailure, match="English release is not ready"):
+            inputs.variable(variable)
 
 
 def test_parameter_example_matches_all_release_defaults(template):
@@ -371,7 +365,7 @@ def test_valid_source_revisions_are_preserved(template, revision):
     inputs = InputExpressions(template, sourceRevision=revision)
     assert inputs.variable("validatedSourceRevision") == revision
     assert inputs.variable("sourceBase") == (
-        f"https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson/blob/{revision}"
+        f"https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/blob/{revision}"
     )
 
 
@@ -413,6 +407,7 @@ def test_immutable_ghcr_digest_passes_through_unchanged(template, repository):
 @pytest.mark.parametrize(
     "image",
     [
+        "",
         "ghcr.io/a/b:latest",
         "ghcr.io/a/b:latest@sha256:" + "a" * 64,
         "docker.io/a/b@sha256:" + "a" * 64,

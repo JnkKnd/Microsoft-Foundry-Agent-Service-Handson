@@ -1,45 +1,47 @@
 ---
 name: preapproval-simulation
-description: Contoso の出張事前承認シミュレーションを明示的に依頼された場合、またはその結果の解釈を求められた場合に使用する。見積もりや規程のみの質問ではシミュレーションを開始しない。
+description: Use when explicitly asked to simulate Contoso travel preapproval or interpret its results. Do not start a simulation for estimate-only or policy-only questions.
 ---
 
-# 事前承認シミュレーション
+# Preapproval simulation
 
-Contoso の事前承認を、合成データだけの Travel Ops API でシミュレーションする。
-これは申請の保存、実際の承認、予約を行う機能ではない。
+Simulate Contoso preapproval using the Travel Ops API with synthetic data only.
+This feature does not save applications, grant actual approvals, or make bookings.
 
-## 実行意思と入力を確認する
+## Confirm intent and inputs
 
-1. ユーザーがシミュレーションを希望していることを確認する。
-   「見積もって」「承認が必要？」だけなら実行しない。
-   「予約して」「承認して」には実行できない範囲を説明し、
-   シミュレーションでよいか確認する。明示的にシミュレーションを依頼済みなら確認を繰り返さない。
-2. 出発地、目的地、出発日、帰着日、座席クラスを確認する。
-   人数が省略された場合だけ 1 名の前提を明示する。
-   不足情報は推測せず、ユーザーへ確認する。
-3. 都市名、日付、座席クラスは `travel-estimation` と同じ schema 形式に揃える。
-   任意の `justification` に個人情報を含めない。`requester_alias` が必要な演習では、
-   `employee-001` のような合成 alias のみを使い、実名やメールアドレスを要求しない。
+1. Confirm that the user wants a simulation.
+   Do not execute for "Give me an estimate" or "Is approval required?" alone.
+   For "Book it" or "Approve it", explain the limits and ask whether a simulation is acceptable.
+   Do not repeat confirmation if the user already explicitly requested a simulation.
+2. Check origin, destination, departure date, return date, and seat class.
+   Only when traveler count is omitted, explicitly state the assumption of 1 traveler.
+   Ask about missing information rather than guessing.
+3. Normalize city names, dates, and seat classes to the same schema forms as `travel-estimation`.
+   Do not include personal information in optional `justification`. For exercises requiring
+   `requester_alias`, use only synthetic aliases such as `employee-001`; do not request real names or email addresses.
 
-## API を呼ぶ
+## Call the API
 
-Toolbox のツール定義から operationId `createPreapproval` に対応する実際の公開名を選び、
-確認済みの旅程を渡す。API が失敗したら、成功した結果や承認番号を作らず、失敗を説明する。
-この API は見積もりも返すため、比較の必要がなければ見積もり API の重複呼び出しは不要。
+Choose the actual published name corresponding to operationId `createPreapproval` from
+the Toolbox definitions and pass the confirmed itinerary. If the API fails, explain the failure;
+do not invent successful results or approval numbers.
+The API also returns an estimate, so a duplicate estimate API call is unnecessary unless comparison is needed.
 
-## 結果を説明する
+## Explain results
 
-「シミュレーション結果」「費用内訳」「次の確認先」の順に整理する。
-`simulation` が `true` であることを確認し、`decision` の `simulated_` 接頭辞を落として
-実際の承認結果のように扱わない。
+Use "Simulation result", "Cost breakdown", and "Where to check next", in that order.
+Check that `simulation` is `true`. Do not remove the `simulated_` prefix from `decision`
+or present the result as an actual approval.
 
-| API の decision | 説明 |
+| API decision | Meaning |
 |---|---|
-| `simulated_auto_eligible` | シミュレーション上の自動処理対象。実際の承認ではない |
-| `simulated_pending_manager_review` | シミュレーション上、マネージャーの確認が必要 |
-| `simulated_pending_vp_review` | シミュレーション上、VP の確認が必要 |
+| `simulated_auto_eligible` | Eligible for automatic processing in the simulation, not actual approval |
+| `simulated_pending_manager_review` | Manager review required in the simulation |
+| `simulated_pending_vp_review` | VP review required in the simulation |
 
-未知の decision や `simulation` が `true` でない結果は承認と解釈せず、講師へ確認する。
-`trip_estimate` の費用内訳と合計を使い、承認条件や価格を Skill 内で再計算しない。
-`reference_id` は合成の参照値であり、保存済みの申請番号ではないと説明する。
-API の `disclaimer` を省略せず、「実際の予約・承認ではありません」と明記する。
+Do not interpret an unknown decision or a result whose `simulation` is not `true` as approval;
+ask the instructor to clarify.
+Use the `trip_estimate` breakdown and total; do not recalculate approval conditions or prices in this Skill.
+Explain that `reference_id` is a synthetic reference, not a saved application number.
+Do not omit the API's `disclaimer`. Explicitly state: "This is not an actual booking or approval."

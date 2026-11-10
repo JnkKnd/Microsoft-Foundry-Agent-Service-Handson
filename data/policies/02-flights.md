@@ -1,6 +1,6 @@
 ---
 id: policy-flights-001
-title: フライトに関する規程
+title: Flight Policy
 category: flights
 effective_date: 2026-04-01
 applies_to:
@@ -8,40 +8,40 @@ applies_to:
 source_url: "{{WORKSHOP_SOURCE_BASE}}/data/policies/02-flights.md"
 ---
 
-# フライトに関する規程
+# Flight Policy
 
-## 座席クラスの基本ルール
+## Seat-class rules
 
-出張の座席クラスは、フライト区間の**片道飛行時間**によって決まります。
-飛行時間は Contoso Travel Portal が表示する予定飛行時間を基準とします。
+Seat-class eligibility depends on the **one-way flight duration** of the flight segment,
+using the scheduled duration shown in Contoso Travel Portal.
 
-| 片道飛行時間 | 利用可能な座席クラス | 事前承認 |
+| One-way flight duration | Eligible seat classes | Preapproval |
 |---|---|---|
-| 国内線（全区間） | エコノミー | 不要 |
-| 6 時間未満（国際線） | エコノミー | 不要 |
-| 6 時間以上 10 時間未満（国際線） | エコノミー、プレミアムエコノミー | 不要（10 万円を超える場合は[承認プロセス](09-approval-process.md)に従う） |
-| 10 時間以上（国際線） | エコノミー、プレミアムエコノミー、ビジネス | [承認プロセス](09-approval-process.md)に定める二段階の事前承認が必須 |
-| ファーストクラス | 原則利用不可 | [アクセシビリティ・例外対応](08-accessibility-exceptions.md)に定める例外を除き承認不可 |
+| Domestic flights (all segments) | Economy | Not required |
+| Under 6 hours (international) | Economy | Not required |
+| At least 6 but under 10 hours (international) | Economy, premium economy | Not required (follow the [Approval Process](09-approval-process.md) if the estimate exceeds JPY 100,000) |
+| At least 10 hours (international) | Economy, premium economy, business | Two-stage preapproval required under the [Approval Process](09-approval-process.md) |
+| First class | Generally prohibited | Cannot be approved except under [Accessibility and Exceptions](08-accessibility-exceptions.md) |
 
-ビジネスクラスを利用する場合は、[承認プロセス](09-approval-process.md)に
-定めるすべての事前承認を、予約前に完了させてください。必要な承認者、承認順序、
-申請方法、承認 SLA は承認プロセス規程を正とします。
-事前承認なしにビジネスクラスを予約した場合、差額は自己負担となります。
+Before booking business class, complete all preapprovals required by the
+[Approval Process](09-approval-process.md). That policy is authoritative for approvers,
+approval order, application method, and approval SLA.
+If you book business class without preapproval, you must pay the difference yourself.
 
-## 予約タイミング
+## Booking timing
 
-- 国内線: 出発の 7 日前までの予約を推奨します。
-- 国際線: 出発の 14 日前までの予約を推奨します。
-- 出発 3 日以内の予約（直前予約）は、マネージャーの承認コメントを
-  Contoso Expense の申請に添付してください。
+- Domestic flights: Book at least 7 days before departure where possible.
+- International flights: Book at least 14 days before departure where possible.
+- For bookings within 3 days of departure (last-minute bookings), attach your manager's
+  approval comment to the Contoso Expense submission.
 
-## 変更・キャンセル
+## Changes and cancellations
 
-- 業務都合による変更・キャンセルは Contoso Travel Portal 経由で行い、
-  手数料は会社負担とします。
-- 個人都合による変更・キャンセルの手数料は自己負担です。
+- Make business-related changes and cancellations through Contoso Travel Portal;
+  the company covers the fees.
+- Fees for personal changes and cancellations are the traveler's responsibility.
 
-## マイレージ・ポイント
+## Miles and points
 
-- 出張で獲得したマイレージ・ポイントは従業員個人に帰属します。
-- ただし、マイレージ獲得のみを目的とした遠回りの経路選択は認められません。
+- Miles and points earned on business trips belong to the employee.
+- Choosing a longer route solely to earn miles is not permitted.

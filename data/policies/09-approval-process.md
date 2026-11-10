@@ -1,6 +1,6 @@
 ---
 id: policy-approval-process-001
-title: 承認プロセスに関する規程
+title: Approval Process Policy
 category: approval_process
 effective_date: 2026-04-01
 applies_to:
@@ -10,42 +10,40 @@ applies_to:
 source_url: "{{WORKSHOP_SOURCE_BASE}}/data/policies/09-approval-process.md"
 ---
 
-# 承認プロセスに関する規程
+# Approval Process Policy
 
-## 事前承認が必要なケース
+## When preapproval is required
 
-| 条件 | 必要な承認 |
+| Condition | Required approval |
 |---|---|
-| 国際出張（すべて） | 予約前にマネージャーの事前承認 |
-| 国内出張で見積総額が 100,000 円以下 | 事前承認不要（事後レビューのみ） |
-| 国内出張で見積総額が 100,000 円を超える | 予約前にマネージャーの事前承認 |
-| ビジネスクラスの利用 | マネージャーおよび部門 VP の事前承認（両方必須） |
-| ファーストクラスの利用 | 原則不可。[アクセシビリティ・例外対応](08-accessibility-exceptions.md)に定める例外のみ、HR・Travel Ops・部門 VP の三者承認 |
-| 宿泊費上限の超過 | 予約前にマネージャーの事前承認 |
-| ハイリスク渡航先への渡航 | Travel Ops チームおよび Contoso Travel Safety Desk の事前承認 |
+| All international trips | Manager preapproval before booking |
+| Domestic trip with total estimate at or below JPY 100,000 | No preapproval (post-trip review only) |
+| Domestic trip with total estimate above JPY 100,000 | Manager preapproval before booking |
+| Business class | Manager and department VP preapproval (both required) |
+| First class | Generally prohibited. Only exceptions under [Accessibility and Exceptions](08-accessibility-exceptions.md) may receive three-party approval from HR, Travel Ops, and the department VP |
+| Hotel cap exceeded | Manager preapproval before booking |
+| High-risk destination | Preapproval from Travel Ops and Contoso Travel Safety Desk |
 
-見積総額は、フライト・宿泊・日当の合計見積額を指します。
-Travel Ops API の `POST /trip-estimates` が返す `total_estimate` を
-基準としてください。
+The total estimate is the sum of estimated flights, hotels, and per diem.
+Use `total_estimate` returned by Travel Ops API `POST /trip-estimates`.
 
-## 事前承認の申請方法
+## Requesting preapproval
 
-- 事前承認は Contoso Travel Portal の「事前承認リクエスト」機能から
-  申請します。本ハンズオンでは、この申請フローを
-  `POST /preapprovals` エンドポイントでシミュレートします。
-- **重要**: このハンズオン環境の `POST /preapprovals` は教材用の
-  シミュレーションであり、実際の承認権限を持ちません。実際の出張では
-  必ず Contoso Travel Portal を通じて正式な承認を得てください。
+- Use the Preapproval Request feature in Contoso Travel Portal. This workshop
+  simulates that submission flow through the `POST /preapprovals` endpoint.
+- **Important**: `POST /preapprovals` in this workshop is an educational simulation
+  with no actual approval authority. For real travel, always obtain formal approval
+  through Contoso Travel Portal.
 
-## 承認 SLA
+## Approval SLA
 
-- マネージャー承認: 申請から 2 営業日以内に判断します。
-- 部門 VP 承認: マネージャー承認後、2 営業日以内に判断します。
-- 2 段階を順番に行うため、申請から部門 VP 承認までの標準最大所要期間は
-  4 営業日です。
-- SLA 内に判断がない場合は、Travel Ops チームへエスカレーションできます。
+- Manager approval: A decision within 2 business days of submission.
+- Department VP approval: A decision within 2 business days after manager approval.
+- These 2 stages are sequential, so the standard maximum time from submission
+  to department VP approval is 4 business days.
+- If no decision is made within the SLA, you may escalate to Travel Ops.
 
-## 承認後の変更
+## Changes after approval
 
-- 承認後に出張内容（座席クラス、宿泊都市、日程）が変更になった場合、
-  見積総額が 10% 以上増加するときは再承認が必要です。
+- If trip details (seat class, hotel city, or dates) change after approval,
+  reapproval is required when the total estimate increases by 10% or more.

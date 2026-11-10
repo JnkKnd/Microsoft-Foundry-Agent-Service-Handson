@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="420" viewBox="0 0 1440 420" role="img" aria-labelledby="cover-title cover-description">
   <title id="cover-title">Microsoft Foundry Agent Service Hands-on — Build agents. Go beyond prompts.</title>
-  <desc id="cover-description">架空の Contoso 社の出張・経費アシスタントを作るハンズオン。10 Labs、休憩込み約 4 時間。Foundry Portal で作る Prompt Agent から、Python の Harness Agent、Hosted workflow へ進む。</desc>
+  <desc id="cover-description">Build a synthetic Contoso travel and expense assistant in nine labs, progressing from a Foundry Portal Prompt Agent to Python Harness Agents and a Hosted workflow. Planning estimate: 220 minutes including the break, excluding Lab 1 setup.</desc>
   <defs>
     <radialGradient id="glow" cx="82%" cy="38%" r="65%">
       <stop offset="0" stop-color="#183a50"/>
@@ -44,9 +44,9 @@
   </g>
 
   <path d="M 64 350 H 1376" fill="none" stroke="#30475f"/>
-  <text class="mono" x="64" y="390" font-size="20">10 LABS</text>
+  <text class="mono" x="64" y="390" font-size="20">9 LABS</text>
   <path d="M 220 374 V 394 M 466 374 V 394" stroke="#476078"/>
-  <text class="mono muted" x="252" y="390" font-size="20">~4 HOURS</text>
+  <text class="mono muted" x="252" y="390" font-size="20">220 MIN + SETUP</text>
   <text class="mono muted" x="498" y="390" font-size="20">PORTAL → PYTHON</text>
   <text class="mono muted" x="1376" y="390" font-size="18" text-anchor="end" letter-spacing="1">SYNTHETIC DATA ONLY</text>
 </svg>

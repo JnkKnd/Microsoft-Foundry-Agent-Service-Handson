@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - English
       - dev-custom-template
 
 permissions:

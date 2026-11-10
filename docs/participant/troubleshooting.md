@@ -1,44 +1,47 @@
-# 困ったとき
+# Troubleshooting
 
-初期化が失敗したら Lab 2 へ進まず、エラー内容を管理者へ伝えてください。
-実行中の処理を繰り返さず、認証コード・トークン・キーは共有しません。
+If initialization fails, do not proceed to Lab 2; report the error to the administrator.
+Do not repeat running operations or share authentication codes, tokens, or keys.
 
-| 症状 | 最初に確認すること |
+| Symptom | First checks |
 |---|---|
-| RG を作成できない | アカウント、サブスクリプション、作成権限。共有 RG で代用しません |
-| テンプレートを読み込めない | 管理者指定の `azuredeploy.json` 本体か確認。HTML ページは読み込めません |
-| デプロイ・初期化が失敗する | RG の **Deployments** と Deployment Scripts の **Logs** を確認。リージョン・モデルを変えず、管理者へ連絡 |
-| モデルや接続先が見つからない | Lab 1 の **Outputs > resourceOutputs** にある自分のプロジェクトを開いているか確認 |
-| Codespace を作れない | GitHub アカウント、利用枠、組織の Codespaces ポリシーを確認 |
-| カーネルが表示されない | **Select Kernel > Jupyter Kernel...** を確認。そこにもない場合は post-create の完了と[準備ガイド](environments/codespaces.md)を確認 |
-| Notebook の出力が省略される | **Output is truncated** の **scrollable element** を選ぶ。セルを再実行して確認しない |
-| Notebook で認証エラー | コンテナーの Terminal で Azure CLI にサインインしたか確認。Portal のログインだけでは使えません |
-| 初回設定で対象が見つからない・曖昧になる | subscription ID / RG 名と **Succeeded** の deployment を確認。複数候補は管理者へ相談し、推測で選びません |
-| 接続先の不一致で初回設定が止まる | 既存の `.workshop/context.json` と今回の対象を確認。別環境の設定を上書きして続けません |
-| RG を削除できない | [Lab 9](../../labs/09-observability-cleanup.md) の順序と **Activity log** を確認。ロックなどは管理者へ相談 |
+| Cannot create an RG | Check account, subscription, and creation permissions. Do not substitute a shared RG |
+| Cannot load the template | Verify that you have the administrator-designated `azuredeploy.json` itself; an HTML page cannot be loaded |
+| Deployment or initialization fails | Check the RG's **Deployments** and Deployment Scripts **Logs**. Contact the administrator without changing regions or models |
+| Cannot find models or connections | Verify that you opened your project from Lab 1's **Outputs > resourceOutputs** |
+| Cannot create a Codespace | Check the GitHub account, allowances, and organizational Codespaces policy |
+| Kernel is missing | Check **Select Kernel > Jupyter Kernel...**. If still missing, verify post-create completion and the [setup guide](environments/codespaces.md) |
+| Notebook output is truncated | Select **scrollable element** under **Output is truncated**. Do not rerun the cell to inspect output |
+| Notebook authentication error | Verify Azure CLI sign-in in the container Terminal. Portal sign-in alone is insufficient |
+| Setup cannot find a target or finds ambiguous targets | Check subscription ID / RG name and a **Succeeded** deployment. Ask the administrator about multiple candidates; do not guess |
+| Setup stops on a connection mismatch | Check the existing `.workshop/context.json` and intended target. Do not overwrite another environment's settings and continue |
+| Cannot delete an RG | Check the order in [Lab 9](../../labs/09-observability-cleanup.md) and **Activity log**. Ask the administrator about locks or other obstacles |
 
-## Lab 4 のファイル
+## Lab 4 files
 
-Skill は [Lab 4 の GitHub リンク](../../labs/04-tools-toolbox.md)から PC に保存した ZIP を
-アップロードします。直下に `SKILL.md` がある ZIP を使い、Markdown 単体は選びません。
-`travel-ops.openapi.json` は `servers[0].url` を **Outputs > travelApiBaseUrl** に置換してから、
-JSON 全体を **OpenAPI 3.0+ schema** に貼り付けます。
-404 や HTML が表示される場合は、リンク先と保存したファイルを管理者へ確認します。
+Upload Skill ZIPs saved to your PC from the [GitHub links in Lab 4](../../labs/04-tools-toolbox.md).
+The ZIP must contain `SKILL.md` at its root; do not select a standalone Markdown file.
+In `travel-ops.openapi.json`, replace `servers[0].url` with **Outputs > travelApiBaseUrl**,
+then paste the entire JSON into **OpenAPI 3.0+ schema**.
+If you see a 404 or HTML, ask the administrator to check the link and saved file.
 
-## 引用リンク
+## Citation links
 
-Lab 2 は Azure AI Search の **Actions > Parameters** で **Search type = Semantic**、
-**Retrieved documents = 5** を確認します。回答の金額だけでなく、適用条件と根拠資料も照合します。
-検索結果の URL が Search 自体を開く場合は、`source_url` を管理者に確認してもらいます。
-Foundry IQ の `mcp://searchindex/...` は内部の引用 ID です。
-Web ページとして開くのではなく、**Traces** の文書 ID と教材の規程を照合します。
-Portal の回答に `cite` の内部記号がそのまま残る場合は、引用表示の不一致として記録し、
-**Traces** の取得文書と元資料を確認します。検索設定だけで表示が直るとは限らず、成功扱いにしません。
+For Lab 2, check **Search type = Semantic** and **Retrieved documents = 5**
+under Azure AI Search **Actions > Parameters**. Compare not just amounts but also
+applicability conditions and supporting documents.
+If a result URL opens Search itself, ask the administrator to check `source_url`.
+Foundry IQ's `mcp://searchindex/...` is an internal citation ID.
+Do not open it as a web page; compare the document ID in **Traces** with the workshop policies.
+If internal `cite` markers remain visible in a Portal response, record a citation-rendering mismatch
+and check retrieved documents in **Traces** against the source material.
+Search settings alone may not fix rendering; do not count this as success.
 
-## 評価と最適化
+## Evaluation and optimization
 
-**In progress** の間は再送しません。429・タイムアウトと、評価結果の **Fail** は区別します。
-`content_filter` は保護機能による遮断です。Guardrail を弱めず、エラー内容を管理者へ共有します。
-**No supported optimization model** と表示された場合も、別モデルを追加せず確認を依頼します。
+Do not resubmit while status is **In progress**. Distinguish 429 errors and timeouts
+from an evaluation result of **Fail**.
+`content_filter` indicates a safety block. Share the error with the administrator without weakening guardrails.
+If **No supported optimization model** appears, ask for a check rather than adding another model.
 
-[準備に戻る：Lab 1](../../labs/01-setup.md)
+[Back to setup: Lab 1](../../labs/01-setup.md)

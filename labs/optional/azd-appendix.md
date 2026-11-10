@@ -1,99 +1,97 @@
-# 付録 — azd（Azure Developer CLI）で Hosted Agent をデプロイする
+# Appendix — Deploy a Hosted Agent with azd (Azure Developer CLI)
 
-## この文書の位置づけ
+## Scope of this document
 
-本編の core は `scripts/deploy_hosted_agent.py` による **source-code remote build** のみで
-完結し、`azd` は一切使いません。この付録は、`azd` の Foundry 拡張機能を使った代替デプロイ
-経路を、**本編とは別の認証と承認済み検証環境が必要になる**ことを明示したうえで説明します。
-本編 [Lab 8](../08-hosted-multi-agent.md) の履修にも、Lab 1 の RG 手動作成 / custom template /
-GitHub 共通教材・Codespaces の利用にも不要です。本編の source directory と固定インフラを変更しません。
+The main workshop uses only **source-code remote build** through `scripts/deploy_hosted_agent.py`
+and never uses `azd`. This appendix describes an alternative route using the azd Foundry extensions,
+which **requires separate authentication and an approved test environment**.
+It is not needed for [Lab 8](../08-hosted-multi-agent.md), manual RG creation / custom template in Lab 1,
+or GitHub shared materials / Codespaces. Do not modify the main source directory or fixed infrastructure.
 
 > [!IMPORTANT]
-> **`azd auth login` は `az login` とは別の認証です。** 本編の Hosted execution は
-> Dev Container 内で本人が行った Azure CLI 認証で動作します。この付録の手順を試す場合、`az login` に
-> 加えて **`azd auth login` を別途実行する必要があります**。これは本編の設計方針を変更する
-> ものではなく、azd という別のツールを使う場合にのみ必要な追加手順です。
+> **`azd auth login` is separate from `az login`.** Main-workshop Hosted execution
+> uses the participant's Azure CLI authentication in the Dev Container.
+> To try this appendix, run **`azd auth login` separately**, in addition to `az login`.
+> This does not change the main design; it is an extra step only for the separate azd tool.
 
-## 1. 前提条件
+## 1. Prerequisites
 
-| 項目 | 要件 |
+| Item | Requirement |
 |---|---|
-| Azure Developer CLI (azd) | **1.25.2 以上** |
-| ランタイム | Python 3.10 以上、または .NET 8 以上（Foundry 拡張機能の実行に必要） |
-| Azure ロール（RG スコープ） | **Contributor**（リソースの provision）。新しい Foundry project を作成する場合は追加で **Foundry Owner** |
-| 認証 | `azd auth login`（`az login` とは別に必要） |
+| Azure Developer CLI (azd) | **1.25.2 or later** |
+| Runtime | Python 3.10 or later, or .NET 8 or later (required by the Foundry extensions) |
+| Azure role (RG scope) | **Contributor** for provisioning; also **Foundry Owner** when creating a new Foundry project |
+| Authentication | `azd auth login` (required separately from `az login`) |
 
-## 2. Foundry 拡張機能をインストールする
+## 2. Install Foundry extensions
 
 ```bash
-azd version   # 1.25.2 以上であることを確認
+azd version   # Verify 1.25.2 or later
 azd auth login
 
 azd extension install microsoft.foundry
 ```
 
-`microsoft.foundry` はメタパッケージで、次の個別拡張機能をまとめてインストールします。
+`microsoft.foundry` is a metapackage installing these extensions together:
 
-| 拡張機能 | 用途 |
+| Extension | Purpose |
 |---|---|
-| `azure.ai.agents` | agent の作成・デプロイ |
-| `azure.ai.connections` | Foundry connection（ACR、Fabric、Work IQ など）の管理 |
-| `azure.ai.inspector` | ローカルデバッグ・トレース閲覧 |
-| `azure.ai.projects` | Foundry project の管理 |
-| `azure.ai.routines` | Routines（preview）の管理 — [A2A・Routines・Publish](a2a-routines-publish.md) 参照 |
-| `azure.ai.skills` | Skills の管理 — [Advanced Hosted Agent](advanced-hosted-agent.md) 参照 |
+| `azure.ai.agents` | Agent creation/deployment |
+| `azure.ai.connections` | Manage Foundry connections (ACR, Fabric, Work IQ, etc.) |
+| `azure.ai.inspector` | Local debugging and trace inspection |
+| `azure.ai.projects` | Manage Foundry projects |
+| `azure.ai.routines` | Manage Routines (preview); see [A2A, Routines, and Publish](a2a-routines-publish.md) |
+| `azure.ai.skills` | Manage Skills; see [Advanced Hosted Agent](advanced-hosted-agent.md) |
 
-## 3. プロジェクトを初期化する
+## 3. Initialize the project
 
-本編の `src/hosted-agent/` ではなく、別途用意した独立した agent project の directory で
-`azd ai agent init` を実行します。
+Run `azd ai agent init` in a separately prepared, independent agent project directory,
+not the main workshop's `src/hosted-agent/`.
 
-このコマンドは対話式に次を確認します。
+The command interactively asks for:
 
-- 使用する別の承認済み Foundry project。本編の `.workshop/context.json` の project を
-  追加インフラの provision 対象にしません。
-- コンテナイメージの push 先とする ACR（未指定の場合、`azd provision` がプロジェクト専用の
-  新しい ACR を作成します — 詳細は [Advanced Hosted Agent](advanced-hosted-agent.md) 参照）。
+- A different approved Foundry project. Do not provision extra infrastructure into
+  the project in the main `.workshop/context.json`.
+- An ACR destination for container images. If unspecified, `azd provision` creates
+  a new project-specific ACR; see [Advanced Hosted Agent](advanced-hosted-agent.md).
 
-`azd ai agent init` は `azure.yaml` と `next-steps.md`（azd 標準のプロジェクトメタデータ）を
-生成します。本編の `.workshop/context.json` とは別のファイルであり、本編のスクリプトはこの
-ファイルを読み書きしません。
+`azd ai agent init` generates `azure.yaml` and `next-steps.md` (standard azd project metadata).
+These are separate from `.workshop/context.json`; main-workshop scripts do not read/write them.
 
-## 4. デプロイする
+## 4. Deploy
 
 ```bash
 azd ai agent deploy
 ```
 
-このコマンドは、コンテナイメージのビルド・ACR への push・Foundry へのバージョン登録・
-agent 用 Microsoft Entra identity の作成・必要な RBAC 割り当てまでを一括で行います。個別に
-ステップを分けたい場合は、`azd ai agent build` → `azd ai agent push` → `azd ai agent deploy`
-のように分割実行することもできます（詳細は [Advanced Hosted Agent](advanced-hosted-agent.md)
-参照）。
+This builds the container, pushes to ACR, registers the version with Foundry,
+creates an agent Microsoft Entra identity, and assigns required RBAC.
+For separate stages, use `azd ai agent build` → `azd ai agent push` → `azd ai agent deploy`;
+see [Advanced Hosted Agent](advanced-hosted-agent.md).
 
-## 5. 本編との違い（まとめ）
+## 5. Differences from the main workshop
 
-| 観点 | 本編 core（`scripts/deploy_hosted_agent.py`） | この付録（`azd ai agent`） |
+| Aspect | Main core (`scripts/deploy_hosted_agent.py`) | This appendix (`azd ai agent`) |
 |---|---|---|
-| 認証 | Dev Container 内の本人の Azure CLI 認証 | `az login` + `azd auth login` |
-| デプロイ方式 | source zip + `REMOTE_BUILD`（Foundry がサーバー側でビルド） | ローカルでコンテナビルド → ACR へ push |
-| 追加インフラ | 不要（本編 custom template resources の範囲内） | 別環境の ACR（既存のものを使うか、`azd provision` が新規作成） |
-| 対象読者 | 全参加者（本編必須） | azd に慣れた参加者向けの任意経路 |
-| べき等性・cleanup | `scripts/delete_hosted_agent.py` と Lab 9 の対象 | azd 独自の state・ACR イメージは別途 cleanup が必要（[Advanced Hosted Agent](advanced-hosted-agent.md) §7 参照） |
+| Authentication | Participant Azure CLI authentication in the Dev Container | `az login` + `azd auth login` |
+| Deployment | source ZIP + `REMOTE_BUILD` (Foundry server-side build) | Local container build → push to ACR |
+| Extra infrastructure | None beyond main custom template resources | ACR in a separate environment (existing or created by `azd provision`) |
+| Audience | All participants (required main lab) | Optional route for azd-experienced participants |
+| Idempotency/cleanup | Covered by `scripts/delete_hosted_agent.py` and Lab 9 | azd-specific state and ACR images need separate cleanup; see [Advanced Hosted Agent](advanced-hosted-agent.md#7-cleanup-beyond-the-main-dedicated-resource-group) |
 
-## 6. この付録を使わない場合
+## 6. If you do not use this appendix
 
-本編の Lab 8 は `azd` を一切使わずに完結します。この付録は完全に任意であり、実施しなくても
-ワークショップの他の部分には影響しません。
+Lab 8 completes without any `azd` use. This appendix is entirely optional;
+skipping it does not affect the rest of the workshop.
 
-## 公式参照
+## Official references
 
 - [Install the Azure Developer CLI Foundry extensions](https://learn.microsoft.com/azure/foundry/agents/how-to/install-cli-foundry-extensions)
 - [Deploy a hosted agent with a private Azure Container Registry](https://learn.microsoft.com/azure/foundry/agents/how-to/deploy-hosted-agent-private-azure-container-registry)
 - [Azure Developer CLI overview](https://learn.microsoft.com/azure/developer/azure-developer-cli/overview)
 
-## 関連リンク
+## Related links
 
-- [選択ラボ index](README.md)
+- [Optional lab index](README.md)
 - [Advanced Hosted Agent](advanced-hosted-agent.md)
-- [本編 Lab 8 — Agent Framework workflow の Hosted Agent 配布](../08-hosted-multi-agent.md)
+- [Lab 8 — Deploy an Agent Framework workflow as a Hosted Agent](../08-hosted-multi-agent.md)

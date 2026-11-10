@@ -214,7 +214,7 @@ def test_agent_instructions_keep_source_and_action_boundaries_visible() -> None:
         "Skill",
         "tool_search",
         "call_tool",
-        "英語の tool 名",
+        "English tool name",
         "createTripEstimate",
         "getPerDiem",
         "createPreapproval",
@@ -223,6 +223,6 @@ def test_agent_instructions_keep_source_and_action_boundaries_visible() -> None:
         "Travel Ops API",
         "Code Interpreter",
         "Web Search",
-        "実際の承認とは区別",
+        "distinguish it from actual approval",
     ):
         assert required in instructions

@@ -1,6 +1,6 @@
 ---
 id: policy-ground-transport-001
-title: 陸上交通に関する規程
+title: Ground Transport Policy
 category: ground_transport
 effective_date: 2026-04-01
 applies_to:
@@ -8,37 +8,37 @@ applies_to:
 source_url: "{{WORKSHOP_SOURCE_BASE}}/data/policies/05-ground-transport.md"
 ---
 
-# 陸上交通に関する規程
+# Ground Transport Policy
 
-## 公共交通機関
+## Public transport
 
-- 電車・バスなどの公共交通機関の利用を原則とします。
-- 定期区間がある場合は、定期区間分を差し引いた金額のみ精算できます。
+- Use public transport such as trains and buses as the default.
+- Deduct any portion covered by a commuter pass; only the remainder is reimbursable.
 
-## タクシー・配車サービス
+## Taxis and ride-hailing
 
-以下のいずれかに該当する場合に限り、タクシーまたは配車サービス
-（ライドシェアアプリを含む）の利用を認めます。
+Taxis and ride-hailing services (including rideshare apps) are permitted only when
+at least one of the following applies:
 
-1. 22:00 以降で、公共交通機関の終電・終バスがない場合。
-2. 重量・かさばる荷物（機材、展示物など）を運搬する場合。
-3. 空港・主要駅からホテルまでの移動で、公共交通機関の乗換が
-   3 回以上になる場合。
-4. [アクセシビリティ・例外対応](08-accessibility-exceptions.md)に
-   定める配慮が必要な場合。
+1. It is 22:00 or later and the last train or bus is no longer available.
+2. You are transporting heavy or bulky luggage, such as equipment or exhibits.
+3. Travel from an airport or major station to the hotel requires 3 or more
+   public-transport transfers.
+4. An accommodation under [Accessibility and Exceptions](08-accessibility-exceptions.md)
+   is required.
 
-上記に該当しない移動でタクシーを利用した場合、精算時に理由の記載が
-必要です。理由の記載がない申請は差し戻しの対象になります。
+For taxi trips not meeting these conditions, provide a reason when claiming reimbursement.
+Submissions without a reason may be returned for correction.
 
-## 自家用車の利用
+## Personal vehicles
 
-- 業務命令による自家用車の利用は、1 キロメートルあたり 30 円で
-  精算します（ガソリン代・高速料金・駐車場代を含む定額）。
-- 高速道路料金・有料駐車場代は、上記の 1 キロメートル当たりの
-  金額とは別に実費精算できます。
+- Company-directed use of a personal vehicle is reimbursed at JPY 30 per kilometer
+  (a fixed rate including fuel, highway tolls, and parking).
+- Highway tolls and paid parking may also be reimbursed at actual cost separately
+  from the per-kilometer rate above.
 
-## レンタカー
+## Rental cars
 
-- レンタカーは、公共交通機関でのアクセスが著しく困難な場合のみ
-  マネージャー承認のうえで利用できます。
-- 任意保険（対人・対物・車両）への加入は必須です。
+- Rental cars require manager approval and are permitted only when public-transport
+  access is exceptionally difficult.
+- Optional insurance covering bodily injury, property damage, and the vehicle is mandatory.

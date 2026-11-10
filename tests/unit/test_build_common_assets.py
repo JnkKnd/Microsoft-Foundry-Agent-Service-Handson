@@ -80,7 +80,7 @@ def test_skill_archive_is_reproducible_and_preserves_source_bytes(name: str) -> 
     metadata = yaml.safe_load(content.split("---", 2)[1])
     assert metadata["name"] == name
     assert 1 <= len(metadata["description"]) <= 1024
-    assert "実際の予約・承認ではありません" in content
+    assert "not an actual booking or approval" in content
     assert "createPreapproval" in content
 
 

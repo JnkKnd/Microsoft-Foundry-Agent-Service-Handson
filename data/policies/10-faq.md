@@ -1,6 +1,6 @@
 ---
 id: policy-faq-001
-title: 出張・経費規程 FAQ
+title: Travel and Expense Policy FAQ
 category: faq
 effective_date: 2026-04-01
 applies_to:
@@ -8,52 +8,47 @@ applies_to:
 source_url: "{{WORKSHOP_SOURCE_BASE}}/data/policies/10-faq.md"
 ---
 
-# 出張・経費規程 FAQ
+# Travel and Expense Policy FAQ
 
-本 FAQ は、複数の規程にまたがる質問に答えるための補助資料です。
-各回答は根拠となる規程へのリンクを明記しています。
+This FAQ helps answer questions spanning multiple policies.
+Each answer links to the policies supporting it.
 
-## Q1. 海外出張でビジネスクラスを使うにはどうすればいいですか？
+## Q1. How can I use business class for international travel?
 
-片道飛行時間が 10 時間以上の国際線区間であれば、ビジネスクラスの
-利用対象になります（[フライト規程](02-flights.md)）。ただし利用には、
-マネージャーおよび部門 VPの両方の事前承認が必須です
-（[承認プロセス](09-approval-process.md)）。事前承認なしに予約した
-場合、差額は自己負担になります。
+International segments with a one-way duration of at least 10 hours are eligible
+for business class ([Flight Policy](02-flights.md)). Preapproval from both your manager
+and department VP is mandatory ([Approval Process](09-approval-process.md)).
+If you book without preapproval, you must pay the difference yourself.
 
-## Q2. 出張配慮（アクセシビリティ）フラグがあれば、短距離便でもビジネス
-クラスに乗れますか？
+## Q2. Can an accessibility accommodation flag allow business class on a short flight?
 
-はい。出張配慮フラグが設定されていれば、飛行時間に関わらず
-プレミアムエコノミーまたはビジネスクラスの利用が認められる場合が
-あります（[アクセシビリティ・例外対応](08-accessibility-exceptions.md)）。
-ただしビジネスクラス以上を利用する場合は、配慮フラグの有無に関わらず、
-[承認プロセス](09-approval-process.md)に定めるマネージャーおよび
-部門 VP の事前承認が引き続き必要です。
+Yes. A travel accommodation flag may permit premium economy or business class
+regardless of flight duration ([Accessibility and Exceptions](08-accessibility-exceptions.md)).
+However, business class or higher still requires manager and department VP preapproval
+under the [Approval Process](09-approval-process.md), whether or not you have a flag.
 
-## Q3. 宿泊費が地域区分の上限を超えそうな場合はどうすればいいですか？
+## Q3. What if my hotel is likely to exceed the regional cap?
 
-会議会場のホテルしか選択肢がない場合など、やむを得ない事情があるときは、
-出張前にマネージャーの事前承認を得れば上限超過分も精算できます
-（[宿泊規程](03-hotels.md)、[承認プロセス](09-approval-process.md)）。
-事前承認のない超過分は自己負担です。
+In unavoidable circumstances, such as when the conference hotel is the only option,
+you can claim the excess if you obtain your manager's preapproval before travel
+([Hotel Policy](03-hotels.md), [Approval Process](09-approval-process.md)).
+Any excess without preapproval is your responsibility.
 
-## Q4. 領収書をなくしてしまいました。どうすればいいですか？
+## Q4. What should I do if I lose a receipt?
 
-Contoso Expense で「紛失申告書」を作成し、マネージャーの共同署名を
-受けてください。1 回の出張につき上限 2 件、1 件あたり上限 5,000 円
-までの精算が可能です（[領収書規程](06-receipts.md)）。上限を超える
-場合は Travel Ops チームに相談してください。
+Create a Lost Receipt Affidavit in Contoso Expense and obtain your manager's co-signature.
+You can claim at most 2 items per trip and JPY 5,000 per item
+([Receipt Policy](06-receipts.md)). Consult Travel Ops if you exceed these limits.
 
-## Q5. 国内出張なら事前承認は不要ですか？
+## Q5. Do domestic trips need no preapproval?
 
-見積総額が 100,000 円以下の国内出張は事前承認不要です。ただし
-100,000 円を超える場合や、ビジネスクラスを利用する場合は、
-金額に関わらず事前承認が必要です（[承認プロセス](09-approval-process.md)）。
+Domestic trips with a total estimate at or below JPY 100,000 require no preapproval.
+Preapproval is required above JPY 100,000, or for business class regardless of amount
+([Approval Process](09-approval-process.md)).
 
-## Q6. 日当は領収書がなくてももらえますか？
+## Q6. Can I receive per diem without receipts?
 
-はい。日当（per diem）は定額支給のため領収書は不要です
-（[日当・食事規程](04-per-diem-meals.md)）。領収書が必要なのは、
-1 件 3,000 円以上の実費精算項目（宿泊、フライト、陸上交通など）です
-（[領収書規程](06-receipts.md)）。
+Yes. Per diem is a fixed allowance requiring no receipts
+([Per Diem and Meals Policy](04-per-diem-meals.md)). Receipts are required for
+actual-cost items of JPY 3,000 or more, such as hotels, flights, and ground transport
+([Receipt Policy](06-receipts.md)).

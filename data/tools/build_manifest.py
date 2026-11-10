@@ -31,7 +31,7 @@ import yaml
 
 DATA_DIR = Path(__file__).resolve().parent.parent
 SOURCE_URL_BASE_PLACEHOLDER = "{{WORKSHOP_SOURCE_BASE}}"
-CORPUS_VERSION = "2026.04.3"
+CORPUS_VERSION = "2026.04.4"
 
 CHUNKING = {
     "strategy": "markdown-heading",
@@ -159,7 +159,7 @@ def build_manifest() -> dict[str, Any]:
 
     return {
         "corpus_version": CORPUS_VERSION,
-        "language": "ja",
+        "language": "en",
         "source_url_base_placeholder": SOURCE_URL_BASE_PLACEHOLDER,
         "chunking": CHUNKING,
         "embedding": EMBEDDING,

@@ -1,45 +1,47 @@
-# 本編の対応範囲
+# Core workshop scope
 
-[開発者向けガイド](README.md) / [ハンズオンの構成](architecture.md)
+[Developer guide](README.md) / [Workshop architecture](architecture.md)
 
-教材の変更時に、本編の固定構成と付録の追加要件を区別するための一覧です。
-サービス全体の提供状況ではなく、このハンズオンが採用している範囲を示します。
+This list distinguishes the core workshop's fixed configuration from additional
+appendix requirements when changing materials. It describes what this workshop
+uses, not the availability of the entire service.
 
-## 環境作成と共通教材
+## Environment creation and shared materials
 
-| 項目 | 本編の構成 |
+| Item | Core configuration |
 |---|---|
-| 専用 RG | テンプレートを開く前に、参加者が Azure Portal で 1 個手動作成します。 |
-| テンプレート | `infra/azuredeploy.json` を読み込み、Subscription と既存 RG を選びます。他は確認済みのリリース既定値を使います。 |
-| 初期化 | Deployment Scripts が Search のデータ、評価データ・評価基準を準備して検証します。 |
-| 成功判定 | デプロイ全体が成功し、`workshopContext.setup_status = complete` になったことを確認します。 |
-| 共通教材 | GitHub の `assets/skills/*.zip` と `assets/openapi/travel-ops.openapi.json`。`servers[0].url` だけを `travelApiBaseUrl` に変更します。 |
-| Portal の演習 | Labs 2〜6 を Foundry Portal で実施します。 |
+| Dedicated RG | The participant manually creates 1 RG in Azure Portal before opening the template. |
+| Template | Load `infra/azuredeploy.json` and select Subscription and the existing RG. Use verified release defaults for everything else. |
+| Initialization | Deployment Scripts prepare and validate Search data, evaluation data, and rubrics. |
+| Success criteria | Verify that the entire deployment succeeds and `workshopContext.setup_status = complete`. |
+| Shared materials | GitHub `assets/skills/*.zip` and `assets/openapi/travel-ops.openapi.json`. Change only `servers[0].url` to `travelApiBaseUrl`. |
+| Portal exercises | Complete Labs 2–6 in Foundry Portal. |
 
-## Notebook と認証
+## Notebooks and authentication
 
-| 項目 | 本編の構成 |
+| Item | Core configuration |
 |---|---|
-| 実行環境 | 基本は GitHub Codespaces。ローカルの VS Code / Docker でも同じ Dev Container を使います。 |
-| 依存関係 | 作成後処理がチェックアウトの外に仮想環境を分けて準備します。Azure へのログインや環境作成は行いません。 |
-| 初期設定カーネル | Python (Foundry Workshop)、Python 3.12、`foundry-workshop`。 |
-| Labs 7〜8 のカーネル | Python (Foundry Hosted Agent)、Python 3.13、`foundry-hosted-agent`。 |
-| 認証 | Notebook の前にコンテナー内で本人が Azure CLI へサインインします。GitHub / Portal の認証とは別です。 |
-| 接続情報 | `00-setup.ipynb` がサブスクリプション ID と RG 名から成功した ARM 出力を取得し、`.workshop/context.json` に保存します。スキーマは `2.0`、構造は `resource_outputs.<key>.value` です。 |
-| Hosted Agent の管理 | ソースコードのリモートビルドを使います。管理用仮想環境から確認入力付きでデプロイ・削除します。 |
+| Runtime | GitHub Codespaces by default. Local VS Code / Docker uses the same Dev Container. |
+| Dependencies | Post-create processing prepares separate virtual environments outside the checkout. It does not sign in to Azure or create resources. |
+| Setup kernel | Python (Foundry Workshop), Python 3.12, `foundry-workshop`. |
+| Labs 7–8 kernel | Python (Foundry Hosted Agent), Python 3.13, `foundry-hosted-agent`. |
+| Authentication | Before the Notebook, the participant signs in to Azure CLI inside the container. This is separate from GitHub / Portal authentication. |
+| Connection information | `00-setup.ipynb` retrieves successful ARM outputs using the subscription ID and RG name and saves `.workshop/context.json`. Schema `2.0`; structure `resource_outputs.<key>.value`. |
+| Hosted Agent management | Uses remote source code builds. Deployment and deletion run from the management virtual environment with confirmation input. |
 
-## サービスと終了処理
+## Services and cleanup
 
-| 項目 | 本編の構成 |
+| Item | Core configuration |
 |---|---|
-| リージョン・モデル | Japan East / GlobalStandard。固定モデルと容量は [管理者向けのモデル利用枠](../../docs/admin/prerequisites.md#モデルの利用枠) を参照します。 |
-| Search | Basic。初期データを持つ 2 インデックスを使います。 |
-| 接続 | Search は AAD リソース接続、MCP と Application Insights は Project Managed Identity。[接続名と設定](../../infra/README.md#接続スキーマの例外) はインフラ説明を参照します。 |
-| ID・ネットワーク | システム割り当て ID、初期化専用 ID、対象を限定した RBAC、公開エンドポイント。Foundry / Search のローカル認証は無効です。 |
-| 監視・API | Log Analytics / Application Insights と、Container Apps の Travel Ops API。 |
-| 終了処理 | 保存・エクスポート → Hosted Agent の全バージョン削除 → Codespace の停止・削除 → Portal で専用 RG を削除 → 削除完了の確認。 |
+| Region and models | Japan East / GlobalStandard. See [administrator model quotas](../../docs/admin/prerequisites.md#model-quotas) for fixed models and capacities. |
+| Search | Basic. Uses 2 indexes with initial data. |
+| Connections | Search uses an AAD resource connection; MCP and Application Insights use Project Managed Identity. See infrastructure documentation for [connection names and settings](../../infra/README.md#connection-schema-exceptions). |
+| Identity and networking | System-assigned identities, a bootstrap-only identity, narrowly scoped RBAC, and public endpoints. Foundry / Search local authentication is disabled. |
+| Monitoring and API | Log Analytics / Application Insights and Travel Ops API on Container Apps. |
+| Cleanup | Save / export → delete all Hosted Agent versions → stop / delete Codespace → delete dedicated RG in Portal → verify deletion. |
 
-環境固有のアーカイブ配布、Cosmos DB、Agent capability host、ACR、プライベートネットワークは本編に含めません。
-リージョン・モデルの自動切り替え、実際の予約・承認・支払いも行いません。
-配布条件は [管理者向け前提条件](../admin/prerequisites.md)、
-終了処理は [費用と片付け](../participant/costs-and-cleanup.md) を参照してください。
+The core workshop does not include environment-specific archive distribution,
+Cosmos DB, Agent capability host, ACR, or private networking. It does not automatically
+switch regions or models or perform actual bookings, approvals, or payments.
+See [administrator prerequisites](../admin/prerequisites.md) for distribution requirements
+and [costs and cleanup](../participant/costs-and-cleanup.md) for cleanup.

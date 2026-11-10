@@ -1,6 +1,6 @@
 ---
 id: policy-per-diem-001
-title: 日当・食事に関する規程
+title: Per Diem and Meals Policy
 category: per_diem_meals
 effective_date: 2026-04-01
 applies_to:
@@ -8,41 +8,39 @@ applies_to:
 source_url: "{{WORKSHOP_SOURCE_BASE}}/data/policies/04-per-diem-meals.md"
 ---
 
-# 日当・食事に関する規程
+# Per Diem and Meals Policy
 
-## 地域区分（Tier）と日当額
+## Regional tiers and per diem rates
 
-出張中の食事代は、実費精算ではなく**定額の日当（per diem）**として
-支給します。地域区分（Tier）は Travel Ops API の `/per-diem` エンドポイントが
-返す `tier` フィールドと一致します。
+Meals during business travel are paid as a **fixed per diem**, not reimbursed at actual cost.
+Regional tiers match the `tier` field returned by the Travel Ops API `/per-diem` endpoint.
 
-| 地域区分 | 代表都市（例） | 日当（1 日あたり） | 宿泊費上限（1 泊） |
+| Regional tier | Example cities | Per diem (per day) | Hotel cap (per night) |
 |---|---|---|---|
-| domestic_tier1 | 東京、大阪、名古屋、横浜、福岡、札幌 | 3,000 円 | 15,000 円 |
-| domestic_tier2 | 上記以外の国内都市 | 2,500 円 | 12,000 円 |
-| international_tier_a | ニューヨーク、サンフランシスコ、ロンドン、パリ | 6,000 円 | 25,000 円 |
-| international_tier_b | シンガポール、香港、シドニー | 5,000 円 | 20,000 円 |
-| international_tier_c | 上記以外の海外都市 | 4,000 円 | 18,000 円 |
+| domestic_tier1 | Tokyo, Osaka, Nagoya, Yokohama, Fukuoka, Sapporo | JPY 3,000 | JPY 15,000 |
+| domestic_tier2 | Other domestic cities | JPY 2,500 | JPY 12,000 |
+| international_tier_a | New York, San Francisco, London, Paris | JPY 6,000 | JPY 25,000 |
+| international_tier_b | Singapore, Hong Kong, Sydney | JPY 5,000 | JPY 20,000 |
+| international_tier_c | Other international cities | JPY 4,000 | JPY 18,000 |
 
-宿泊費上限は [宿泊に関する規程](03-hotels.md) と同じ値です。
+Hotel caps are identical to those in the [Hotel Policy](03-hotels.md).
 
-## 日帰り出張（宿泊を伴わない出張）
+## Day trips (without an overnight stay)
 
-宿泊を伴わない日帰り出張の食事日当は、地域区分にかかわらず以下の
-定額とします。
+Meal per diem for day trips is fixed regardless of regional tier:
 
-- 国内日帰り: 1,500 円（固定）
-- 海外日帰り: 3,000 円（固定、まれなケースです）
+- Domestic day trip: JPY 1,500 (fixed)
+- International day trip: JPY 3,000 (fixed; an uncommon case)
 
-## 宿泊を伴う出張の日数計算
+## Counting days for overnight trips
 
-- 出張初日・最終日を含む全ての日について、上表の地域区分に応じた
-  日当を 100% 支給します（按分計算は行いません）。
-- 日当には、朝食・昼食・夕食および軽食が含まれます。会議や研修で
-  食事が提供された日は、日当を 50% に減額して申告してください。
+- Pay 100% of the applicable tier's per diem for every day, including departure and return
+  days (no proration).
+- Per diem includes breakfast, lunch, dinner, and snacks. For days when a conference or
+  training provides meals, report a 50% reduction in per diem.
 
-## 日当は実費精算ではない
+## Per diem is not actual-cost reimbursement
 
-- 日当は領収書の提出を必要としません。
-- 実際の食事代が日当を上回っても差額の追加精算はできません。
-- 実際の食事代が日当を下回っても返金の必要はありません。
+- No receipt is required for per diem.
+- If actual meal costs exceed per diem, the difference cannot be reimbursed.
+- If actual meal costs are below per diem, no refund is required.

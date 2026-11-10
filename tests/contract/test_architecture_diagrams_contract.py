@@ -46,12 +46,12 @@ def assert_service_paths(spec: dict) -> None:
         assert (edges[edge_id]["source"], edges[edge_id]["target"]) == endpoints
     assert not any(edge["source"] == "agent" and edge["target"] == "api" for edge in spec["edges"])
     assert "Lab 2" in edges["agent-search"]["label"]
-    assert "Lab 3 で解除" in edges["agent-search"]["label"]
-    assert "Lab 3 以降" in edges["agent-iq"]["label"]
+    assert "removed in Lab 3" in edges["agent-search"]["label"]
+    assert "Lab 3 onward" in edges["agent-iq"]["label"]
     assert "Project MI" in edges["agent-toolbox"]["label"]
-    assert "匿名" in edges["toolbox-api"]["label"]
+    assert "anonymous" in edges["toolbox-api"]["label"]
     assert "gpt-5.5" in edges["iq-planning"]["label"]
-    assert "埋め込み" not in edges["iq-planning"]["label"]
+    assert "embedding" not in edges["iq-planning"]["label"].lower()
     for node_id, lab in (("agent", "Lab 2"), ("iq", "Lab 3"), ("toolbox", "Lab 4")):
         assert lab in nodes[node_id]["detail"]
 
@@ -88,9 +88,9 @@ def assert_deployment_ownership(spec: dict) -> None:
     for edge_id, endpoints in expected.items():
         assert (edges[edge_id]["source"], edges[edge_id]["target"]) == endpoints
     assert "--prepare-only" in nodes["evaluation"]["detail"]
-    assert "ジョブ実行なし" in nodes["evaluation"]["detail"]
-    assert "Python で埋め込み" in nodes["seed"]["detail"]
-    assert "全段階成功後" in nodes["outputs"]["detail"]
+    assert "no job execution" in nodes["evaluation"]["detail"]
+    assert "Generate embeddings in Python" in nodes["seed"]["detail"]
+    assert "only after all stages succeed" in nodes["outputs"]["detail"]
     assert "complete" in nodes["confirm"]["detail"]
     assert "Succeeded" in nodes["confirm"]["detail"]
 
@@ -111,7 +111,7 @@ def test_service_contract_rejects_incorrect_architectures(mutation: str) -> None
     elif mutation == "separate-iq":
         indexed(spec, "nodes")["iq"]["parent"] = "azure"
     else:
-        indexed(spec, "edges")["agent-search"]["label"] = "Lab 2: 直接検索"
+        indexed(spec, "edges")["agent-search"]["label"] = "Lab 2: direct search"
     with pytest.raises(AssertionError):
         assert_service_paths(spec)
 
@@ -122,7 +122,7 @@ def test_deployment_contract_rejects_incorrect_execution(mutation: str) -> None:
     if mutation == "user-bootstrap":
         indexed(spec, "nodes")["bootstrap"]["parent"] = "participant-actions"
     elif mutation == "eval-job":
-        indexed(spec, "nodes")["evaluation"]["detail"] = "評価ジョブを実行"
+        indexed(spec, "nodes")["evaluation"]["detail"] = "Run evaluation jobs"
     else:
         indexed(spec, "edges")["validation-outputs"]["source"] = "resources"
     with pytest.raises(AssertionError):

@@ -1,32 +1,32 @@
-# 費用と片付け
+# Costs and cleanup
 
-[資料一覧](../README.md) / [Lab 9 の操作手順](../../labs/09-observability-cleanup.md)
+[Documentation index](../README.md) / [Lab 9 instructions](../../labs/09-observability-cleanup.md)
 
-## 課金対象
+## Billable usage
 
-- Foundry のモデル推論、評価、最適化、Hosted Agent
-- Azure AI Search Basic、Container Apps、Application Insights / Log Analytics
-- Deployment Scripts の実行
-- Code Interpreter / Web Search などの利用したツール
-- Codespaces の稼働時間とストレージ（アカウントの利用枠・課金設定による）
+- Foundry model inference, evaluation, optimization, and Hosted Agents
+- Azure AI Search Basic, Container Apps, Application Insights / Log Analytics
+- Deployment Scripts execution
+- Tools you use, such as Code Interpreter / Web Search
+- Codespaces compute time and storage (depending on account allowances and billing settings)
 
-ブラウザーを閉じても Azure のリソースは残ります。Codespace は停止後もストレージが残ります。
-管理者は利用枠、予算・アラートを確認し、実行中の処理を重複送信しないよう案内します。
-この教材の評価は 7 件、最適化候補は 1 件です。
+Closing the browser does not delete Azure resources. Codespace storage remains after stopping.
+Administrators should check quotas, budgets, and alerts, and remind participants not to resubmit running operations.
+This workshop uses 7 evaluation cases and 1 optimization candidate.
 
-## 片付けの順序
+## Cleanup order
 
-1. Notebook と必要な結果を保存・エクスポートします。
-2. Notebook から Hosted Agent と全バージョンを削除します。
-3. Codespace を **Stop codespace**、続けて **Delete**。ローカルの場合は教材のコンテナーを停止。
-4. Azure Portal で自分のサブスクリプションと専用 RG 名を確認します。
-5. **Delete resource group** で RG と残る演習リソースをまとめて削除します。
-6. **Resource groups** 一覧から対象 RG が消えたことを確認。
+1. Save/export notebooks and any results you need.
+2. Delete Hosted Agents and all their versions from the notebook.
+3. Select **Stop codespace**, then **Delete**. For local execution, stop the workshop container.
+4. In Azure Portal, verify your subscription and dedicated RG name.
+5. Use **Delete resource group** to delete the RG and remaining workshop resources together.
+6. Confirm that the RG no longer appears in **Resource groups**.
 
-**Deployments の履歴を消してもリソースは残ります。**
-保存と Hosted Agent / Codespace の片付けは RG 削除より先に行います。
-失敗したデプロイの部分リソースも課金される場合があります。
-他参加者の RG、共有リソース、無関係なローカル環境は対象外です。
+**Deleting Deployments history does not delete resources.**
+Save your work and clean up Hosted Agents / Codespaces before deleting the RG.
+Partial resources from failed deployments may also incur charges.
+Other participants' RGs, shared resources, and unrelated local environments are out of scope.
 
-画面操作は [Lab 9](../../labs/09-observability-cleanup.md)、初期化の実行基盤の詳細は
-[インフラ実装ガイド](../../infra/README.md) を参照してください。
+See [Lab 9](../../labs/09-observability-cleanup.md) for UI steps and the
+[infrastructure implementation guide](../../infra/README.md) for the initialization runtime.

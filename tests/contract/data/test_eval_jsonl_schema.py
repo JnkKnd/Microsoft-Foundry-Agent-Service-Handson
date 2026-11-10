@@ -65,9 +65,9 @@ def test_optimizer_live_subset_jsonl_matches_schema(data_dir):
         jsonschema.validate(instance=case, schema=schema)
 
 
-def test_master_has_approximately_twelve_cases(data_dir):
+def test_master_has_exactly_fourteen_cases(data_dir):
     cases = _load_jsonl(data_dir / "eval" / "master.jsonl")
-    assert 12 <= len(cases) <= 14, f"expected ~12 master cases, found {len(cases)}"
+    assert len(cases) == 14, f"expected exactly 14 master cases, found {len(cases)}"
 
 
 def test_live_subset_has_exactly_seven_cases(data_dir):
@@ -233,12 +233,12 @@ def test_multi_hop_quality_evidence_is_exclusive_to_each_search_index(data_dir):
         for index in manifest["search_indexes"]
     }
 
-    assert "承認コメント" in text_by_index["contoso-travel-policy"]
-    assert "承認コメント" not in text_by_index["contoso-travel-approval"]
-    assert "標準最大所要期間" in text_by_index["contoso-travel-approval"]
-    assert "標準最大所要期間" not in text_by_index["contoso-travel-policy"]
-    assert "事前承認リクエスト" in text_by_index["contoso-travel-approval"]
-    assert "事前承認リクエスト" not in text_by_index["contoso-travel-policy"]
+    assert "approval comment" in text_by_index["contoso-travel-policy"]
+    assert "approval comment" not in text_by_index["contoso-travel-approval"]
+    assert "standard maximum time" in text_by_index["contoso-travel-approval"]
+    assert "standard maximum time" not in text_by_index["contoso-travel-policy"]
+    assert "Preapproval Request" in text_by_index["contoso-travel-approval"]
+    assert "Preapproval Request" not in text_by_index["contoso-travel-policy"]
 
 
 def test_tool_choice_cases_declare_expected_tool_calls(data_dir):
@@ -282,7 +282,7 @@ def test_current_info_cases_use_task_rubric_and_trace_without_fixed_fact(data_di
         assert case["ground_truth"] is None
         assert case["process_evaluator_compatible"] is False
         assert case["evaluation_methods"] == ["task_level", "custom_rubric", "trace"]
-        assert "取得日時" in case["expected_behavior"]
+        assert "retrieval timestamp" in case["expected_behavior"]
         assert "URL" in case["expected_behavior"]
         assert any(call["tool"] == "web_search" for call in case["expected_tool_calls"])
 
@@ -295,4 +295,4 @@ def test_create_preapproval_is_expected_only_when_explicitly_requested(data_dir)
         if any(call["tool"] == "createPreapproval" for call in case.get("expected_tool_calls", []))
     ]
     assert len(preapproval_cases) == 1
-    assert "実行してください" in preapproval_cases[0]["query"]
+    assert "please run the preapproval simulation" in preapproval_cases[0]["query"]

@@ -1,6 +1,6 @@
 {
-  "corpus_version": "2026.04.3",
-  "language": "ja",
+  "corpus_version": "2026.04.4",
+  "language": "en",
   "source_url_base_placeholder": "{{WORKSHOP_SOURCE_BASE}}",
   "chunking": {
     "strategy": "markdown-heading",
@@ -48,7 +48,7 @@
   "documents": [
     {
       "id": "policy-general-001",
-      "title": "出張・経費規程 総則",
+      "title": "Travel and Expense Policy — General Provisions",
       "category": "general_policy",
       "path": "policies/01-general-policy.md",
       "effective_date": "2026-04-01",
@@ -56,12 +56,12 @@
         "all_employees"
       ],
       "source_url": "{{WORKSHOP_SOURCE_BASE}}/data/policies/01-general-policy.md",
-      "sha256": "9bce00262d1e2af56701c526133410fa75e242180d88c4100b65492d7aa43bae",
-      "size_bytes": 2818
+      "sha256": "912ddcfabba482efe5b2fa0a23bd863a14dc4ab96b0bee86b1254d6c2eca41a6",
+      "size_bytes": 2580
     },
     {
       "id": "policy-flights-001",
-      "title": "フライトに関する規程",
+      "title": "Flight Policy",
       "category": "flights",
       "path": "policies/02-flights.md",
       "effective_date": "2026-04-01",
@@ -69,12 +69,12 @@
         "all_employees"
       ],
       "source_url": "{{WORKSHOP_SOURCE_BASE}}/data/policies/02-flights.md",
-      "sha256": "ffc9cf034ea2ccb67992e2a0d1520e27d1b999302d4ab814b33fc24d47516174",
-      "size_bytes": 2446
+      "sha256": "55b7431e76a3b4577b54dd4b5599a2fe6c9a295b092a3118dda66c28b273aa17",
+      "size_bytes": 2062
     },
     {
       "id": "policy-hotels-001",
-      "title": "宿泊に関する規程",
+      "title": "Hotel Policy",
       "category": "hotels",
       "path": "policies/03-hotels.md",
       "effective_date": "2026-04-01",
@@ -82,12 +82,12 @@
         "all_employees"
       ],
       "source_url": "{{WORKSHOP_SOURCE_BASE}}/data/policies/03-hotels.md",
-      "sha256": "59e88e28f140863c80722dc3a40259a58d558384db6288d9eac6ceb4e41a8bdb",
-      "size_bytes": 2116
+      "sha256": "7704947b38e890a0ddd12e387c36a0ecd3178a942b3efd8d558b920189190443",
+      "size_bytes": 1734
     },
     {
       "id": "policy-per-diem-001",
-      "title": "日当・食事に関する規程",
+      "title": "Per Diem and Meals Policy",
       "category": "per_diem_meals",
       "path": "policies/04-per-diem-meals.md",
       "effective_date": "2026-04-01",
@@ -95,12 +95,12 @@
         "all_employees"
       ],
       "source_url": "{{WORKSHOP_SOURCE_BASE}}/data/policies/04-per-diem-meals.md",
-      "sha256": "c0993aeb865d4aa485c62c9fbf7d0c8464832e70dc3420d8af3ef2552ae3f433",
-      "size_bytes": 2175
+      "sha256": "a9630880b8004e3acbe489b090a6d90d5d8f5ea681e362904c019b8844927ab7",
+      "size_bytes": 1803
     },
     {
       "id": "policy-ground-transport-001",
-      "title": "陸上交通に関する規程",
+      "title": "Ground Transport Policy",
       "category": "ground_transport",
       "path": "policies/05-ground-transport.md",
       "effective_date": "2026-04-01",
@@ -108,12 +108,12 @@
         "all_employees"
       ],
       "source_url": "{{WORKSHOP_SOURCE_BASE}}/data/policies/05-ground-transport.md",
-      "sha256": "5e51f3dd3e5e3dda2919e78ed09dfd623f17e2ae62a6a4a533863fbe9f11a305",
-      "size_bytes": 1865
+      "sha256": "695c87bb791d501e008c17040f4b4fbd85c6dd14f021216caba660264ff85810",
+      "size_bytes": 1613
     },
     {
       "id": "policy-receipts-001",
-      "title": "領収書に関する規程",
+      "title": "Receipt Policy",
       "category": "receipts",
       "path": "policies/06-receipts.md",
       "effective_date": "2026-04-01",
@@ -121,12 +121,12 @@
         "all_employees"
       ],
       "source_url": "{{WORKSHOP_SOURCE_BASE}}/data/policies/06-receipts.md",
-      "sha256": "de0d4de3347b642bb2569a8ef68412bd2b69f1c87f82583730443a97598a781d",
-      "size_bytes": 1950
+      "sha256": "d77403fdc5b7ea563830f277e3aa593eac0589b4d24f89fb6665818fb77b06a6",
+      "size_bytes": 1523
     },
     {
       "id": "policy-international-security-001",
-      "title": "海外渡航・セキュリティに関する規程",
+      "title": "International Travel and Security Policy",
       "category": "international_security",
       "path": "policies/07-international-travel-security.md",
       "effective_date": "2026-04-01",
@@ -134,12 +134,12 @@
         "all_employees_international_travel"
       ],
       "source_url": "{{WORKSHOP_SOURCE_BASE}}/data/policies/07-international-travel-security.md",
-      "sha256": "b4466f87d3da4e5a42b04d120d3290d39b2bfb67056191c7db89d13afa84b7bd",
-      "size_bytes": 1975
+      "sha256": "6a86ad9ce4452dbd991777636a3d394c9473361f59daf985f77bee4ef4b25b97",
+      "size_bytes": 1705
     },
     {
       "id": "policy-accessibility-exceptions-001",
-      "title": "アクセシビリティ・例外対応に関する規程",
+      "title": "Accessibility and Exceptions Policy",
       "category": "accessibility_exceptions",
       "path": "policies/08-accessibility-exceptions.md",
       "effective_date": "2026-04-01",
@@ -149,12 +149,12 @@
         "hr_team"
       ],
       "source_url": "{{WORKSHOP_SOURCE_BASE}}/data/policies/08-accessibility-exceptions.md",
-      "sha256": "91dfa1d852e276bca3a1b1ea0663ec3cb284ee4400e0ba914f2015ecc66acf4c",
-      "size_bytes": 2433
+      "sha256": "3d217c78e4a97dae3f6499f766645762f7bea05a980affb0c9612c8a155eca88",
+      "size_bytes": 1975
     },
     {
       "id": "policy-approval-process-001",
-      "title": "承認プロセスに関する規程",
+      "title": "Approval Process Policy",
       "category": "approval_process",
       "path": "policies/09-approval-process.md",
       "effective_date": "2026-04-01",
@@ -164,12 +164,12 @@
         "department_vps"
       ],
       "source_url": "{{WORKSHOP_SOURCE_BASE}}/data/policies/09-approval-process.md",
-      "sha256": "504c8470d040529911c243456db5684ef25924360d6e920b6000fd7d87badd9f",
-      "size_bytes": 2529
+      "sha256": "2ad01d3339549616114f813735a83a99b23a7751a926c099af1f505323950be3",
+      "size_bytes": 2131
     },
     {
       "id": "policy-faq-001",
-      "title": "出張・経費規程 FAQ",
+      "title": "Travel and Expense Policy FAQ",
       "category": "faq",
       "path": "policies/10-faq.md",
       "effective_date": "2026-04-01",
@@ -177,8 +177,8 @@
         "all_employees"
       ],
       "source_url": "{{WORKSHOP_SOURCE_BASE}}/data/policies/10-faq.md",
-      "sha256": "017448a87b39bb7a3c59c0d273ce3c88a33b4fddf2e5c5a35639232ce5cc5650",
-      "size_bytes": 3126
+      "sha256": "021f8ece7331d2c3709192244e465fd81e0e173542d268e18727f39b15270de1",
+      "size_bytes": 2373
     }
   ],
   "receipts": {
@@ -186,14 +186,14 @@
       {
         "name": "receipts_csv",
         "path": "receipts/receipts.csv",
-        "sha256": "f9a6a544c57699a041e53920821d58e0361930db89d3d53e112a78f9d116e3d6",
-        "size_bytes": 2360
+        "sha256": "009ecc032d9dd58a566d36e0b66d54be21551dada6eec43468cb4a18d155d912",
+        "size_bytes": 2338
       },
       {
         "name": "receipts_json",
         "path": "receipts/receipts.json",
-        "sha256": "04e7c1a6e7f60664ccb0ed5adeb63d4e63a217bf09c1446ade4a07e0fd59d33b",
-        "size_bytes": 5180
+        "sha256": "ec4803227987d1dae4d0c90162df8506b2295be4be6b79d444cd9a553c56020c",
+        "size_bytes": 5158
       }
     ]
   },
@@ -202,8 +202,8 @@
       {
         "name": "trips_json",
         "path": "fixtures/trips.json",
-        "sha256": "450ef0066e8179172367ca8802cc148e04049b219cdf26b4846f85f2096c0170",
-        "size_bytes": 3392
+        "sha256": "fa4596eb063cab20a24cb69bdb104d90485ec645347585f3b170635957463f84",
+        "size_bytes": 3401
       }
     ]
   },
@@ -212,20 +212,20 @@
       {
         "name": "eval_master_jsonl",
         "path": "eval/master.jsonl",
-        "sha256": "0e1ad29946b8eba707fcdbdacfc50cb3efa27f59d6bac56be48bd4075518b899",
-        "size_bytes": 15508
+        "sha256": "b2ff819e2301a9b679f5f8f45b166807c52dfbc092a0b0d825683b420a76ec3f",
+        "size_bytes": 14403
       },
       {
         "name": "eval_live_subset_jsonl",
         "path": "eval/live_subset.jsonl",
-        "sha256": "aad6d4a08f3a4732e8c6a1738ce458bee68b8015413d875e85f4453fad53fa4f",
-        "size_bytes": 7734
+        "sha256": "4af377e9c5d5f4980d4053058c0a5784261f6eac5e112fc4d0aa372ae491408c",
+        "size_bytes": 7234
       },
       {
         "name": "optimizer_live_subset_jsonl",
         "path": "eval/optimizer_live_subset.jsonl",
-        "sha256": "cb41354efb4523a5c89907a141116a46938f598ee65c4b155394a878f186259c",
-        "size_bytes": 9491
+        "sha256": "5c8f95c12f2cc34304f5d0e8ce232cb8c86b9e384fe1e07e718c16b50293ef2a",
+        "size_bytes": 8833
       }
     ]
   }

@@ -1,84 +1,90 @@
-# Lab 1 — 環境を作り、初期化を確認する
+# Lab 1 — Create the environment and verify initialization
 
-Azure Portal で準備します。この Lab では CLI や Notebook は使いません。
+Use Azure Portal. This lab does not use a CLI or notebooks.
 
-## 全体の流れ
+> [!WARNING]
+> **Do not deploy this unreleased English branch yet.** English artifacts have not been published;
+> source revision and API image defaults remain empty with fail guards until an administrator
+> pins a published English source SHA and GHCR digest. Branch download links are mutable,
+> not release pins. Existing Azure environments are not automatically English.
+> The steps below remain the procedure for a future pinned release.
 
-上段は参加者が Azure Portal で行う操作、下段はカスタムテンプレートの内部処理です。
-下段の処理は Azure 側で実行されます。リソースの作成だけでなく、データの準備と検証を含めた
-全体の成功を確認してから、次の Lab に進みます。
+## Overall flow
 
-![参加者による専用 RG の作成、テンプレートの読み込み・実行・完了確認と、Azure 側で行うリソース配置、データ準備、環境検証、接続情報の出力。](../docs/images/azure-architecture-02.png)
+Participants create a dedicated RG, load and run the custom template, and check completion in Azure Portal.
+Azure then provisions resources, prepares data, validates the environment, and outputs connections.
+Verify success of the entire process, including data preparation and validation, before continuing.
 
-[拡大表示（PNG）](../docs/images/azure-architecture-02.png)
+The existing [deployment flow diagram](../docs/images/azure-architecture-02.png)
+is historical/illustrative, not English instructions or current-revision success evidence.
 
-## 始める前に
+## Before you begin
 
-- [参加条件](../docs/participant/prerequisites.md)を確認します。
-- 管理者からサブスクリプションの指定を受け取ります。専用 RG は手順 1 で自分で作成します。
-  テンプレートの既定値については[管理者向けガイド](../docs/admin/prerequisites.md#2-配布するテンプレートと既定値)を参照できます。
-- 管理者指定の
-   [azuredeploy.json](https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson/blob/main/infra/azuredeploy.json)
-  を PC に保存します。Web ページではなく JSON 本体を保存してください。
+- Check the [prerequisites](../docs/participant/prerequisites.md).
+- Obtain the designated subscription from the administrator. Create your own dedicated RG in step 1.
+  See the [administrator guide](../docs/admin/prerequisites.md#2-template-and-defaults-to-distribute) for template defaults.
+- Save the administrator-designated
+  [azuredeploy.json](https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/blob/English/infra/azuredeploy.json)
+  to your PC. Save the JSON itself, not the web page.
 
-モデルのバージョン、イメージのハッシュ、教材の SHA は設定済みです。
-既定値を使い、推測して入力しません。
+For a distributed release, model versions, image hashes, and the workshop source SHA must be preconfigured.
+Use that release's defaults; do not guess values or bypass the unreleased branch's fail guards.
 
-## 1. 専用 RG を 1 個手動作成する
+## 1. Manually create one dedicated RG
 
-1. [Azure Portal](https://portal.azure.com) でアカウントとサブスクリプションを確認します。
-2. **Resource groups > Create** を開きます。
-3. **Subscription** に指定のサブスクリプション、**Resource group** に自分専用の名前、
-   **Region** に **Japan East** を指定します。
-4. **Review + create > Create** を選択します。
-5. 作成完了後、**Resource groups** で RG の名前を確認します。
+1. In [Azure Portal](https://portal.azure.com), verify your account and subscription.
+2. Open **Resource groups > Create**.
+3. Set **Subscription** to the designated subscription, **Resource group** to your own dedicated name,
+   and **Region** to **Japan East**.
+4. Select **Review + create > Create**.
+5. Once creation finishes, check the RG name in **Resource groups**.
 
-**RG の作成が完了してから、次の手順へ進んでください。**
+**Wait for RG creation to finish before proceeding.**
 
-## 2. 作成済み RG にテンプレートを実行する
+## 2. Run the template against the existing RG
 
-1. Azure Portal で **Deploy a custom template** を検索して開きます。
-2. **Build your own template in the editor > Load file** を選びます。
-3. 保存した `azuredeploy.json` を読み込み、**Save** を選びます。
-4. **Subscription** と **Resource group** に、手順 1 の作成済み RG を選びます。
-   **Create new** は使いません。
-5. その他の項目は**既定値のまま**にします。自分自身がデプロイするため、
-   **Participant Object Id Override** は空欄、**Bootstrap Run Id** は `1` のままです。
-   **Enable Bootstrap Policy Exclusion** の既定値は **true** です。
-   組織の管理者が初期化用の除外タグを承認したハンズオン環境向けの設定です。
-   承認されていない環境や除外が不要な環境では **false** に変更します。
-   [管理者向けの適用条件](../docs/admin/prerequisites.md#初期化用のポリシー除外を承認した場合)を確認してください。
-6. **Review + create > Create** を選びます。
+1. In Azure Portal, search for and open **Deploy a custom template**.
+2. Select **Build your own template in the editor > Load file**.
+3. Load the saved `azuredeploy.json` and select **Save**.
+4. For **Subscription** and **Resource group**, select the existing RG from step 1.
+   Do not use **Create new**.
+5. Keep other fields **at their defaults**. You are deploying for yourself, so leave
+   **Participant Object Id Override** empty and **Bootstrap Run Id** at `1`.
+   **Enable Bootstrap Policy Exclusion** defaults to **true**.
+   This is for workshop environments where the organization's administrator has approved
+   the initialization exclusion tag. Set it to **false** where approval is absent or exclusion is unnecessary.
+   Check the [administrator applicability conditions](../docs/admin/prerequisites.md#when-bootstrap-policy-exclusion-is-approved).
+6. Select **Review + create > Create**.
 
-## 3. 初期化の成功を待つ
+## 3. Wait for successful initialization
 
-1. RG の **Deployments** で、**Deployment Scripts による初期化を含む全体**が
-   **Succeeded** になるまで待ちます。
-2. **Outputs** の `workshopContext` を開き、`setup_status = complete` を確認します。
-   Search のデータ投入、評価データ・rubric の準備、検証までが初期化に含まれます。
-   リソースが作られただけでは準備完了ではありません。
+1. In the RG's **Deployments**, wait until the **entire deployment, including Deployment Scripts initialization**,
+   shows **Succeeded**.
+2. Open `workshopContext` in **Outputs** and verify `setup_status = complete`.
+   Initialization includes Search data loading, evaluation dataset/rubric preparation, and validation.
+   Resource creation alone does not mean setup is complete.
 
-![デプロイの Overview に Your deployment is complete と表示される画面例](../docs/images/lab01-template-succeeded.png)
+The existing [deployment completion screenshot](../docs/images/lab01-template-succeeded.png)
+is a historical UI illustration, not evidence that this revision has been verified.
+Use the status and output checks above rather than the screenshot to determine success.
 
-画像はデプロイ完了 UI の参考です。この改訂の動作確認結果を示すものではありません。
+If it fails, do not continue; see [troubleshooting](../docs/participant/troubleshooting.md).
+Do not resubmit running operations or switch regions or models.
 
-失敗した場合は次へ進まず、[トラブルシューティング](../docs/participant/troubleshooting.md)を確認します。
-実行中の処理を重複送信したり、別のリージョン・モデルへ変更したりしません。
+## 4. Open Foundry Portal
 
-## 4. Foundry Portal を開く
+Check these in the same **Outputs**:
 
-同じ **Outputs** で次を確認します。
-
-| 出力 | 用途 |
+| Output | Purpose |
 |---|---|
-| `foundryPortalUrl` | 開いて、`resourceOutputs` の Foundry resource と project `contoso-travel` を選ぶ |
-| `resourceOutputs` | Labs 2〜6 で使う名前。各項目の `value` を参照 |
-| `travelApiBaseUrl` | Lab 4 の共通 OpenAPI に設定する自分の API URL |
+| `foundryPortalUrl` | Open it and select the Foundry resource in `resourceOutputs` and project `contoso-travel` |
+| `resourceOutputs` | Names used in Labs 2–6; use each item's `value` |
+| `travelApiBaseUrl` | Your API URL to insert into the shared OpenAPI in Lab 4 |
 
-これで Lab 1 は完了です。環境別の教材一式をダウンロードする手順はありません。
-[Lab 4](04-tools-toolbox.md) で共通ファイルを GitHub から取得し、
-[Lab 7](07-agent-framework-harness.md) で Codespaces を準備します。
+Lab 1 is complete. There is no environment-specific bundle to download.
+Obtain shared files from GitHub in [Lab 4](04-tools-toolbox.md) and prepare Codespaces in
+[Lab 7](07-agent-framework-harness.md).
 
-## 次の Lab
+## Next lab
 
 [Lab 2 — Prompt Agent](02-prompt-agent.md)

@@ -26,7 +26,7 @@
     },
     "language": {
       "type": "string",
-      "const": "ja"
+      "const": "en"
     },
     "source_url_base_placeholder": {
       "type": "string",

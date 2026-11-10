@@ -57,7 +57,7 @@ class _StandardAgent:
 
     async def run(self, prompt: str) -> _Response:
         self.requests.append(prompt)
-        return _Response("Foundry IQ に基づく回答", "knowledge_base_retrieve")
+        return _Response("Answer grounded in Foundry IQ", "knowledge_base_retrieve")
 
 
 class _Toolbox:
@@ -91,18 +91,18 @@ class _HarnessAgent:
                 "items": [
                     {
                         "id": 1,
-                        "title": "規程と費用を確認する",
-                        "description": "Foundry IQ と Toolbox を使う",
+                        "title": "Check policies and costs",
+                        "description": "Use Foundry IQ and Toolbox",
                         "is_complete": False,
                     }
                 ],
                 "next_id": 2,
             }
-            return _Response("実行計画", "todos_add")
+            return _Response("Execution plan", "todos_add")
 
         session.state["todo"]["items"][0]["is_complete"] = True
         return _Response(
-            "根拠・見積もり・現在情報をまとめた最終回答",
+            "Final answer combining evidence, estimates, and current information",
             "load_skill",
             "knowledge_base_retrieve",
             "tool_search",
@@ -218,9 +218,9 @@ def test_notebook_builds_standard_then_harness_agent_with_direct_framework_wirin
     assert captured_standard["tools"] == [iq_tools[0]]
     assert captured_standard["name"] == "travel_policy_agent"
     assert "Foundry IQ" in captured_standard["instructions"]
-    assert standard_agent.requests and "片道12時間" in standard_agent.requests[0]
+    assert standard_agent.requests and "12-hour one-way" in standard_agent.requests[0]
     assert harness_agent.requests[0] == namespace["complex_request"]
-    assert "この計画を承認します" in harness_agent.requests[1]
+    assert "I approve this plan" in harness_agent.requests[1]
     assert namespace["execute_actions"] == [
         "load_skill",
         "knowledge_base_retrieve",

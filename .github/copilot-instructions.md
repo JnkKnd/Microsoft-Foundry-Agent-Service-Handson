@@ -1,67 +1,89 @@
-# Copilot 向け開発指示
+# Copilot development instructions
 
-このRepositoryで蓄積するAI向けの開発規則は `.github/` 配下に置きます。
-構成・設計・開発手順の正本は [開発者向けガイド](../docs/development/README.md) とその参照先です。
-変更前に対象の資料を確認し、仕様を変更した場合は同じ変更で正本も更新します。
-AI向け指示には仕様を複製せず、必要な文書への参照を置きます。
+Keep repository-specific AI development rules under `.github/`.
+The [developer guide](../docs/development/README.md) and its references are the
+source of truth for architecture, design, and development procedures. Read the
+relevant guide before changing code, and update it in the same change when a
+specification changes. Link to specifications rather than duplicating them here.
 
-## 文書の言語と正本
+## Documentation language and source of truth
 
-- README、`AGENTS.md`、`.github/`、`docs/`、`instructor/`、`labs/`、
-  各コンポーネントの README の説明・見出しは日本語を正とします。公式製品名、UIラベル、
-  識別子、ファイル名、コード、コマンドは正式表記を維持します。
-- `README.en.md` は明示的な英語版として維持し、日本語版と構成・手順の変更を揃えます。
-- 現行手順は [README](../README.md) と
-  [環境準備ガイド](../docs/participant/environments/custom-template.md)、
-  構成の説明は [ハンズオンの構成](../docs/development/architecture.md) を参照します。
-  同じ責務を持つ文書を新設する前に、既存の正本を更新します。
-- 旧手順を保持する場合は履歴資料と明記し、冒頭に現行手順への参照を置きます。
-  履歴内のコマンドやリンクは現在の操作根拠に使いません。
+- On the **English branch**, English is the source language for README files,
+  `AGENTS.md`, `.github/`, `docs/`, `instructor/`, `labs/`, sample data, and
+  user-visible runtime text. Preserve official product names, UI labels,
+  identifiers, filenames, code, and commands.
+- `README.md` is the primary entry point. Keep `README.en.md` consistent as
+  an explicit English entry point; do not imply that this branch contains a
+  separately maintained Japanese edition.
+- Translation does not change policy amounts, JPY, dates, IDs, approval rules,
+  service configuration, or safety boundaries.
+- Current procedures are in the [README](../README.md) and
+  [setup guide](../docs/participant/environments/custom-template.md).
+  See [workshop architecture](../docs/development/architecture.md) for structure.
+  Update an existing source of truth before creating another document with the same role.
+- Label retained old procedures as historical and link to current instructions
+  at the beginning. Historical commands and links are not current operating instructions.
 
-## 文書の配置
+## Documentation placement
 
-- 参加者向け資料は `docs/participant/`、管理者向け資料は `docs/admin/`、
-  演習は `labs/`、講師向け資料は `instructor/` に置きます。
-- 人とAIが参照する横断的な構成・設計・開発知識は `docs/development/` に置きます。
-  実装に隣接する README はその場所で維持し、開発者向けガイドから参照します。
-- 新規作成・移動時は読者別の案内ページと相対リンクを同時に更新し、同じ正本を複製しません。
+- Put participant materials in `docs/participant/`, administrator materials in
+  `docs/admin/`, exercises in `labs/`, and instructor materials in `instructor/`.
+- Keep shared architecture, design, and development knowledge for people and AI
+  in `docs/development/`. Keep implementation-adjacent README files in place and
+  link to them from the developer guide.
+- When creating or moving documents, update audience indexes and relative links
+  together. Do not duplicate the source of truth.
 
-## 開発履歴の取り込み
+## Using development history
 
-- [AIと進める変更](../docs/development/README.md#aiと進める変更) に従い、
-  依頼の到達点と、今回の変更・検証範囲を先に決めます。
-- 履歴は判断の根拠であり、現在仕様や今回の実行許可ではありません。
-  ユーザーの決定、当時のAgentの報告、未検証の推測を分け、現行の実装・正本・テストと照合します。
-- 再発防止に必要な規則だけを既存の指示へ統合し、機械的に確認できる契約は既存の検査へ接続します。
-  会話全文、実環境の識別情報、個人の絶対パス、一時的な進捗はリポジトリへ転記しません。
+- Follow [AI-assisted changes](../docs/development/README.md#working-with-ai-on-changes):
+  establish the requested outcome and the scope of changes and verification first.
+- History informs decisions; it is neither the current specification nor
+  authorization for this operation. Distinguish user decisions, past Agent reports,
+  and unverified assumptions, and compare them with current code, documentation, and tests.
+- Integrate only recurrence-prevention rules into existing instructions.
+  Connect machine-checkable contracts to existing checks. Do not copy entire
+  conversations, live environment identifiers, personal absolute paths, or temporary progress.
 
-## コード変更と完了条件
+## Code changes and completion
 
-- 変更対象の実装・テスト・隣接 README を先に読み、既存の API、依存方向、例外処理を維持します。
-  初期化や規約更新のためにソースを移動せず、無関係な整形・再設計を混ぜません。
-- 共有作業ツリーでは開始時と編集・ステージ前の差分を確認し、他の作業の変更を保持します。
-  履歴資料の削除や復元を自動整理に混ぜず、復元が必要なら対象ファイルと確定した revision を確認します。
-- 対象別の規約は [AI設定の一覧](../docs/development/README.md#ai設定の責務) を参照します。
-  個人の Agent / Skill や親フォルダーの依存関係を、開発の必須条件にしません。
-- 依存定義は既存の `pyproject.toml` と各 `requirements.txt` を維持します。
-  グローバル Python や別用途の仮想環境に依存を追加しません。
-- 振る舞いを変更したら対応する単体・契約テストを更新し、正常系・失敗系・境界条件を確認します。
-  新しい検査を作る場合は、意図的に壊した入力を検出できることも確認します。
-- 検証の入口と提出前の確認は [開発者向けガイド](../docs/development/README.md#変更対象と確認先)
-  に従います。未実施、スキップ、既存の失敗と変更による失敗を分けて報告します。
-- 資格情報、実環境の接続情報、Notebook の認証出力をコミットしません。
-  公開・デプロイ・権限変更・削除は設定更新の一部として実行せず、対象と影響の了承を得ます。
+- Read the implementation, tests, and adjacent README first. Preserve existing
+  APIs, dependency direction, and exception handling. Do not move source code
+  just to initialize tooling or update rules, or mix in unrelated formatting or redesign.
+- Check the shared worktree at the start and before editing or staging. Preserve
+  other work. Do not automatically delete or restore historical material; confirm
+  the exact file and revision before restoration.
+- Use [AI configuration responsibilities](../docs/development/README.md#ai-configuration-responsibilities)
+  for path-specific rules. Do not make personal Agents, Skills, or parent-folder
+  dependencies a prerequisite for development.
+- Maintain the existing `pyproject.toml` and `requirements.txt` dependency manifests.
+  Do not install dependencies into global Python or an unrelated virtual environment.
+- Update unit and contract tests for changed behavior. Cover normal, failure, and
+  boundary cases. New checks must also reject deliberately broken input.
+- Follow [change scope and verification](../docs/development/README.md#change-targets-and-checks)
+  for validation and submission checks. Report not-run checks, skips, pre-existing
+  failures, and failures caused by the change separately.
+- Never commit credentials, live connection information, or Notebook authentication
+  output. Publication, deployment, permission changes, and deletion require separate
+  approval of their targets and effects; do not perform them as part of configuration edits.
+- English releases use this fork's published source and API image. Never assign
+  an upstream SHA or digest to a different owner or claim unpublished artifacts
+  are available. Bootstrap and citations use immutable commits, not branch names.
 
-## 実環境検証の判断基準
+## Live verification criteria
 
-実環境の通し検証はAzure Portal、Foundry Portal、Codespaces / VS Code Notebookの
-実画面で行い、開始前に対象・課金・本人認証を確認します。
-参加者に示していない API / REST 操作や手順外の修復で、掲載手順の成功を代替しません。
-受入条件は [講師向けrunbook](../instructor/runbook.md) を正とし、全Lab（1〜9）、
-再デプロイ、cleanupを同一revisionで確認します。修正後は最初から通し直します。
-評価・最適化ジョブの実行をデータ登録確認で代替せず、Harnessはplanとexecute、
-Hosted Agentはdeploy後の応答まで確認します。
+Verify the full participant journey in the actual Azure Portal, Foundry Portal,
+and Codespaces / VS Code Notebook UI. Confirm the target, costs, and personal
+authentication before starting. Do not replace documented success with unpublished
+API / REST operations or repairs outside the participant procedure.
 
-未完了・未実施・中断を成功と区別し、検証範囲の縮小は事前に了承を得ます。
-CIやsimulated fixtureは実画面の成功根拠にしません。Lab変更時はrunbookも更新し、
-アカウント固有の値と秘密を含まない実行証跡はRepository外に保持します。
+The [instructor runbook](../instructor/runbook.md) defines acceptance criteria:
+verify all Labs (1-9), redeployment, and cleanup at the same revision. After a fix,
+restart the complete run at the corrected revision. Dataset registration is not
+evaluation or optimization job execution. Verify Harness plan and execute, and
+the Hosted Agent's response after deployment.
+
+Distinguish incomplete, not run, and interrupted results from success. Obtain
+prior approval before reducing verification scope. CI and simulated fixtures
+do not prove live UI success. Update the runbook when Labs change, and keep
+execution evidence without account-specific values or secrets outside the repository.

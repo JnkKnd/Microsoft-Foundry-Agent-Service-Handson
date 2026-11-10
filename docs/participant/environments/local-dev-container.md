@@ -1,30 +1,30 @@
-# ローカルの Dev Container — Labs 7〜8
+# Local Dev Container — Labs 7–8
 
-Codespaces と**同じ `.devcontainer`、Notebook、カーネル**を使います。
-ホスト OS へ Python / Conda を直接導入する手順は対象外です。
+Use the **same `.devcontainer`, notebooks, and kernels** as Codespaces.
+Installing Python / Conda directly on the host OS is outside this guide.
 
-## ローカルで実施される方は以下の前提条件を確認下さい
+## Prerequisites for local execution
 
 - Git
 - [Visual Studio Code](https://code.visualstudio.com/)
-- [Dev Containers 拡張](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-- コンテナーを起動できる Docker（起動済みで、組織の利用許可があること）
-- Lab 1 と同じ Azure アカウント・認証手段、および[必要な権限](../prerequisites.md)
+- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+- Docker able to run containers (running and approved by your organization)
+- The same Azure account and authentication method as Lab 1, with the [required permissions](../prerequisites.md)
 
-## 開く
+## Open the environment
 
-1. 教材を clone し、VS Code で開きます。
+1. Clone the workshop and open it in VS Code.
 
    ```text
-   git clone --branch main https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson.git
+   git clone --branch English https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson.git
    code Microsoft-Foundry-Agent-Service-Handson
    ```
 
-2. Command Palette で **Dev Containers: Reopen in Container** を選びます。
-3. コンテナーと post-create の準備完了後、
-   [共通手順：Azure CLI サインイン → 初回 Notebook](codespaces.md#共通手順) を実施します。
+2. In Command Palette, select **Dev Containers: Reopen in Container**.
+3. Once container creation and post-create finish, follow the
+   [shared steps: Azure CLI sign-in → setup notebook](codespaces.md#shared-steps).
 
-Python 3.12 / 3.13 の venv はコンテナー内・チェックアウト外に作られます。
-ホストの `.venv` や Python の設定を変更する必要はありません。
-終了時は成果物を保存し、[Lab 9](../../../labs/09-observability-cleanup.md) に従います。
-ローカルの操作対象も、この教材のコンテナーだけにしてください。
+Python 3.12 / 3.13 venvs are created inside the container, outside the checkout.
+You do not need to change the host's `.venv` or Python settings.
+Save results and follow [Lab 9](../../../labs/09-observability-cleanup.md) when finished.
+Local cleanup must target only this workshop's container.
