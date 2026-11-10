@@ -44,10 +44,18 @@ illustrative, not evidence for the current English revision.
 
 | Connection | Behavior defined by this repository |
 |---|---|
-| Agent Service → Azure AI Search | Lab 2 performs Semantic search on `contoso-travel-policy`. Lab 3 removes this direct-search tool. |
+| Agent Service → Azure AI Search | Lab 2 directly searches `contoso-travel-policy` using Portal-created tool settings. Lab 3 removes this direct-search tool. |
 | Agent Service → Foundry IQ → Search indexes | Path from Lab 3 onward. The Knowledge base resides on the same Search service and uses 2 indexed knowledge sources, policy and approval. It does not add another Search service. |
 | Foundry IQ → Foundry Models | Lab 3 sets `gpt-5.5` / Medium for retrieval planning. Initial-data embeddings are generated separately by Python inside Deployment Scripts. |
 | Agent Service → Toolbox → Travel Ops API | Lab 4 keeps Knowledge and connects Toolbox through MCP / Project Managed Identity. Toolbox exposes 4 OpenAPI operations and calls the API over anonymous HTTPS; this is not a direct Agent-to-API connection. |
+
+Lab 2's direct-search baseline does not explicitly force semantic-only retrieval.
+The current new Portal exposes the connection and index, not query-mode or result-count controls.
+The [Azure AI Search tool reference](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/ai-search#configure-tool-parameters)
+documents defaults of `query_type = vector_semantic_hybrid` and `top_k = 5`.
+Those documented defaults do not prove this Portal-created agent's effective configuration.
+Record settings if exposed in execution evidence; otherwise leave them unverified.
+Actual Search execution, grounded answers, and citations remain the Lab's checks.
 
 The Foundry project and model deployments are separate child resources under the
 same Foundry account. The template prepares the Search AAD connection, model access

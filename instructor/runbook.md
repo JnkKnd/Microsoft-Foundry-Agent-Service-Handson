@@ -71,6 +71,15 @@ In Lab 2, verify the [automatic-toolbox opt-out and Web search removal](../labs/
 when the current Portal creates an agent-managed toolbox. Direct tool configuration
 on the Prompt Agent is separate from Lab 4's published Toolbox and its server-side Tool Search.
 
+Follow Lab 2's [Search connection steps](../labs/02-prompt-agent.md#5-connect-an-azure-ai-search-tool)
+using Portal-created tool settings, not an explicitly forced semantic-only query.
+The current new Portal's Search actions expose **Edit** / **Remove**, not retrieval parameters;
+the model's **Parameters** is not a substitute.
+Record the selected connection / index, actual Search call, answer, and citations.
+Record query mode / result-count settings only if execution evidence exposes them;
+do not infer them from documented defaults or use SDK / REST operations to force them.
+This procedure correction still requires the complete corrected-revision validation above.
+
 Registration of evaluation data or rubrics alone does not complete Labs 5 / 6.
 For **Partial** evaluations, record unscorable rows and causes.
 Distinguish protection-triggered blocks / answer Fail results from unresolved

@@ -27,9 +27,11 @@ If you see a 404 or HTML, ask the administrator to check the link and saved file
 
 ## Citation links
 
-For Lab 2, check **Search type = Semantic** and **Retrieved documents = 5**
-under Azure AI Search **Actions > Parameters**. Compare not just amounts but also
-applicability conditions and supporting documents.
+For Lab 2, verify the existing Search connection and selected `contoso-travel-policy`
+index using the [Search connection steps](../../labs/02-prompt-agent.md#5-connect-an-azure-ai-search-tool).
+The current new Portal does not expose Search retrieval settings in **Actions**;
+the model's **Parameters** is not a substitute. Check the actual Search call and
+compare not just amounts but also applicability conditions and supporting documents.
 If a result URL opens Search itself, ask the administrator to check `source_url`.
 Foundry IQ's `mcp://searchindex/...` is an internal citation ID.
 Do not open it as a web page; compare the document ID in **Traces** with the workshop policies.

@@ -44,7 +44,7 @@ In Lab 1's deployment **Outputs > resourceOutputs**, find `foundry_project_name`
    If **Use the Microsoft Copilot harness** appears, leave it unchecked.
    This is not Lab 7's Agent Framework Harness Agent.
 5. Replace the generated **Agent name** with `contoso-travel-assistant`.
-6. Select **Create and open playground**.
+6. Select **Create agent and open playground**.
 
 ## 2. Select the deployed model
 
@@ -102,9 +102,18 @@ not an API key.
 3. Open **Azure AI Search connection** and select the `search_service_name` value
    (`srch-fdyws-...`). Do not use **Connect to new resource**.
 4. Select `contoso-travel-policy` and **Add**.
-5. Back in the agent, verify **Select a search index** is `contoso-travel-policy`.
-6. Under Azure AI Search **Actions > Parameters**, set **Search type = Semantic**
-   and **Retrieved documents = 5**. Close the configuration pane and select **Save**.
+5. Back in the agent, open the attached **Azure AI search** tool.
+   In **Connect to Azure AI Search index**, verify the existing connection and the
+   selected `contoso-travel-policy` row, then select **Cancel** to close without changes.
+6. Select **Save** if enabled.
+
+The current new Foundry Portal exposes connection and index selection, but not
+**Search type** or **Retrieved documents** for this direct tool.
+Its **Actions** menu contains **Edit** and **Remove**; the model's **Parameters**
+does not configure Search retrieval. Leave the Portal-created tool settings unchanged.
+This lab uses those settings, not an explicitly forced semantic-only query.
+Do not switch to the classic Portal or add SDK / REST configuration steps to force a query mode.
+Verify the actual Search call, answer, and citations below rather than assuming retrieval settings.
 
 The retained screenshots for these steps are historical/illustrative, not English instructions
 or current-revision success evidence: [agent list](../docs/images/lab02-agent-list.png),
