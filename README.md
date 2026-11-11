@@ -5,13 +5,6 @@
 Build a travel and expense assistant for the fictional company Contoso in nine labs.
 Explore retrieval, tools, evaluation, optimization, and Hosted Agents.
 
-> [!WARNING]
-> **English artifacts are published and pinned, but live acceptance is not complete.**
-> See the [source SHA, API digest, and publication evidence](infra/README.md#english-release-artifacts).
-> All Labs, redeployment, and cleanup must pass before participant distribution.
-> Links to the `English` branch are mutable browsing/download links, not release pins.
-> Existing Azure environments are not automatically converted to English.
-
 [**Start with Lab 1**](labs/01-setup.md) ·
 [Prerequisites](docs/participant/prerequisites.md) ·
 [Setup guide](docs/participant/environments/custom-template.md)
@@ -84,3 +77,5 @@ English is the source language on this branch. [README.en.md](README.en.md) is a
 > Use synthetic data only; never share or save credentials or tokens.
 > Azure and Codespaces usage may incur charges.
 > Follow Lab 9 to delete **only your dedicated RG** and verify that deletion completed.
+
+<sub>English artifacts are published and pinned; participant distribution awaits live acceptance of all Labs, redeployment, and cleanup. Branch links are mutable; existing Azure environments are not automatically translated. [Release details](infra/README.md#english-release-artifacts).</sub>
