@@ -1,39 +1,86 @@
-# 講師向けガイド
+# Instructor guide
 
-本編は **専用 RG の手動作成 → custom template / 初期化 → Foundry Portal →
-GitHub Codespaces** の順です。ローカル参加者も同じ Dev Container を使います。
+The core sequence is **manually create a dedicated RG → custom template /
+initialization → Foundry Portal → GitHub Codespaces**.
+Local participants use the same Dev Container.
 
-開催前に [runbook](runbook.md)、[参考結果](completed-run-assets/README.md)、
-[管理者向け前提条件](../docs/admin/prerequisites.md)、
-[費用と片付け](../docs/participant/costs-and-cleanup.md) を確認します。
-教材を変更する場合は [開発者向けガイド](../docs/development/README.md)、
-参加者への案内は [資料一覧](../docs/README.md) を参照してください。
+Before the event, review the [runbook](runbook.md),
+[reference results](completed-run-assets/README.md),
+[administrator prerequisites](../docs/admin/prerequisites.md), and
+[costs and cleanup](../docs/participant/costs-and-cleanup.md).
+For material changes, see the [developer guide](../docs/development/README.md);
+for participant navigation, see the [documentation index](../docs/README.md).
 
-## 開催時間の計画
+## Schedule planning
 
-時間配分の正本は [README の時間表](../README.md#演習一覧) です。Lab 1を除く進行用の目安として扱います。
-Lab 1を含む実測済みの開催時間として案内しないでください。
-開催前に runbook に従って使用するリビジョン・環境で実行し、初期化、コンテナー準備、
-評価・最適化・デプロイの待機、参加者の操作、片付けにかかった時間を区別して記録します。
-記録は実行証跡と同じく Repository 外に保持します。
+The [README schedule](../README.md#schedule-and-preparation) is the source of truth
+for time allocations. Treat it as a facilitation estimate excluding Lab 1, not a
+measured event duration including Lab 1.
+Before the event, follow the runbook on the intended revision / environment and
+record initialization, container preparation, evaluation / optimization / deployment
+waits, participant operations, and cleanup durations separately.
+Keep these records outside the repository, like other execution evidence.
 
-| 開催方法 | 案内する内容 |
+| Event format | Information to provide |
 |---|---|
-| Lab 1を事前に実施 | 実施期限、成功の確認方法、開始時刻までの課金・保持期間、片付け担当。当日は環境の準備完了を確認してLab 2へ進みます。 |
-| Lab 1を当日に実施 | 初期化待ちを含む準備枠と、実測に基づく対応余裕を演習枠に追加します。Lab 1の成功後にLab 2へ進みます。 |
+| Complete Lab 1 beforehand | Deadline, success checks, costs / retention until the start time, cleanup owner. At the event, confirm readiness before Lab 2. |
+| Complete Lab 1 during the event | Add a preparation slot including initialization waits and measured contingency time to the exercise schedule. Proceed to Lab 2 only after Lab 1 succeeds. |
 
-どちらを採用するかは開催案内に明記します。時間表の見直し時は日本語・英語の README を同時更新し、
-省略や実行待ちを隠して全 Lab の通し検証が完了したように扱わないでください。
+State the chosen format in the event announcement. When revising the schedule,
+update the English-primary README and any explicitly maintained README variant together.
+Do not hide omissions or pending execution and present them as completed all-Lab
+end-to-end validation. This branch does not promise a Japanese counterpart.
 
-## 確認すること
+### 60-minute English presentation
 
-- 参加者の subscription、専用 RG 名、作成・削除・role assignment の権限
-- 固定モデル / Search Basic の利用枠と、既定値設定済みテンプレート
-- RG の作成完了後にテンプレートを開き、Subscription / 作成済み RG だけを選ぶ順序
-- Search・評価データの準備と validation の成功、`workshopContext.setup_status = complete`
-- Lab 4 の GitHub Skill ZIP、共通 OpenAPI と本人の `travelApiBaseUrl`
-- Codespaces / Dev Container の準備、本人の Azure CLI サインイン、`00-setup.ipynb` と 2 カーネル
-- 保存 → Hosted Agent versions → Codespace 停止・削除 → 専用 RG の削除確認
+Use this variant for an instructor-led English presentation, not a shortened
+participant workshop. Announce it as explanation and walkthrough segments;
+participants are not expected to create resources or complete the Labs during
+the hour. The full workshop schedule above remains unchanged. Optional Labs
+are omitted from this presentation.
 
-本編の安全上の注意を開始時に説明してください。
-実 UI の操作結果と参考資料を区別し、simulated assets を成功証拠にしません。
+| Minutes | Segment | Instructor action and reference |
+|---|---|---|
+| 0–5 | Scope and synthetic-data safety | State the learning goals and distinguish simulation from real bookings, submissions, approvals, and payments. Explain that credentials and personal information must not be shared. |
+| 5–12 | Architecture and setup overview | Use the [architecture diagrams](../docs/development/architecture.md#architecture-diagrams) to explain responsibilities and the [Lab 1](../labs/01-setup.md) sequence: manually create 1 dedicated RG, deploy the pinned template, and verify completed initialization. Explain cleanup ownership rather than starting deployment during this slot. |
+| 12–27 | Prompt Agent and Foundry IQ | Walk through [Lab 2](../labs/02-prompt-agent.md) direct Search and citations, then [Lab 3](../labs/03-rag-foundry-iq.md) Knowledge base retrieval. Emphasize replacing, not simultaneously enabling, the direct-search path. |
+| 27–37 | Toolbox, Skills, and API simulation | Follow [Lab 4](../labs/04-tools-toolbox.md): shared Skill ZIPs, the participant-specific OpenAPI server URL, Tool Search, and actual tool-call traces. Explain that preapproval responses are simulations, not real approval. |
+| 37–45 | Evaluation and optimization | Use [Lab 5](../labs/05-evaluation.md) to explain the 7 evaluation rows, evaluator results, and execution errors; use [Lab 6](../labs/06-optimization.md) to explain the 1-candidate baseline comparison and optional promotion. Do not start jobs merely to fit this slot or imply data registration proves job completion. |
+| 45–52 | Harness and Hosted Agent | Contrast [Lab 7](../labs/07-agent-framework-harness.md) plan → execute in the same session with [Lab 8](../labs/08-hosted-multi-agent.md) intake → policy → reviewer. Explain local versus Hosted execution, kernel separation, and post-deployment response / trace checks. |
+| 52–55 | Summary | Recap grounding, controlled tool use, evaluation, and execution boundaries. Explain [Lab 9](../labs/09-observability-cleanup.md) trace comparison and save → Hosted versions → Codespace → dedicated RG cleanup. |
+| 55–60 | Q&A | Answer questions, identify relevant Labs for later practice, and explicitly distinguish demonstrated results from unperformed operations. |
+
+Prepare the linked material and choose explanation-only versus live demonstration
+before the session. Live demos may use only a separately released, immutably
+pinned English source / API image and an environment that has passed the full
+[same-revision acceptance](runbook.md#real-environment-validation-scope).
+Obtain any required target, cost, and personal-authentication approvals before
+live operations. This agenda records no executed demo or validation result;
+English artifacts are [published and pinned](../infra/README.md#english-release-artifacts),
+but full live acceptance is incomplete.
+
+If a live demonstration is unavailable or fails, continue with an explanation
+of the documented procedure. Label historical screenshots as illustrative and
+[simulated reference results](completed-run-assets/README.md) as simulated;
+neither proves successful execution. Do not silently substitute off-procedure
+repairs or present an unfinished operation as complete.
+
+This shorter lecture does not reduce release acceptance: every core Lab (1–9),
+redeployment, and cleanup must still complete at the same revision under the
+runbook. Omitting optional Labs from the presentation does not waive any applicable
+release checks.
+
+## Checklist
+
+- Participant subscription, dedicated RG name, and create / delete / role assignment permissions
+- Fixed-model / Search Basic quotas and a template with verified release defaults
+- Open the template only after RG creation completes; select only Subscription / existing RG
+- Successful Search / evaluation data preparation and validation; `workshopContext.setup_status = complete`
+- Lab 4 GitHub Skill ZIP, shared OpenAPI, and the participant's `travelApiBaseUrl`
+- Codespaces / Dev Container preparation, personal Azure CLI sign-in, `00-setup.ipynb`, and both kernels
+- Save → Hosted Agent versions → stop / delete Codespace → verify dedicated RG deletion
+
+Explain core safety precautions at the start. Distinguish real UI operation results
+from reference materials; never use simulated assets as proof of success.
+The English source / API image are published and pinned; full live verification
+must precede participant distribution. See the [release evidence](../infra/README.md#english-release-artifacts).

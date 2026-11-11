@@ -19,7 +19,7 @@ def test_small_domestic_trip_is_auto_eligible():
     )
     assert result.decision == SIMULATED_AUTO_ELIGIBLE
     assert result.simulation is True
-    assert "シミュレーション" in result.disclaimer
+    assert "simulation" in result.disclaimer
 
 
 def test_international_trip_requires_manager_review():
@@ -71,6 +71,6 @@ def test_justification_is_carried_through_unmodified():
         destination_city="Osaka",
         start_date=datetime.date(2026, 5, 11),
         end_date=datetime.date(2026, 5, 12),
-        justification="顧客訪問のため",
+        justification="For a customer visit",
     )
-    assert result.justification == "顧客訪問のため"
+    assert result.justification == "For a customer visit"

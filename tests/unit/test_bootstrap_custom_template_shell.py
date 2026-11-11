@@ -44,7 +44,7 @@ def environment(root: Path) -> dict[str, str]:
                 "schema_version": "2.0",
                 "source_revision": REVISION,
                 "source_base": (
-                    "https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson"
+                    "https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson"
                     f"/blob/{REVISION}"
                 ),
             }
@@ -217,7 +217,7 @@ def test_source_download_has_bounded_transient_only_retries(
     assert len(urls) == expected_attempts
     assert len(sleeps) == expected_attempts - 1
     assert set(urls) == {
-        "https://codeload.github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson"
+        "https://codeload.github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson"
         f"/tar.gz/{REVISION}"
     }
 

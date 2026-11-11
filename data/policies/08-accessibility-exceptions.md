@@ -1,6 +1,6 @@
 ---
 id: policy-accessibility-exceptions-001
-title: アクセシビリティ・例外対応に関する規程
+title: Accessibility and Exceptions Policy
 category: accessibility_exceptions
 effective_date: 2026-04-01
 applies_to:
@@ -10,41 +10,39 @@ applies_to:
 source_url: "{{WORKSHOP_SOURCE_BASE}}/data/policies/08-accessibility-exceptions.md"
 ---
 
-# アクセシビリティ・例外対応に関する規程
+# Accessibility and Exceptions Policy
 
-## 対象
+## Eligibility
 
-医療上・身体的な理由により、標準の出張規程（座席クラス、宿泊、
-陸上交通）の適用が困難な従業員を対象とした配慮制度です。
+This accommodation program supports employees who cannot readily follow standard
+travel rules (seat class, hotels, and ground transport) for medical or physical reasons.
 
-## 申請方法
+## Request process
 
-1. 従業員は「出張配慮リクエストフォーム」を HR チームへ提出します
-   （診断書等の提出は任意で、必要な場合のみ HR が個別に案内します）。
-2. HR チームと Travel Ops チームが共同でレビューし、配慮内容を
-   決定します。
-3. 決定内容は Contoso Travel Portal 上の従業員プロファイルに
-   「出張配慮フラグ」として記録され、以降の出張予約に自動適用されます。
+1. Submit a Travel Accommodation Request Form to HR. Medical certificates and similar
+   documents are optional; HR provides individual guidance only when needed.
+2. HR and Travel Ops jointly review the request and determine the accommodations.
+3. The decision is recorded as a travel accommodation flag in the employee's Contoso
+   Travel Portal profile and automatically applies to subsequent travel bookings.
 
-## 認められる配慮の例
+## Examples of permitted accommodations
 
-- **座席クラス**: 飛行時間によらず、プレミアムエコノミーまたは
-  ビジネスクラスの利用を認める場合があります。ファーストクラスの
-  利用は、医療上の必要性が個別に認定された場合のみ例外的に認められます。
-- **宿泊**: 宿泊費上限の引き上げ（バリアフリー客室の確保等）。
-- **陸上交通**: タクシー・配車サービスの利用条件（22:00 以降、
-  重量荷物等）を、配慮対象者については時間帯を問わず適用しません。
+- **Seat class**: Premium economy or business class may be permitted regardless of
+  flight duration. First class is an exceptional option only when medical necessity
+  is individually established.
+- **Hotels**: A higher hotel cap, for example to secure an accessible room.
+- **Ground transport**: Standard taxi and ride-hailing conditions (22:00 or later,
+  heavy luggage, and similar conditions) do not apply to eligible employees,
+  regardless of time of day.
 
-## 承認プロセスとの関係
+## Relationship to approvals
 
-- 出張配慮フラグが設定されている場合でも、ビジネスクラス以上の
-  座席クラスを利用する際は、[承認プロセス](09-approval-process.md)に
-  定めるマネージャーおよび部門 VP の事前承認が必要です。
-  配慮フラグは「利用を認められる資格」を示すものであり、
-  事前承認の手続きを省略するものではありません。
-- 配慮に関する情報は HR センシティブ情報として扱われ、
-  Travel Ops チーム内でも必要最小限のメンバーのみがアクセスできます。
+- Even with an accommodation flag, business class or higher requires the manager's
+  and department VP's preapproval under the [Approval Process](09-approval-process.md).
+  The flag establishes eligibility; it does not waive preapproval procedures.
+- Accommodation details are sensitive HR information. Even within Travel Ops,
+  access is limited to the minimum necessary personnel.
 
-## 見直し
+## Review
 
-- 配慮内容は年に一度、HR チームが本人と面談のうえ見直します。
+- HR reviews accommodations annually in consultation with the employee.

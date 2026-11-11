@@ -1,6 +1,6 @@
 {
   "asset_status": "SIMULATED",
-  "disclaimer_ja": "これは実際に Microsoft Foundry 上で実行された評価結果ではありません。labs/05-evaluation.md に記載された scripts/run_evaluation.py --output json の出力形状を示すために、講師が手作業で作成した架空の値です。eval_id・run_id・report_url はすべて実在しない架空の識別子です。",
+  "disclaimer_ja": "These are not evaluation results from an actual Microsoft Foundry run. The instructor manually created fictional values to illustrate the output shape of scripts/run_evaluation.py --output json documented in labs/05-evaluation.md. eval_id, run_id, and report_url are all fictional, nonexistent identifiers.",
   "eval_id": "SIMULATED-EVAL-0001",
   "run_id": "SIMULATED-RUN-0001",
   "status": "completed",

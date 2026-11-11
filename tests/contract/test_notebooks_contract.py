@@ -253,6 +253,61 @@ def hosted_cell_source(cell_id: str) -> str:
     return notebook_cell_source("08-hosted-agent.ipynb", cell_id)
 
 
+def _prompt_assignments(source: str, names: set[str]) -> dict[str, str]:
+    assignments = [
+        node
+        for node in ast.parse(source).body
+        if isinstance(node, ast.Assign)
+        and len(node.targets) == 1
+        and isinstance(node.targets[0], ast.Name)
+        and node.targets[0].id in names
+    ]
+    namespace: dict[str, Any] = {}
+    exec(compile(ast.Module(body=assignments, type_ignores=[]), "<prompts>", "exec"), namespace)
+    return {name: namespace[name] for name in names}
+
+
+@pytest.mark.parametrize(
+    ("filename", "module", "name_pairs"),
+    [
+        (
+            "07-agent-framework-harness.ipynb",
+            "travel_agents.py",
+            {
+                "standard_instructions": "STANDARD_AGENT_INSTRUCTIONS",
+                "harness_instructions": "HARNESS_AGENT_INSTRUCTIONS",
+            },
+        ),
+        (
+            "08-hosted-agent.ipynb",
+            "workflow.py",
+            {
+                name: name
+                for name in (
+                    "SIMULATION_NOTICE",
+                    "INTAKE_AGENT_INSTRUCTIONS",
+                    "POLICY_AGENT_INSTRUCTIONS",
+                    "REVIEWER_AGENT_INSTRUCTIONS",
+                    "SAMPLE_REQUEST",
+                )
+            },
+        ),
+    ],
+)
+def test_notebook_prompts_exactly_match_deployment_sources_without_sdk(
+    filename: str, module: str, name_pairs: dict[str, str]
+) -> None:
+    notebook = json.loads((REPO_ROOT / "notebooks" / filename).read_text(encoding="utf-8"))
+    code = "\n".join(
+        "".join(cell["source"]) for cell in notebook["cells"] if cell["cell_type"] == "code"
+    )
+    notebook_prompts = _prompt_assignments(code, set(name_pairs))
+    source = (REPO_ROOT / "src" / "hosted-agent" / module).read_text(encoding="utf-8")
+    source_prompts = _prompt_assignments(source, set(name_pairs.values()))
+    for notebook_name, source_name in name_pairs.items():
+        assert notebook_prompts[notebook_name] == source_prompts[source_name], source_name
+
+
 def test_hosted_deploy_and_delete_cells_require_explicit_confirmation() -> None:
     calls: list[tuple[object, ...]] = []
     namespace = {
@@ -391,7 +446,7 @@ def test_management_runner_rejects_other_context_changes(
         raise AssertionError("management script must not run for a changed context")
 
     monkeypatch.setattr(subprocess, "run", unexpected)
-    with pytest.raises(RuntimeError, match="接続設定が変更"):
+    with pytest.raises(RuntimeError, match="Connection settings have changed"):
         management_namespace["run_management_script"]("deploy_hosted_agent.py")
 
 

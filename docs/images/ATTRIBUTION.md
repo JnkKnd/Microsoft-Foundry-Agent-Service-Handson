@@ -1,50 +1,67 @@
-# 画像・アイコンの出典
+# Image and icon attribution
 
-Microsoft と Azure の製品名・ロゴの商標は Microsoft に帰属します。
-この教材での使用は、Microsoft による推奨を意味しません。
+Microsoft and Azure product names / logo trademarks belong to Microsoft.
+Their use in these materials does not imply Microsoft endorsement.
 
-## Microsoft Learn の画像
+## Microsoft Learn images
 
-次の画面画像は
-[Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
-のライセンスに基づいて掲載しています。
+The following screenshot is included under
+[Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/).
 
-| 教材の画像 | Microsoft Learn の出典 | 変更 |
+| Workshop image | Microsoft Learn source | Changes |
 |---|---|---|
-| `lab09-delete-resource-group.png` | [共通のリソースグループ削除手順](https://github.com/MicrosoftDocs/azure-docs/blob/main/includes/alt-delete-resource-group.md) | なし |
+| `lab09-delete-resource-group.png` | [Common resource group deletion procedure](https://github.com/MicrosoftDocs/azure-docs/blob/main/includes/alt-delete-resource-group.md) | None |
 
-一般的なリソースグループ削除の例であり、このハンズオンで削除を実行した証拠ではありません。
+This is a generic resource group deletion example, not proof of workshop cleanup.
 
-## 演習環境の Portal 画像
+## Workshop Portal screenshots
 
-| 教材の画像 | 撮影した画面 | 変更 |
+| Workshop image | Captured screen | Changes |
 |---|---|---|
-| `lab01-template-succeeded.png` | Azure Portal のデプロイ Overview：Your deployment is complete | 切り抜き、デプロイ・サブスクリプション・RG・時刻・相関情報のマスク、完了表示の強調 |
+| `lab01-template-succeeded.png` | Azure Portal deployment Overview: Your deployment is complete | Cropped; deployment, subscription, RG, time, and correlation information masked; completion display highlighted |
 
-過去のデプロイで実際に撮影した画像で、Portal の完了表示を説明するために使います。
-現在の GitHub / Codespaces リビジョンをデプロイ・検証した証拠ではありません。
+This real screenshot was captured during a previous deployment and illustrates
+the Portal completion display. It is not evidence that the current GitHub /
+Codespaces revision was deployed or validated.
+Existing screenshots may show older UI or Japanese content; they are illustrative,
+not proof of the current English revision's successful operation.
+Screenshots are unchanged by the English diagram translation; no generated
+illustration or translated diagram is presented as a captured product screen.
 
-## 構成図
+## Architecture diagrams
 
-`azure-architecture-01.png` と `azure-architecture-02.png` は、この教材のために作成した構成図です。
-[編集用 PowerPoint](../diagrams/azure-architecture.pptx)をデスクトップ版 PowerPoint で描画しています。
-再生成用の [概要図 JSON](../diagrams/azure-architecture.json) と
-[デプロイ・初期化図 JSON](../diagrams/azure-architecture-deployment.json)、
-[使用した SVG の取得元とハッシュ](../diagrams/azure-icons/manifest.json)を保持しています。
+`azure-architecture-01.png` and `azure-architecture-02.png` were created for these materials.
+The [editable PowerPoint](../diagrams/azure-architecture.pptx) is rendered with desktop PowerPoint.
+The [overview JSON](../diagrams/azure-architecture.json),
+[deployment / initialization JSON](../diagrams/azure-architecture-deployment.json),
+and [SVG sources / hashes](../diagrams/azure-icons/manifest.json) are retained as
+diagram specifications and provenance.
 
-| アイコン集 | バージョン | 使用したアイコン |
+The English-label update translates the corresponding JSON specifications and
+the existing native PPTX text shapes and speaker notes. Desktop PowerPoint COM
+automation preserves the service objects, connections, and icons and exports the
+two PNGs at 1800 × 1160 pixels. This is native diagram editing and PNG export,
+not screenshot fabrication or evidence of English-release deployment.
+See [diagram editing](../development/architecture.md#editing-architecture-diagrams)
+for the supported manual / automation maintenance path.
+
+| Icon collection | Version | Icons used |
 |---|---|---|
-| [Azure architecture icons](https://learn.microsoft.com/azure/architecture/icons/) | Azure Public Service Icons V24、2026 年 7 月。2026-09-19 取得 | Foundry Agent Service、Foundry IQ、Foundry Project、Foundry Models、Azure AI Search、Container Apps、Application Insights、Log Analytics、ブラウザー、テンプレート、リソースグループ |
+| [Azure architecture icons](https://learn.microsoft.com/azure/architecture/icons/) | Azure Public Service Icons V24, July 2026; retrieved 2026-09-19 | Foundry Agent Service, Foundry IQ, Foundry Project, Foundry Models, Azure AI Search, Container Apps, Application Insights, Log Analytics, browser, template, resource group |
 
-Microsoft は、リンク先の条件に基づき、構成図・研修資料・文書でのアイコンの使用を許可しています。
-元の SVG アイコンの内容は変更せずに埋め込み、縦横比を保って表示しています。
-図の構成は Microsoft の参照アーキテクチャ、製品画面の撮影、推奨、デプロイ証跡を表すものではありません。
-参加者・Toolbox・初期化処理・完了出力の記号は製品ロゴではなく、PowerPoint の汎用図形です。
+Microsoft permits icon use in architecture diagrams, training materials, and
+documentation under the linked conditions. Original SVG contents are embedded
+unchanged and displayed with their aspect ratios preserved.
+The diagrams are not Microsoft reference architectures, product screenshots,
+endorsements, or deployment evidence. Participant, Toolbox, initialization, and
+completion-output symbols are generic PowerPoint shapes, not product logos.
 
-旧 `azure-architecture.svg` と [draw.io データ](../diagrams/azure-architecture.drawio)は更新前の履歴です。
-これらは Azure Public Service Icons V24 に加えて、
+Old `azure-architecture.svg` and [draw.io data](../diagrams/azure-architecture.drawio)
+are historical artifacts from before the update. In addition to Azure Public
+Service Icons V24, they use the Microsoft Entra ID icon from
 [Microsoft Entra architecture icons](https://learn.microsoft.com/entra/architecture/architecture-icons)
-（2023 年 10 月）の Microsoft Entra ID アイコンを使用しています。
+(October 2023).
 
-`workshop-architecture.svg` と `workshop-learning-flow.svg` も教材独自の説明図です。
-編集用の `.excalidraw` を保持しており、製品画面や実行証跡とは区別します。
+`workshop-architecture.svg` and `workshop-learning-flow.svg` are also workshop-specific
+illustrations. Editable `.excalidraw` files are retained; distinguish these diagrams
+from product screens or execution evidence.

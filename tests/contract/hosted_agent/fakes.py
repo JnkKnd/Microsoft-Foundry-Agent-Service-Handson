@@ -12,16 +12,19 @@ from workflow import (
     SIMULATION_NOTICE,
 )
 
-INTAKE_RESPONSE = "受付整理: 東京から大阪、2026-09-10〜2026-09-11、1名、economy。"
+INTAKE_RESPONSE = (
+    "Intake summary: Tokyo to Osaka, 2026-09-10 through 2026-09-11, 1 traveler, economy."
+)
 POLICY_RESPONSE = (
-    "規程確認: 国内 Tier 1 の食事日当は1日3,000円、宿泊上限は1泊15,000円です。"
-    "精算は出張終了後30日以内です。"
-    "出典: policy-per-diem-001、policy-hotels-001、policy-general-001。"
+    "Policy findings: Domestic Tier 1 meal per diem is JPY 3,000 per day, "
+    "with a hotel cap of JPY 15,000 per night. "
+    "Submit reimbursement within 30 days after the trip ends. "
+    "Sources: policy-per-diem-001, policy-hotels-001, policy-general-001."
 )
 REVIEWER_RESPONSE = (
-    "依頼の整理: 東京から大阪への社内レビュー出張です。\n"
-    "規程確認: 日当、宿泊上限、精算期限と各文書IDを確認しました。\n"
-    f"次のアクション: 申請前に規程原文を確認してください。\n{SIMULATION_NOTICE}"
+    "Request summary: An internal review trip from Tokyo to Osaka.\n"
+    "Policy findings: Verified per diem, hotel cap, reimbursement deadline, and document IDs.\n"
+    f"Next actions: Check the original policies before applying.\n{SIMULATION_NOTICE}"
 )
 
 

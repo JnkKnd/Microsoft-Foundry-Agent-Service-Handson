@@ -1,186 +1,187 @@
-# Lab 2 — Prompt Agent と Azure AI Search（20分）
+# Lab 2 — Prompt Agent and Azure AI Search (20 min)
 
-## ゴール
+## Goal
 
-Microsoft Foundry Portal で、後続 Lab の knowledge と tool を接続する Prompt Agent
-`contoso-travel-assistant` を作成し、Azure AI Search tool で社内規程を検索できるように
-します。
+Create the Prompt Agent `contoso-travel-assistant` in Microsoft Foundry Portal,
+ready for knowledge and tools in later labs, and connect an Azure AI Search tool to search internal policies.
 
-Microsoft Foundry Agent Service には、次の 2 種類の Agent があります。
+Microsoft Foundry Agent Service offers two agent types:
 
-- **Prompt Agent**：指示、モデル、tool を設定すると、コードやインフラを管理せずに
-  Foundry 上で実行できる Agent
-- **Hosted Agent**：独自のコードやフレームワークで実装し、Foundry が managed endpoint、
-  scaling、identity を備えた container として実行する Agent
+- **Prompt Agent**: Configure instructions, a model, and tools to run on Foundry
+  without managing code or infrastructure.
+- **Hosted Agent**: Implement your own code and framework; Foundry runs it in
+  a container with a managed endpoint, scaling, and identity.
 
-参考：[What is Microsoft Foundry Agent Service? — Agent types](https://learn.microsoft.com/en-us/azure/foundry/agents/overview#agent-types)
+Reference: [What is Microsoft Foundry Agent Service? — Agent types](https://learn.microsoft.com/en-us/azure/foundry/agents/overview#agent-types)
 
-この Lab では、Portal から **Prompt Agent** を構築し、「何をする担当か」を指示文で
-設定します。その後、利用条件をまとめた検索用データ（index）を直接検索する
-Azure AI Search tool を接続します。Lab 3 では Foundry IQ に切り替えて検索範囲を広げ、
-Lab 4 では費用を計算する機能を追加します。
+In this lab, build a **Prompt Agent** in the Portal and define its role through instructions.
+Then connect an Azure AI Search tool to directly search the index of eligibility policies.
+In Lab 3, switch to Foundry IQ to broaden retrieval; in Lab 4, add cost calculation.
 
 > [!WARNING]
-> 検索とモデルの呼び出しには料金が発生します。教材の合成データと質問例を使います。
+> Search and model calls incur charges. Use the workshop's synthetic data and example questions.
 
-## 始める前に
+## Before you begin
 
-Lab 1 の custom template / Deployment Scripts / validation が成功したことを確認し、
-`foundryPortalUrl` から自分の Foundry project を開きます。
-以後、同じ `contoso-travel-assistant` を編集して機能を追加します。
-Lab ごとに別の Agent を作る必要はありません。
-Labs 2〜6 ではこの 1 つの Prompt Agent を育てます。Lab 7 / 8 は別の Agent を
-作り直すのではなく、ここから先で準備する remote resources をコードから再利用します。
+Verify that Lab 1's custom template, Deployment Scripts, and validation succeeded,
+then open your Foundry project from `foundryPortalUrl`.
+Continue enhancing the same `contoso-travel-assistant`; no separate agent is needed for each lab.
+Labs 2–6 develop this one Prompt Agent. Labs 7 / 8 reuse the remote resources prepared here
+from code rather than rebuilding the same agent.
 
-## 使用する値
+## Values to use
 
-Lab 1 のデプロイの **Outputs > resourceOutputs** で、
-`foundry_project_name`、`primary_model_deployment_name`、
-`search_service_name` を確認します。direct search index は
-`contoso-travel-policy` です。各項目の `value` を使います。
+In Lab 1's deployment **Outputs > resourceOutputs**, find `foundry_project_name`,
+`primary_model_deployment_name`, and `search_service_name`. The direct search index is
+`contoso-travel-policy`. Use each item's `value`.
 
-## 1. Prompt Agent を作成する
+## 1. Create a Prompt Agent
 
-1. Microsoft Foundry Portal で対象 project を開きます。
-2. 上部の **Build** を開き、左側の **Agents** を選択します。
-3. **New agent** を選択します。
+1. Open the target project in Microsoft Foundry Portal.
+2. Select **Build** at the top, then **Agents** on the left.
+3. Select **New agent**.
+4. Select **Build an agent**. Do not use **Code an agent** in this lab.
+   If **Use the Microsoft Copilot harness** appears, leave it unchecked.
+   This is not Lab 7's Agent Framework Harness Agent.
+5. Replace the generated **Agent name** with `contoso-travel-assistant`.
+6. Select **Create agent and open playground**.
 
-![Build > Agents から New agent を作成する](../docs/images/lab02-agent-list.png)
+## 2. Select the deployed model
 
-4. **Build an agent** を選択します。**Code an agent** は、この Lab では使いません。
-5. **Agent name** の自動入力された名前を `contoso-travel-assistant` に置き換えます。
-6. **Create and open playground** を選択します。
+1. Open **Model** in the configuration pane.
+2. Under **Deployments**, select the value of `primary_model_deployment_name`
+   (normally `gpt-5.6-luna`).
 
-## 2. 作成済みのモデルを選択する
+## 3. Remove automatically added Web search
 
-1. 設定欄の **Model** を開きます。
-2. **Deployments** の中から、`primary_model_deployment_name` （通常は `gpt-5.6-luna`）の値を選択します。
+New agents may include **Web search**. Remove it before asking questions because
+this workshop initially uses only the supplied policies and API.
 
-![Deployments にある gpt-5.6-luna を選択する](../docs/images/lab02-model-deployment.png)
+1. If **Tools** contains an automatically created `contoso-travel-assistant-toolbox`,
+   open **Actions for contoso-travel-assistant-toolbox toolbox > Opt out**.
+   In **Stop using a toolbox?**, select **Opt out**.
+   This keeps the tools attached directly to this agent, where they can be edited.
+   The **Remove** action on a tool inside the automatically attached toolbox is disabled.
+   Skip this step if tools are already attached directly.
+2. In **Tools**, open **Actions for Web search** at the right of the direct **Web search** row.
+3. Select **Remove** and verify Web search is no longer listed.
 
-## 3. 自動追加された Web search を外す
+The **Toolbox off** message is expected; do not select **Turn on**.
+This opts out of this agent's automatically managed toolbox only.
+Lab 4 separately creates `contoso-travel-toolbox`, enables Tool Search **inside that
+published Toolbox**, and connects its MCP endpoint to this agent.
+Keep that distinction when following Lab 4; do not turn off its server-side Tool Search.
 
-新規 Agent に **Web search** が追加されている場合があります。
-このハンズオンでは用意した規程と API だけを使うため、質問を送る前に外します。
+If Tools has no Web search entry, no action is needed. Leave other settings, such as **Guardrail**, unchanged.
 
-1. **Tools** の **Web search** 行の右端にある **Actions for Web search** を開きます。
-2. **Remove** を選択します。
+## 4. Set Instructions
 
-![Web search の Actions から Remove を選択する](../docs/images/lab02-remove-web-search.png)
-
-Tools に Web search がなければ操作は不要です。**Guardrail** など、ほかの設定は
-変更しません。
-
-## 4. Instructions を設定する
-
-**Instructions** に次を貼り付けます。
-
-```text
-あなたは Contoso 社の社内向け出張・経費アシスタントです。
-出張・経費に関する質問へ、日本語で簡潔に回答してください。
-
-接続された knowledge または tool がある場合は、必ずそれを使って確認してください。
-規程を参照した回答には出典を付け、確認できない値は推測しないでください。
-Travel Ops tool の都市名には、Tokyo、Osaka、New York のような英語の canonical name を
-渡してください。
-予約や承認を実行したとは表現せず、シミュレーションであることを明示してください。
-```
-
-
-## 5. Azure AI Search tool を接続する
-
-このハンズオンの Search は **Basic** です。Lab 1 が seed した index を選択します。
-Search SKU を変更したり、直接検索の手順を別経路に置き換えたりしません。
-
-1. **Tools > Add > Add tools** を選択します。
-
-![Tools の Add から Add tools を選ぶ](../docs/images/lab03-add-tools.png)
-
-2. **Configured** の **Azure AI search** を選び、**Add tool** を選択します。
-
-![Azure AI search を選んで追加する](../docs/images/lab03-select-ai-search.png)
-
-これは Lab 1 が作成した、**Microsoft Entra ID 認証の Azure AI Search connection** を
-使う設定です。API key は使いません。
-
-3. **Azure AI Search connection** を開き、`search_service_name` の値
-  （`srch-fdyws-...`）を選択します。**Connect to new resource** は使いません。
-
-![接続欄で自分の Search service を選択する](../docs/images/lab03-search-connection.png)
-
-
-4. `contoso-travel-policy` を選択し、**Add** します。
-
-![policy index を選択する](../docs/images/lab03-ai-search-picker.png)
-
-5. Agent に戻ったら **Select a search index** が `contoso-travel-policy` であることを
-  確認します。
-6. Azure AI Search の **Actions > Parameters** で **Search type = Semantic**、
-  **Retrieved documents = 5** にします。設定欄を閉じ、**Save** でまとめて保存します。
-
-![接続した index を確認して保存する](../docs/images/lab03-search-attached.png)
-
-## 6. Direct search と citation を確認する
-
-**Playground > New chat** で、次の質問を送ります。
+Paste this into **Instructions**:
 
 ```text
-東京から大阪へ日帰り出張する場合、食事の日当はいくらですか?
+You are Contoso's internal travel and expense assistant.
+Answer travel and expense questions concisely in English.
+
+Whenever connected knowledge or tools are available, always use them to verify your answer.
+Cite sources for policy-based answers, and do not guess values you cannot verify.
+Pass English canonical city names such as Tokyo, Osaka, and New York to Travel Ops tools.
+Do not claim to have made bookings or granted approvals; explicitly state that operations are simulations.
 ```
 
-回答の金額と、回答下部に表示される番号付きの citation を確認し、
-[日当・食事規程](../data/policies/04-per-diem-meals.md)と見比べます。
-Search service のトップ URL が開く場合は
-[引用のトラブルシューティング](../docs/participant/troubleshooting.md#引用リンク)
-を確認してください。
+## 5. Connect an Azure AI Search tool
 
+This workshop uses Search **Basic**. Select the index seeded by Lab 1.
+Do not change the Search SKU or substitute another route for direct search.
 
-この確認後、もう一度 **New chat** を選び、複数の規程に根拠が分かれている比較用質問を
-送ります。
+1. Select **Tools > Add > Add tools**.
+2. Under **Configured**, select **Azure AI search**, then **Add tool**.
+
+This uses the **Microsoft Entra ID-authenticated Azure AI Search connection** created in Lab 1,
+not an API key.
+
+3. Open **Azure AI Search connection** and select the `search_service_name` value
+   (`srch-fdyws-...`). Do not use **Connect to new resource**.
+4. Select `contoso-travel-policy` and **Add**.
+5. Back in the agent, open the attached **Azure AI search** tool.
+   In **Connect to Azure AI Search index**, verify the existing connection and the
+   selected `contoso-travel-policy` row, then select **Cancel** to close without changes.
+6. Select **Save** if enabled.
+
+The current new Foundry Portal exposes connection and index selection, but not
+**Search type** or **Retrieved documents** for this direct tool.
+Its **Actions** menu contains **Edit** and **Remove**; the model's **Parameters**
+does not configure Search retrieval. Leave the Portal-created tool settings unchanged.
+This lab uses those settings, not an explicitly forced semantic-only query.
+Do not switch to the classic Portal or add SDK / REST configuration steps to force a query mode.
+Verify the actual Search call, answer, and citations below rather than assuming retrieval settings.
+
+The retained screenshots for these steps are historical/illustrative, not English instructions
+or current-revision success evidence: [agent list](../docs/images/lab02-agent-list.png),
+[model selection](../docs/images/lab02-model-deployment.png),
+[Web search removal](../docs/images/lab02-remove-web-search.png),
+[Add tools](../docs/images/lab03-add-tools.png),
+[Search selection](../docs/images/lab03-select-ai-search.png),
+[connection](../docs/images/lab03-search-connection.png),
+[index picker](../docs/images/lab03-ai-search-picker.png), and
+[attached index](../docs/images/lab03-search-attached.png).
+
+## 6. Check direct search and citations
+
+In **Playground > New chat**, send:
 
 ```text
-片道12時間の国際線を出発2日前にビジネスクラスで予約したいです。
-直前予約として添付が必要なもの、ビジネスクラスの承認者と順序、
-申請に使う機能名、申請から承認完了までの標準最大営業日数をまとめてください。
+What is the meal per diem for a same-day business trip from Tokyo to Osaka?
 ```
 
-次の 4 項目について、回答に値があるかだけでなく、対応する citation があるかを
-記録します。この結果は Lab 3 で Foundry IQ と比較します。
+Check the amount and numbered citations below the answer against the
+[per diem and meals policy](../data/policies/04-per-diem-meals.md).
+If a citation opens the Search service's top-level URL, see
+[citation troubleshooting](../docs/participant/troubleshooting.md#citation-links).
 
-| 確認項目 | 根拠文書 |
+Then select **New chat** again and send this comparison question, whose evidence is split across policies:
+
+```text
+I want to book business class on a 12-hour one-way international flight, 2 days before departure.
+Summarize the attachment required for a last-minute booking, the business-class approvers and their order,
+the feature used to apply, and the standard maximum number of business days from application to completed approval.
+```
+
+For each of these four items, record not only whether the answer contains a value but whether
+it has a supporting citation. Compare the result with Foundry IQ in Lab 3.
+
+| Item to check | Source document |
 |---|---|
-| 直前予約で添付するもの | [フライト規程](../data/policies/02-flights.md) |
-| 承認者と順序 | [承認プロセス規程](../data/policies/09-approval-process.md) |
-| 申請に使う機能 | [承認プロセス規程](../data/policies/09-approval-process.md) |
-| 標準最大所要期間 | [承認プロセス規程](../data/policies/09-approval-process.md) |
+| Last-minute booking attachment | [Flight policy](../data/policies/02-flights.md) |
+| Approvers and their order | [Approval process policy](../data/policies/09-approval-process.md) |
+| Application feature | [Approval process policy](../data/policies/09-approval-process.md) |
+| Standard maximum processing time | [Approval process policy](../data/policies/09-approval-process.md) |
 
-`contoso-travel-policy` にはフライト規程が含まれますが、承認プロセス規程は
-`contoso-travel-approval` に分けてあります。今は前者だけを接続しています。
-回答に値が書かれていても、対応する資料で裏付けられなければ未取得として記録します。
+`contoso-travel-policy` includes flight policy, while approval process policy is separated into
+`contoso-travel-approval`. Only the former is connected now. Even if the answer includes a value,
+record it as not retrieved unless the corresponding document supports it.
 
-画面の **AI Quality** の数値だけで合否を決めず、この表の 4 項目と根拠を使って
-比較します。
+Do not judge success solely by **AI Quality** scores; compare the four items and their evidence.
 
-## 完了チェック
+## Completion checklist
 
-- Agents の一覧に `contoso-travel-assistant` が表示される
-- Agent の model と instructions が保存されている
-- Tools に `contoso-travel-policy` を使う Azure AI Search が接続されている
-- 食事日当の回答に金額と番号付きの citation があり、内部表現が本文に露出していない
-- 比較用質問の 4 項目について、根拠の有無を記録している
+- `contoso-travel-assistant` appears in the Agents list.
+- The agent's model and instructions are saved.
+- Tools includes Azure AI Search using `contoso-travel-policy`.
+- The meal per diem answer includes an amount and numbered citations, without raw internal markers.
+- You recorded evidence coverage for the four comparison items.
 
-Direct search では原則として、フライト規程にある 1 項目だけを根拠付きで回答できます。
-続けて Foundry IQ を接続し、2 つの index を横断検索します。
+Direct search should generally support only the one item in the flight policy.
+Next, connect Foundry IQ to search across both indexes.
 
 <details>
-<summary>回答後の確認ポイント</summary>
+<summary>Checks after answering</summary>
 
-国内日帰りの食事日当は `1,500円` です。比較用質問では、Direct search が原則として
-4 項目中 1 項目だけを根拠付きで回答します。生成文に値が含まれていても、citation が
-なければ根拠付き回答には数えません。
+The domestic same-day meal per diem is `JPY 1,500`.
+For the comparison question, direct search generally supports only 1 of 4 items.
+Do not count values in generated text as evidence-backed answers without citations.
 
 </details>
 
-## 次の Lab
+## Next lab
 
 [Lab 3 — Foundry IQ](03-rag-foundry-iq.md)

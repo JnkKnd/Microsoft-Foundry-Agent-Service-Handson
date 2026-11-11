@@ -11,16 +11,16 @@
         <mxCell id="eyebrow" value="AZURE ARCHITECTURE" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=16;fontColor=#0078D4;fontStyle=1;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="40" y="26" width="500" height="28" as="geometry" />
         </mxCell>
-        <mxCell id="title" value="Contoso 出張・経費アシスタント" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=34;fontColor=#172B3A;fontStyle=1;resizable=1;connectable=0;" vertex="1" parent="1">
+        <mxCell id="title" value="Contoso travel and expense assistant" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=34;fontColor=#172B3A;fontStyle=1;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="40" y="67" width="1490" height="46" as="geometry" />
         </mxCell>
-        <mxCell id="subtitle" value="Microsoft Foundry を中心に、規程検索・ツール実行・監視をつなぐ" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=21;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
+        <mxCell id="subtitle" value="Connect policy retrieval, tool execution, and monitoring with Microsoft Foundry" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=21;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="40" y="124" width="1470" height="31" as="geometry" />
         </mxCell>
         <mxCell id="participant-icon" value="" style="shape=image;html=0;imageAspect=1;aspect=fixed;verticalLabelPosition=bottom;verticalAlign=top;strokeColor=none;fillColor=none;connectable=0;image=data:image/svg+xml,PHN2ZyBpZD0iZTI0NjcxZjYtZjUwMS00OTUyLWEyZGItOGIwYjFkMzI5YzE3IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgdmlld0JveD0iMCAwIDE4IDE4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJlOTI5MDFiLWVjMzMtNGM2NS1hZGYxLTliMGVlZDA2ZDY3NyIgeDE9IjkiIHkxPSI2Ljg4IiB4Mj0iOSIgeTI9IjIwLjQ1IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agb2Zmc2V0PSIwLjIyIiBzdG9wLWNvbG9yPSIjMzJkNGY1IiAvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzE5OGFiMyIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYjQ2ZmMyNDYtMjVkOC00Mzk4LTg3NzktMTA0MmU4Y2FjYWU3IiB4MT0iOC42MSIgeTE9Ii0wLjQiIHgyPSI5LjYiIHkyPSIxMS45MiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIG9mZnNldD0iMC4yMiIgc3RvcC1jb2xvcj0iIzMyZDRmNSIgLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxOThhYjMiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHRpdGxlPkljb24taWRlbnRpdHktMjMwPC90aXRsZT48cGF0aCBkPSJNMTUuNzIsMThhMS40NSwxLjQ1LDAsMCwwLDEuNDUtMS40NS40Ny40NywwLDAsMCwwLS4xN0MxNi41OSwxMS44MSwxNCw4LjA5LDksOC4wOVMxLjM0LDExLjI0LjgzLDE2LjM5QTEuNDYsMS40NiwwLDAsMCwyLjE0LDE4SDE1LjcyWiIgZmlsbD0idXJsKCNiZTkyOTAxYi1lYzMzLTRjNjUtYWRmMS05YjBlZWQwNmQ2NzcpIiAvPjxwYXRoIGQ9Ik05LDkuMTdhNC41OSw0LjU5LDAsMCwxLTIuNDgtLjczTDksMTQuODZsMi40NC02LjM4QTQuNTMsNC41MywwLDAsMSw5LDkuMTdaIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjgiIC8+PGNpcmNsZSBjeD0iOS4wMSIgY3k9IjQuNTgiIHI9IjQuNTgiIGZpbGw9InVybCgjYjQ2ZmMyNDYtMjVkOC00Mzk4LTg3NzktMTA0MmU4Y2FjYWU3KSIgLz48L3N2Zz4=;" vertex="1" parent="1" azureIcon="identity/10230-icon-service-Users.svg">
           <mxGeometry x="45" y="220" width="38" height="38" as="geometry" />
         </mxCell>
-        <mxCell id="participant-label" value="利用者・開発者" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=22;fontColor=#172B3A;fontStyle=1;resizable=1;connectable=0;" vertex="1" parent="1">
+        <mxCell id="participant-label" value="Users / developers" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=22;fontColor=#172B3A;fontStyle=1;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="104" y="221" width="262" height="31" as="geometry" />
         </mxCell>
         <mxCell id="azure-rg" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#AFC3D3;strokeWidth=1.5;dashed=0;dashPattern=6 4;shadow=0;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="1">
@@ -32,7 +32,7 @@
         <mxCell id="rg-title" value="Azure  /  Japan East" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=25;fontColor=#172B3A;fontStyle=1;resizable=1;connectable=0;" vertex="1" parent="azure-rg">
           <mxGeometry x="76" y="18" width="717" height="33" as="geometry" />
         </mxCell>
-        <mxCell id="rg-note" value="専用リソースグループ" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="azure-rg">
+        <mxCell id="rg-note" value="Dedicated resource group" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="azure-rg">
           <mxGeometry x="77" y="55" width="710" height="25" as="geometry" />
         </mxCell>
         <mxCell id="public-note" value="Public endpoints" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=right;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=18;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="azure-rg">
@@ -80,7 +80,7 @@
         <mxCell id="iq-title" value="Foundry IQ" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=21;fontColor=#172B3A;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="search">
           <mxGeometry x="89" y="54" width="259" height="28" as="geometry" />
         </mxCell>
-        <mxCell id="search-role" value="規程・承認ルールを検索" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="search">
+        <mxCell id="search-role" value="Search policy and approval rules" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="search">
           <mxGeometry x="89" y="93" width="258" height="25" as="geometry" />
         </mxCell>
         <mxCell id="travel-api" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#BFCDD8;strokeWidth=1.4;dashed=0;dashPattern=6 4;shadow=0;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="azure-rg">
@@ -95,7 +95,7 @@
         <mxCell id="api-name" value="Travel Ops API" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=21;fontColor=#172B3A;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="travel-api">
           <mxGeometry x="89" y="54" width="258" height="28" as="geometry" />
         </mxCell>
-        <mxCell id="api-role" value="旅費計算・承認シミュレーション" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="travel-api">
+        <mxCell id="api-role" value="Travel estimates / simulated approval" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="travel-api">
           <mxGeometry x="20" y="95" width="326" height="25" as="geometry" />
         </mxCell>
         <mxCell id="models" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#BFCDD8;strokeWidth=1.4;dashed=0;dashPattern=6 4;shadow=0;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="azure-rg">
@@ -107,7 +107,7 @@
         <mxCell id="models-title" value="Foundry Models" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=27;fontColor=#172B3A;fontStyle=1;resizable=1;connectable=0;" vertex="1" parent="models">
           <mxGeometry x="95" y="18" width="328" height="35" as="geometry" />
         </mxCell>
-        <mxCell id="models-role" value="推論・評価・埋め込み" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="models">
+        <mxCell id="models-role" value="Inference / evaluation / embeddings" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="models">
           <mxGeometry x="95" y="64" width="328" height="29" as="geometry" />
         </mxCell>
         <mxCell id="monitoring" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#BED3D5;strokeWidth=1.4;dashed=0;dashPattern=6 4;shadow=0;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="azure-rg">
@@ -134,7 +134,7 @@
         <mxCell id="portal-title" value="Foundry portal" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=22;fontColor=#172B3A;fontStyle=1;resizable=1;connectable=0;" vertex="1" parent="foundry-portal">
           <mxGeometry x="70" y="14" width="179" height="33" as="geometry" />
         </mxCell>
-        <mxCell id="portal-role" value="作成・対話・評価" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="foundry-portal">
+        <mxCell id="portal-role" value="Create / chat / evaluate" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="foundry-portal">
           <mxGeometry x="20" y="69" width="225" height="30" as="geometry" />
         </mxCell>
         <mxCell id="dev-container" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#F8FAFC;strokeColor=#CDD7E0;strokeWidth=1.4;dashed=0;dashPattern=6 4;shadow=0;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="1">
@@ -149,7 +149,7 @@
         <mxCell id="dev-runtime" value="Agent / Harness" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#172B3A;fontStyle=1;resizable=1;connectable=0;" vertex="1" parent="dev-container">
           <mxGeometry x="20" y="105" width="225" height="29" as="geometry" />
         </mxCell>
-        <mxCell id="dev-role" value="ローカルで開発・実行" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=18;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="dev-container">
+        <mxCell id="dev-role" value="Develop and run locally" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=18;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="dev-container">
           <mxGeometry x="20" y="148" width="225" height="26" as="geometry" />
         </mxCell>
         <mxCell id="portal-foundry" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;jettySize=auto;strokeColor=#0078D4;strokeWidth=2;dashed=0;dashPattern=6 4;endArrow=block;endFill=1;endSize=8;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.26618705035971224;entryDx=0;entryDy=0;" edge="1" parent="1" source="foundry-portal" target="foundry">
@@ -190,19 +190,19 @@
         <mxCell id="sdk-label" value="SDK / MCP" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=center;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=16;fontColor=#0078D4;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="311" y="583" width="113" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="search-label" value="規程検索" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=center;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#0078D4;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
+        <mxCell id="search-label" value="Policy retrieval" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=center;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#0078D4;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="929" y="316" width="184" height="28" as="geometry" />
         </mxCell>
-        <mxCell id="api-label" value="ツール実行" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=center;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#0078D4;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
+        <mxCell id="api-label" value="Tool execution" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=center;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#0078D4;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="917" y="486" width="200" height="29" as="geometry" />
         </mxCell>
-        <mxCell id="model-label" value="推論" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#0078D4;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
+        <mxCell id="model-label" value="Inference" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#0078D4;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="701" y="601" width="126" height="29" as="geometry" />
         </mxCell>
-        <mxCell id="trace-label" value="トレース" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=18;fontColor=#007F86;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
+        <mxCell id="trace-label" value="Traces" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=18;fontColor=#007F86;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="918" y="642" width="78" height="28" as="geometry" />
         </mxCell>
-        <mxCell id="logs-label" value="ログ" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=18;fontColor=#007F86;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
+        <mxCell id="logs-label" value="Logs" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=18;fontColor=#007F86;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="1343" y="614" width="120" height="27" as="geometry" />
         </mxCell>
         <mxCell id="foundation" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#F5F8FA;strokeColor=none;strokeWidth=1.4;dashed=0;dashPattern=6 4;shadow=0;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="1">
@@ -214,7 +214,7 @@
         <mxCell id="entra-title" value="Microsoft Entra ID" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=22;fontColor=#172B3A;fontStyle=1;resizable=1;connectable=0;" vertex="1" parent="foundation">
           <mxGeometry x="80" y="8" width="485" height="31" as="geometry" />
         </mxCell>
-        <mxCell id="entra-role" value="Foundry / Search の認証・アクセス制御" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="foundation">
+        <mxCell id="entra-role" value="Foundry / Search authentication and access control" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="foundation">
           <mxGeometry x="80" y="49" width="492" height="26" as="geometry" />
         </mxCell>
         <mxCell id="bootstrap-icon" value="" style="shape=image;html=0;imageAspect=1;aspect=fixed;verticalLabelPosition=bottom;verticalAlign=top;strokeColor=none;fillColor=none;connectable=0;image=data:image/svg+xml,PHN2ZyBpZD0iZTRiYTVkMmItZTZlNC00MTAxLTkzYWMtN2M2YjNkNTY4YTI3IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgdmlld0JveD0iMCAwIDE4IDE4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJkMmY5NDk0LWQzZmYtNDNiZC1iNTk5LTRlYzE3MGYwOTBiZCIgeDE9IjguNjMiIHkxPSIxNy41OSIgeDI9IjguNjMiIHkyPSIwLjU5IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMDA3OGQ0IiAvPjxzdG9wIG9mZnNldD0iMC44MiIgc3RvcC1jb2xvcj0iIzVlYTBlZiIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48dGl0bGU+SWNvbi1nZW5lcmFsLTk8L3RpdGxlPjxwYXRoIGQ9Ik05LjU5LjcySDIuMzZhLjU2LjU2LDAsMCwwLS41Ny41N3YxNS42YS41Ni41NiwwLDAsMCwuNTcuNTdIMTQuODlhLjU3LjU3LDAsMCwwLC41OC0uNTdWNi41NkEuNTguNTgsMCwwLDAsMTQuODksNkgxMC43M2EuNTcuNTcsMCwwLDEtLjU3LS41N1YxLjI5QS41Ni41NiwwLDAsMCw5LjU5LjcyWiIgZmlsbD0iI2ZmZiIgLz48cGF0aCBkPSJNOS4zMywxLjQ1VjUuMzdBMS40MywxLjQzLDAsMCwwLDEwLjc2LDYuOGg0djkuOTNIMi41NFYxLjQ1SDkuMzNNOS42LjU5SDIuMjZhLjU4LjU4LDAsMCwwLS41OC41OFYxN2EuNTguNTgsMCwwLDAsLjU4LjU4SDE1YS41OC41OCwwLDAsMCwuNTgtLjU4VjYuNTNBLjU4LjU4LDAsMCwwLDE1LDZIMTAuNzZhLjU4LjU4LDAsMCwxLS41OC0uNThWMS4xN0EuNTguNTgsMCwwLDAsOS42LjU5WiIgZmlsbD0idXJsKCNiZDJmOTQ5NC1kM2ZmLTQzYmQtYjU5OS00ZWMxNzBmMDkwYmQpIiAvPjxwYXRoIGQ9Ik0xNS4zNSw2LjA2LDEwLC43MlY1LjA3YTEsMSwwLDAsMCwxLDFaIiBmaWxsPSIjMDA3OGQ0IiAvPjxwYXRoIGQ9Ik01LjI3LDEwLjU2YTEuMjEsMS4yMSwwLDAsMS0uMjYuODMuODkuODksMCwwLDEtLjcyLjI5LDEsMSwwLDAsMS0uMzktLjA4VjExYS41NS41NSwwLDAsMCwuMzUuMTJjLjI3LDAsLjQxLS4yMS40MS0uNjJWOC45M2guNjFabS40Niwxdi0uNmExLjMxLDEuMzEsMCwwLDAsLjM2LjIxLDEuMjIsMS4yMiwwLDAsMCwuMzguMDdsLjIsMCwuMTUtLjA2QS4zNC4zNCwwLDAsMCw2LjksMTFhLjIuMiwwLDAsMCwwLS4xMS4yMy4yMywwLDAsMCwwLS4xNC40Ny40NywwLDAsMC0uMTMtLjExLjc3Ljc3LDAsMCwwLS4xOC0uMWwtLjIzLS4xYTEuMjUsMS4yNSwwLDAsMS0uNDctLjMyLjY4LjY4LDAsMCwxLS4xNi0uNDYuODcuODcsMCwwLDEsLjA4LS4zN0EuOTIuOTIsMCwwLDEsNiw5LjA3YTEuMTYsMS4xNiwwLDAsMSwuMzQtLjE0LDEuODQsMS44NCwwLDAsMSwuNDEsMCwyLjA1LDIuMDUsMCwwLDEsLjM3LDAsMS4zMiwxLjMyLDAsMCwxLC4zLjA4di41NmEuNTMuNTMsMCwwLDAtLjE1LS4wOC40NC40NCwwLDAsMC0uMTYtLjA2TDcsOS4zN0g2LjgxbC0uMTksMGEuNTkuNTksMCwwLDAtLjE0LjA2LjIxLjIxLDAsMCwwLS4xMi4yLjI3LjI3LDAsMCwwLDAsLjEyLjU1LjU1LDAsMCwwLC4xMS4xbC4xNi4wOS4yMS4xYTIsMiwwLDAsMSwuMjkuMTQsMS4yOCwxLjI4LDAsMCwxLC4yMi4xNy43NC43NCwwLDAsMSwuMTQuMjIuODguODgsMCwwLDEsLjA1LjI5Ljc0Ljc0LDAsMCwxLS4wOS4zOC42OC42OCwwLDAsMS0uMjMuMjUuOTMuOTMsMCwwLDEtLjM0LjEzLDEuODQsMS44NCwwLDAsMS0uNDEsMCwyLjcyLDIuNzIsMCwwLDEtLjQyLDBBMS4xMSwxLjExLDAsMCwxLDUuNzMsMTEuNTJabTMuNDIuMTZhMS4yNiwxLjI2LDAsMCwxLS45NC0uMzgsMS4zOCwxLjM4LDAsMCwxLS4zNy0xLDEuNDgsMS40OCwwLDAsMSwuMzctMSwxLjMxLDEuMzEsMCwwLDEsMS0uNCwxLjI0LDEuMjQsMCwwLDEsLjk0LjM4LDEuNCwxLjQsMCwwLDEsLjM1LDEsMS40MywxLjQzLDAsMCwxLS4zNywxQTEuMjQsMS4yNCwwLDAsMSw5LjE1LDExLjY4Wm0wLTIuMjdhLjYxLjYxLDAsMCwwLS41MS4yNCwxLjE2LDEuMTYsMCwwLDAsMCwxLjI3LjYyLjYyLDAsMCwwLC40OS4yMy42MS42MSwwLDAsMCwuNS0uMjMsMSwxLDAsMCwwLC4xOC0uNjMsMSwxLDAsMCwwLS4xNy0uNjVBLjYxLjYxLDAsMCwwLDkuMTgsOS40MVptNC4xOCwyLjIyaC0uNjJsLTEuMTEtMS43YTIuMzQsMi4zNCwwLDAsMS0uMTMtLjIyaDBjMCwuMDksMCwuMjQsMCwuNDR2MS40OGgtLjU3VjguOTNoLjY2bDEuMDYsMS42NC4xNC4yMmgwYTIuNTEsMi41MSwwLDAsMSwwLS4zN1Y4LjkzaC41OFoiIGZpbGw9IiM1ZWEwZWYiIC8+PC9zdmc+;" vertex="1" parent="foundation" azureIcon="general/10009-icon-service-Templates.svg">
@@ -223,7 +223,7 @@
         <mxCell id="bootstrap-title" value="Bicep / ARM + Deployment Scripts" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=20;fontColor=#172B3A;fontStyle=1;resizable=1;connectable=0;" vertex="1" parent="foundation">
           <mxGeometry x="656" y="8" width="487" height="31" as="geometry" />
         </mxCell>
-        <mxCell id="bootstrap-role" value="環境構築・初期データの準備" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="foundation">
+        <mxCell id="bootstrap-role" value="Provision environment and seed data" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="foundation">
           <mxGeometry x="656" y="49" width="479" height="26" as="geometry" />
         </mxCell>
         <mxCell id="legend-runtime-start" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=none;strokeWidth=1.4;dashed=0;dashPattern=6 4;shadow=0;container=1;collapsible=0;recursiveResize=0;opacity=0;" vertex="1" parent="1">
@@ -235,7 +235,7 @@
         <mxCell id="legend-runtime" value="" style="edgeStyle=none;rounded=0;html=0;jettySize=auto;strokeColor=#0078D4;strokeWidth=2;dashed=0;dashPattern=6 4;endArrow=block;endFill=1;endSize=8;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="legend-runtime-start" target="legend-runtime-end">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="legend-runtime-label" value="サービス呼び出し" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=18;fontColor=#172B3A;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
+        <mxCell id="legend-runtime-label" value="Service calls" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=18;fontColor=#172B3A;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="126" y="949" width="300" height="29" as="geometry" />
         </mxCell>
         <mxCell id="legend-logs-start" value="" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=none;strokeWidth=1.4;dashed=0;dashPattern=6 4;shadow=0;container=1;collapsible=0;recursiveResize=0;opacity=0;" vertex="1" parent="1">
@@ -247,10 +247,10 @@
         <mxCell id="legend-logs" value="" style="edgeStyle=none;rounded=0;html=0;jettySize=auto;strokeColor=#007F86;strokeWidth=2;dashed=1;dashPattern=6 4;endArrow=block;endFill=1;endSize=8;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="legend-logs-start" target="legend-logs-end">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="legend-logs-label" value="監視データ" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=18;fontColor=#172B3A;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
+        <mxCell id="legend-logs-label" value="Monitoring data" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=18;fontColor=#172B3A;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="584" y="949" width="260" height="29" as="geometry" />
         </mxCell>
-        <mxCell id="scope-note" value="主要な役割と接続に絞った概要図" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=right;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
+        <mxCell id="scope-note" value="Historical overview of key roles and connections" style="text;html=0;whiteSpace=nowrap;overflow=visible;fillColor=none;strokeColor=none;align=right;verticalAlign=middle;spacing=0;fontFamily=Segoe UI;fontSize=17;fontColor=#526575;fontStyle=0;resizable=1;connectable=0;" vertex="1" parent="1">
           <mxGeometry x="925" y="950" width="630" height="27" as="geometry" />
         </mxCell>
       </root>

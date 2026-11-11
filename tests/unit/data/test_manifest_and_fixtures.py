@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 
 import jsonschema
+import pytest
 
 SCHEMA_NAMES = {
     "manifest": "manifest.schema.json",
@@ -41,6 +42,15 @@ def test_manifest_matches_schema(data_dir):
 def test_manifest_has_ten_policy_documents(data_dir):
     manifest = _load_json(data_dir / "manifest.json")
     assert len(manifest["documents"]) == 10
+
+
+def test_manifest_declares_english_and_rejects_another_language(data_dir):
+    schema = _load_schema(data_dir, "manifest")
+    manifest = _load_json(data_dir / "manifest.json")
+    assert manifest["language"] == "en"
+    manifest["language"] = "ja"
+    with pytest.raises(jsonschema.ValidationError, match="'en' was expected"):
+        jsonschema.validate(instance=manifest, schema=schema)
 
 
 def test_manifest_document_ids_are_unique(data_dir):
@@ -116,7 +126,7 @@ def test_trips_fixture_matches_schema(data_dir):
     schema = _load_schema(data_dir, "trip")
     trips = _load_json(data_dir / "fixtures" / "trips.json")
     assert isinstance(trips, list)
-    assert len(trips) >= 1
+    assert len(trips) == 8
     for trip in trips:
         jsonschema.validate(instance=trip, schema=schema)
 
@@ -140,7 +150,7 @@ def test_receipts_json_matches_schema(data_dir):
     schema = _load_schema(data_dir, "receipt")
     receipts = _load_json(data_dir / "receipts" / "receipts.json")
     assert isinstance(receipts, list)
-    assert len(receipts) >= 1
+    assert len(receipts) == 14
     for receipt in receipts:
         jsonschema.validate(instance=receipt, schema=schema)
 
@@ -176,9 +186,12 @@ def test_receipt_notes_match_policy_limits(data_dir):
         for receipt in _load_json(data_dir / "receipts" / "receipts.json")
     }
 
-    assert receipts["rcpt-0004"]["note"] == "domestic_tier1 上限(15,000円)内"
-    assert "精算上限5,000円のみ対象" in receipts["rcpt-0007"]["note"]
-    assert "残額40,000円は別途例外承認が必要" in receipts["rcpt-0007"]["note"]
+    assert receipts["rcpt-0004"]["note"] == "Within the domestic_tier1 cap (JPY 15,000)"
+    assert "Only JPY 5,000 is eligible" in receipts["rcpt-0007"]["note"]
+    assert (
+        "separate exception approval for the remaining JPY 40,000"
+        in (receipts["rcpt-0007"]["note"])
+    )
 
 
 def test_receipts_csv_round_trips_against_json(data_dir):

@@ -1,65 +1,62 @@
-# Lab 7 — Agent Framework で Agent と Harness Agent を作る（45分）
+# Lab 7 — Build an Agent and Harness Agent with Agent Framework (45 min)
 
-## ゴール
+## Goal
 
-これまで Portal で育てた `contoso-travel-assistant` と同じ情報源を、Python から作る
-Microsoft Agent Framework の Agent でも利用します。
+Use the same information sources as the Portal-built `contoso-travel-assistant`
+from Microsoft Agent Framework agents created in Python.
 
-Notebook で次の 2 つを順に作ります。
+Build these in order in the notebook:
 
-1. **通常の Agent**: Lab 3 の Foundry IQ だけを接続し、Agent をコードで作る最小構成を学ぶ
-2. **Harness Agent**: Foundry IQ を残したまま、Lab 4 の Toolbox tools と Skills を追加し、
-   複雑な依頼を plan / todos / execute に分解して処理する
+1. **Plain Agent**: Connect only Lab 3's Foundry IQ to learn the minimal code-based agent configuration.
+2. **Harness Agent**: Retain Foundry IQ and add Lab 4's Toolbox tools and Skills,
+   decomposing complex requests into plan / todos / execute.
 
-この Lab では Workshop 独自の Agent factory を使いません。`AzureCliCredential`、
-`FoundryChatClient`、`MCPStreamableHTTPTool`、`Agent`、`FoundryToolbox`、
-`create_harness_agent` を Notebook で直接 import・生成し、各引数の役割を確認します。
+This lab does not use a workshop-specific agent factory. Directly import and construct
+`AzureCliCredential`, `FoundryChatClient`, `MCPStreamableHTTPTool`, `Agent`,
+`FoundryToolbox`, and `create_harness_agent` in the notebook to inspect each argument's role.
 
-Lab 4 で公開した Skills は、この Lab で初めて `load_skill` により本文を読み込みます。
-Toolbox へ登録しただけの状態と、Agent が実際に利用した状態の違いを実行記録で確認します。
+Skills published in Lab 4 are first loaded here through `load_skill`.
+Use execution records to distinguish registration in Toolbox from actual agent use.
 
 > [!WARNING]
-> Agent は Notebook のコンテナー内で実行しますが、モデル、Foundry IQ、
-> Toolbox tools は Azure のサービスを呼び出し、料金が発生します。
-> 結果待ちの cell を重複実行しないでください。
+> Agents run in the notebook container, but model, Foundry IQ, and Toolbox tools
+> call billable Azure services. Do not rerun cells that are waiting for results.
 
-## 通常の Agent と Harness Agent
+## Plain Agent and Harness Agent
 
-どちらも、Agent Framework の通常の `Agent` として `run()` できます。
-違いは、組み立て時に追加される実行支援機能です。
+Both run through `run()` as ordinary Agent Framework `Agent` instances.
+Their difference is the execution-support features added during construction.
 
-| 構成 | この Lab で確認すること |
+| Configuration | What this lab examines |
 |---|---|
-| `Agent(...)` | client、instructions、tools を明示して作る最小構成 |
-| `create_harness_agent(...)` | 通常の Agent に mode、todos、memory、Skills、loop を組み合わせる factory |
+| `Agent(...)` | Minimal configuration with explicit client, instructions, and tools |
+| `create_harness_agent(...)` | Factory combining an ordinary agent with mode, todos, memory, Skills, and a loop |
 
-`create_harness_agent` は decorator、別の Azure resource、multi-agent workflow ではありません。
-複雑な作業を 1 つの Agent 内で管理しやすくした構成です。複数 Agent を明示的につなぐ方法は
-次の Lab 8 で、通常 Agent だけを使って扱います。
+`create_harness_agent` is not a decorator, separate Azure resource, or multi-agent workflow.
+It manages complex work within one agent. Lab 8 explicitly connects multiple ordinary agents.
 
-## 1. Codespaces を準備して Notebook を開く
+## 1. Prepare Codespaces and open the notebook
 
-1. [Codespaces の準備](../docs/participant/environments/codespaces.md)に従い、
-   コンテナーの Terminal で Azure CLI にサインインします。
-   ローカルの方は[同じ Dev Container](../docs/participant/environments/local-dev-container.md)を使います。
-2. `notebooks/00-setup.ipynb` を **Python (Foundry Workshop)** で実行し、
-   subscription ID と RG 名から `.workshop/context.json` を作成します。
-3. VS Code の Explorer で
-   [`notebooks/07-agent-framework-harness.ipynb`](../notebooks/07-agent-framework-harness.ipynb)
-   を開きます。
-4. **Select Kernel > Jupyter Kernel...** で
-   **Python (Foundry Hosted Agent)**（`foundry-hosted-agent`、Python 3.13）を選択します。
-5. 説明を読み、上から 1 cell ずつ実行します。エラーの cell を飛ばしません。
+1. Follow [Codespaces setup](../docs/participant/environments/codespaces.md) and sign in to
+   Azure CLI in the container Terminal. Local participants use the
+   [same Dev Container](../docs/participant/environments/local-dev-container.md).
+2. Run `notebooks/00-setup.ipynb` with **Python (Foundry Workshop)**,
+   creating `.workshop/context.json` from the subscription ID and RG name.
+3. In VS Code Explorer, open
+   [`notebooks/07-agent-framework-harness.ipynb`](../notebooks/07-agent-framework-harness.ipynb).
+4. Under **Select Kernel > Jupyter Kernel...**, choose
+   **Python (Foundry Hosted Agent)** (`foundry-hosted-agent`, Python 3.13).
+5. Read the explanations and run one cell at a time from the top. Do not skip errors.
 
-Notebook・source・scripts はリポジトリに揃っています。手動で集めたりアップロードしたりしません。
-Notebook は `.workshop/context.json` の `resource_outputs.<key>.value` を読むため、
-接続先や model deployment の手入力は不要です。
-Notebook を保存しても、実行中の session、todos、memory が保存されるわけではありません。
-kernel を再起動した場合は接続セルから必要なセルを順番に再実行し、plan の確認もやり直します。
+Notebooks, source, and scripts are already in the repository; no manual collection/upload is needed.
+The notebook reads `.workshop/context.json` at `resource_outputs.<key>.value`,
+so no manual connection or model deployment entry is needed.
+Saving the notebook does not persist the running session, todos, or memory.
+After a kernel restart, rerun required cells from connection setup in order and recheck the plan.
 
-## 2. Foundry IQ を使う通常の Agent
+## 2. Plain Agent with Foundry IQ
 
-Notebook 前半では、次の部品を順に作ります。
+The first half constructs:
 
 ```text
 FoundryChatClient
@@ -68,17 +65,17 @@ FoundryChatClient
   = travel_policy_agent
 ```
 
-- `FoundryChatClient` は model に質問を送る client
-- `instructions` は Agent の担当と回答方針
-- `MCPStreamableHTTPTool` は Lab 3 の knowledge base を呼ぶ接続
-- `Agent` は上の部品を一つにまとめ、`run()` できる実行単位
+- `FoundryChatClient`: client that sends questions to the model
+- `instructions`: agent role and response policy
+- `MCPStreamableHTTPTool`: connection to Lab 3's knowledge base
+- `Agent`: combines these components into a runnable unit with `run()`
 
-Lab 3 と同じ複数規程の質問を送り、`knowledge_base_retrieve` と citation を確認します。
-この時点では Toolbox を渡していないため、費用計算や Web Search はできません。
+Send Lab 3's multi-policy question and check `knowledge_base_retrieve` and citations.
+Toolbox is not supplied yet, so cost calculation and Web Search are unavailable.
 
-## 3. Toolbox と Skills を使う Harness Agent
+## 3. Harness Agent with Toolbox and Skills
 
-Notebook 後半では、同じ Foundry IQ に次を追加します。
+The second half adds these to the same Foundry IQ:
 
 ```text
 Foundry IQ
@@ -94,83 +91,81 @@ Foundry IQ
   = travel_harness_agent
 ```
 
-`FoundryToolbox` は Toolbox の tool を MCP 経由で読み込みます。
-`toolbox.as_skills_provider()` は Skills の名前と説明を提示し、必要な Skill の本文だけを
-`load_skill` で遅延読み込みします。全 Skill の本文を毎回 prompt に入れる方式ではありません。
+`FoundryToolbox` loads Toolbox tools over MCP.
+`toolbox.as_skills_provider()` exposes Skill names/descriptions and lazily loads
+only the needed Skill body with `load_skill`, rather than including every body in every prompt.
 
-Harness Agent が自動追加できる Web Search は無効にします。Web Search も含め、Lab 4 の
-すべての callable tool が Toolbox の Tool Search を通るようにするためです。
+Disable Web Search automatically added by Harness Agent, so every Lab 4 callable tool,
+including Web Search, goes through Toolbox Tool Search.
 
-## 4. plan mode で複合依頼を分解する
+## 4. Decompose a complex request in plan mode
 
-Notebook が作る合成依頼には、規程確認、費用見積もり、予算比較、現在の公開情報、
-事前承認シミュレーションが含まれます。
+The notebook's synthetic request includes policy checks, cost estimation, budget comparison,
+current public information, and a preapproval simulation.
 
-最初の実行は **plan mode** です。ここではすぐに最終回答を作らず、`todos_add` で作業を
-小さく分け、計画を提示します。
+The initial run uses **plan mode**. Rather than immediately producing a final answer,
+it breaks work into smaller tasks with `todos_add` and presents a plan.
 
-表示された計画を読み、次を確認します。
+Read the plan and verify:
 
-- Foundry IQ で社内規程と承認手続きを調べる
-- `travel-estimation` Skill を読み、見積もり tool の使い方を確認する
-- Travel Ops API で deterministic な費用見積もりを取得する
-- Code Interpreter で予算との差額と消化率を計算する
-- 明示的に依頼された現在情報だけ Web Search で調べる
-- `preapproval-simulation` Skill を読み、合成の承認シミュレーションを実行する
+- Foundry IQ retrieves internal policies and approval procedures.
+- The `travel-estimation` Skill is loaded to check estimate tool usage.
+- Travel Ops API returns a deterministic cost estimate.
+- Code Interpreter computes budget difference and utilization.
+- Web Search retrieves only explicitly requested current information.
+- The `preapproval-simulation` Skill is loaded for a synthetic approval simulation.
 
-計画に不要な処理や、実際の予約・承認が含まれていないことも確認します。
+Ensure the plan includes no unnecessary work or actual bookings/approvals.
 
-## 5. execute mode で todos を完了する
+## 5. Complete todos in execute mode
 
-計画確認の次の cell で、同じ `AgentSession` を **execute mode** に切り替えます。
-session を作り直さないため、plan mode で作成した todos が残ります。
+In the cell after plan review, switch the same `AgentSession` to **execute mode**.
+Do not recreate the session; keep the todos from plan mode.
 
-execute mode では、未完了 todo がある間だけ Harness Agent を再実行します。
-反復回数には上限があり、tool エラーを成功として扱いません。
+Execute mode reruns the Harness Agent only while todos remain incomplete.
+Iterations are bounded, and tool errors are not treated as success.
 
-Notebook に表示される実行記録で、少なくとも次を確認します。
+Verify at least these in the notebook execution records:
 
-1. `knowledge_base_retrieve` で社内規程を取得
-2. `load_skill` で該当 Skill の本文を取得
-3. `tool_search` で必要な tool schema を発見
-4. `call_tool` で選択した tool を実行
-5. Travel Ops / Code Interpreter / Web Search の結果を todos ごとに反映
-6. `todos_complete` で未完了項目がなくなる
+1. `knowledge_base_retrieve` retrieves internal policies.
+2. `load_skill` retrieves the relevant Skill body.
+3. `tool_search` discovers the needed tool schema.
+4. `call_tool` executes the selected tool.
+5. Travel Ops / Code Interpreter / Web Search results are reflected in individual todos.
+6. `todos_complete` leaves no incomplete items.
 
-Tool Search は「複雑な依頼を分解する機能」ではありません。候補 tool を必要時に発見して
-context を節約する機能です。依頼の分解と進捗管理は Harness の mode、TodoProvider、
-session、loop が担当します。
+Tool Search does not decompose complex requests; it discovers candidate tools on demand to save context.
+Harness mode, TodoProvider, session, and loop handle decomposition and progress.
 
-## 完了チェック
+## Completion checklist
 
-- 通常の `Agent(...)` を client / instructions / tools から作成し、Foundry IQ の回答を確認した
-- `create_harness_agent(...)` も通常の Agent を返す factory だと説明できる
-- 通常 Agent には Foundry IQ だけ、Harness Agent には Foundry IQ + Toolbox + Skills がある
-- plan mode で複合依頼が todos に分解され、確認後に同じ session を execute mode へ切り替えた
-- `load_skill` と Skill resource の読み込みを確認した
-- `tool_search`、`call_tool`、選択された実 tool の順を確認した
-- 未完了 todos がなくなり、失敗した tool を成功として扱っていない
-- 最終回答が社内規程、API 結果、現在の外部情報を出典と取得時点付きで区別している
-- 実際の予約・承認ではないことが明記されている
+- Built ordinary `Agent(...)` from client / instructions / tools and verified Foundry IQ answers.
+- Can explain that `create_harness_agent(...)` is a factory returning an ordinary Agent.
+- Plain Agent has only Foundry IQ; Harness Agent has Foundry IQ + Toolbox + Skills.
+- Plan mode decomposed the request into todos; after review, the same session switched to execute mode.
+- Verified `load_skill` and Skill resource loading.
+- Verified `tool_search`, `call_tool`, and the selected actual tool in order.
+- No todos remain incomplete, and failed tools were not counted as success.
+- The final answer distinguishes internal policies, API results, and current external information with sources and retrieval times.
+- The answer explicitly states that no actual booking/approval occurred.
 
-## Lab 7 を飛ばして Lab 8 を行う場合
+## Skipping Lab 7 execution and proceeding to Lab 8
 
-Lab 8 は、この Notebook の session、todos、memory、出力を引き継ぎません。
-Lab 8 は `intake_agent`、`policy_agent`、`reviewer_agent` という通常 Agent の
-sequential workflow です。Lab 3 の Foundry IQ が準備できていれば、経験者は
-Lab 7 の Agent 実行を省略して Lab 8 へ進めます。ただし、この Lab の環境準備
-（共通 Dev Container、Azure CLI サインイン、`00-setup.ipynb`）は省略できません。
+Lab 8 does not inherit this notebook's session, todos, memory, or output.
+It uses a sequential workflow of ordinary `intake_agent`, `policy_agent`, and `reviewer_agent`.
+Experienced participants may skip Lab 7 agent execution if Lab 3's Foundry IQ is ready.
+However, the shared Dev Container, Azure CLI sign-in, and `00-setup.ipynb` preparation remain mandatory.
 
-連続して受講する場合は、この Lab で単一 Agent 内の仕組みを観察してから、Lab 8 で
-複数の通常 Agent に役割を分ける構成と比較してください。
+When taking the labs consecutively, observe the single-agent mechanisms here,
+then compare them with role separation across multiple ordinary agents in Lab 8.
 
-## 参考資料
+## References
 
 - [Microsoft Agent Framework — Agent Harness](https://learn.microsoft.com/agent-framework/concepts/harness)
 - [Microsoft Agent Framework — Agent Skills](https://learn.microsoft.com/agent-framework/agents/skills)
 - [Microsoft Agent Framework — Microsoft Foundry Toolbox](https://learn.microsoft.com/agent-framework/integrations/by-component/tools/foundry-toolbox)
 - [Microsoft Foundry — Foundry IQ](https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-foundry-iq)
 
-## 次の Lab
+## Next lab
 
-[Lab 8 — 通常 Agent の sequential workflow](08-hosted-multi-agent.md)
+[Lab 8 — Sequential workflow of ordinary agents](08-hosted-multi-agent.md)

@@ -1,252 +1,306 @@
-# ハンズオンの構成
+# Workshop architecture
 
-[開発者向けガイド](README.md) / [本編の対応範囲](feature-support-matrix.md)
+[Developer guide](README.md) / [Core workshop scope](feature-support-matrix.md)
 
-この文書は、教材開発者がサービスの責務、通信経路、認証、教材の受け渡しを確認するための資料です。
-構成の正本は `infra/main.bicep` と各 Lab の実装です。
-参加者向けの操作は [Lab 1](../../labs/01-setup.md) から順に確認してください。
+For material developers checking service responsibilities, communication paths,
+authentication, and material handoffs. `infra/main.bicep` and each Lab's
+implementation are the architecture sources of truth.
+For participant operations, start with [Lab 1](../../labs/01-setup.md).
 
-## 構成図
+## Architecture diagrams
 
-![Foundry Agent Service から Azure AI Search の直接検索、Foundry IQ の規程検索、Toolbox 経由の Travel Ops API を呼び出す接続。Lab 2 の直接検索は Lab 3 で解除する。](../images/azure-architecture-01.png)
+![Foundry Agent Service connections to direct Azure AI Search, policy retrieval through Foundry IQ, and Travel Ops API through Toolbox. Lab 2 direct search is removed in Lab 3.](../images/azure-architecture-01.png)
 
-[拡大表示（PNG）](../images/azure-architecture-01.png) ·
-[編集用 PowerPoint（2枚）](../diagrams/azure-architecture.pptx) ·
-[概要図の JSON](../diagrams/azure-architecture.json) ·
-[画像・アイコンの出典](../images/ATTRIBUTION.md#構成図)
+[Full-size PNG](../images/azure-architecture-01.png) ·
+[Editable PowerPoint (2 slides)](../diagrams/azure-architecture.pptx) ·
+[Overview JSON](../diagrams/azure-architecture.json) ·
+[Image and icon attribution](../images/ATTRIBUTION.md#architecture-diagrams)
 
-1 枚目は **カスタムテンプレートの基盤と、Labs 2〜4 で追加するサービス接続**です。
-基盤は `infra/main.bicep` が正本で、生成した `infra/azuredeploy.json` を既存の専用 RG へ適用します。
-Prompt Agent、Foundry IQ の Knowledge base、Toolbox はテンプレートではなく各 Lab で作成するため、
-図の該当ノードに作成する Lab を記載しています。Codespaces / Dev Container と Hosted Agent は図に含めません。
+Slide 1 shows **custom-template infrastructure and service connections added in
+Labs 2–4**. `infra/main.bicep` defines the infrastructure; its generated
+`infra/azuredeploy.json` is applied to an existing dedicated RG.
+The Prompt Agent, Foundry IQ Knowledge base, and Toolbox are created in the Labs,
+not the template, so the corresponding nodes identify their creation Lab.
+Codespaces / Dev Container and Hosted Agent are omitted from this diagram.
 
-2 枚目は参加者の Azure Portal 操作と、カスタムテンプレート内部のデプロイ・初期化・検証を分けています。
-RBAC の全定義、Tool Search・Skills・組み込みツールの内部処理、評価・最適化ジョブは省略しています。
-境界は仮想ネットワークではなく、図自体も実行中デプロイの成否を確認した証跡ではありません。
-リソースの配置先は Japan East ですが、`GlobalStandard` のモデルは推論処理のリージョン境界を保証しません。
+Slide 2 separates participant Azure Portal operations from deployment, initialization,
+and validation inside the custom template. It omits full RBAC definitions, internal
+Tool Search / Skills / built-in-tool processing, and evaluation / optimization jobs.
+Boundaries are not virtual networks, and the diagrams are not evidence of an
+in-progress deployment's success or failure.
+Resources are placed in Japan East, but `GlobalStandard` models do not guarantee
+a regional boundary for inference processing.
+Existing diagrams / screenshots may contain Japanese or older UI and remain
+illustrative, not evidence for the current English revision.
 
-## サービスの接続と作成時点
+## Service connections and creation timing
 
-| 表示 | 意味 |
+| Visual | Meaning |
 |---|---|
-| 青の実線 | Agent のモデル推論、検索、ツール呼び出し。応答は省略します。Lab 2 と Lab 3 以降の検索経路は切り替えであり、同時有効ではありません。 |
-| 灰色の破線 | 1 枚目は監視、2 枚目は参加者の操作と内部処理の順序。 |
-| 紫の点線の矢印 | リソースと接続・RBAC の依存関係。すべてのリソースを逐次実行する指定ではありません。 |
-| 紫の破線の枠 | Foundry のリソース階層、Search 上の論理機能、Container Apps 環境、処理の担当範囲。ネットワーク境界ではありません。 |
+| Solid blue line | Agent inference, retrieval, and tool calls; responses omitted. Search paths in Lab 2 and Lab 3 onward replace one another; they are not simultaneously active. |
+| Dashed gray line | Monitoring on slide 1; participant / internal-processing order on slide 2. |
+| Dotted purple arrow | Resource, connection, and RBAC dependencies, not instructions to execute every resource sequentially. |
+| Dashed purple frame | Foundry resource hierarchy, logical Search functions, Container Apps environment, or processing responsibilities; not network boundaries. |
 
-| 接続 | リポジトリで定義した動き |
+| Connection | Behavior defined by this repository |
 |---|---|
-| Agent Service → Azure AI Search | Lab 2 は `contoso-travel-policy` を Semantic 検索します。Lab 3 でこの直接検索ツールを解除します。 |
-| Agent Service → Foundry IQ → Search indexes | Lab 3 以降の経路です。Knowledge base は同じ Search サービス上にあり、policy と approval の 2 つの indexed knowledge source を使います。独立した Search サービスを追加する構成ではありません。 |
-| Foundry IQ → Foundry Models | Lab 3 の検索計画に `gpt-5.5` / Medium を設定します。初期データの埋め込み生成は別経路であり、Deployment Scripts 内の Python が行います。 |
-| Agent Service → Toolbox → Travel Ops API | Lab 4 は Knowledge を残したまま、Toolbox を MCP / Project Managed Identity で接続します。Toolbox が OpenAPI の 4 operation を公開し、匿名 HTTPS で API を呼び出します。Agent から API への直接接続ではありません。 |
+| Agent Service → Azure AI Search | Lab 2 directly searches `contoso-travel-policy` using Portal-created tool settings. Lab 3 removes this direct-search tool. |
+| Agent Service → Foundry IQ → Search indexes | Path from Lab 3 onward. The Knowledge base resides on the same Search service and uses 2 indexed knowledge sources, policy and approval. It does not add another Search service. |
+| Foundry IQ → Foundry Models | Lab 3 sets `gpt-5.5` / Medium for retrieval planning. Initial-data embeddings are generated separately by Python inside Deployment Scripts. |
+| Agent Service → Toolbox → Travel Ops API | Lab 4 keeps Knowledge and connects Toolbox through MCP / Project Managed Identity. Toolbox exposes 4 OpenAPI operations and calls the API over anonymous HTTPS; this is not a direct Agent-to-API connection. |
 
-Foundry プロジェクトとモデルのデプロイは、同じ Foundry アカウント配下の別々の子リソースです。
-テンプレートは Search の AAD 接続、Search ID のモデル利用権限、Project Managed Identity による
-Application Insights 接続を準備します。MCP 接続も先に定義しますが、接続先の Knowledge base 本体は
-後の演習で作成します。Application Insights の保存先は共通の Log Analytics ワークスペースで、
-Container Apps 環境のログもそのワークスペースへ送る設定です。
+Lab 2's direct-search baseline does not explicitly force semantic-only retrieval.
+The current new Portal exposes the connection and index, not query-mode or result-count controls.
+The [Azure AI Search tool reference](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/ai-search#configure-tool-parameters)
+documents defaults of `query_type = vector_semantic_hybrid` and `top_k = 5`.
+Those documented defaults do not prove this Portal-created agent's effective configuration.
+Record settings if exposed in execution evidence; otherwise leave them unverified.
+Actual Search execution, grounded answers, and citations remain the Lab's checks.
 
-## 参加者の操作とテンプレート内部の処理
+The Foundry project and model deployments are separate child resources under the
+same Foundry account. The template prepares the Search AAD connection, model access
+for the Search identity, and Application Insights connection using Project Managed
+Identity. It also predefines the MCP connection; the target Knowledge base itself
+is created later in the exercises.
+Application Insights stores data in the shared Log Analytics workspace; Container
+Apps environment logs are configured to go to that same workspace.
 
-![上段は参加者が Azure Portal で行う専用 RG 作成、テンプレート読み込み、開始、全体成功と出力の確認。下段は Azure 側で実行するリソース・接続・RBAC 作成、Deployment Scripts によるデータ準備、環境検証、完了出力。](../images/azure-architecture-02.png)
+## Participant operations and template internals
 
-[デプロイ・初期化の拡大表示（PNG）](../images/azure-architecture-02.png) ·
-[デプロイ・初期化図の JSON](../diagrams/azure-architecture-deployment.json)
+![Top: participant creates a dedicated RG in Azure Portal, loads and starts the template, then checks overall success and outputs. Bottom: Azure creates resources, connections, and RBAC, prepares data with Deployment Scripts, validates the environment, and returns completed outputs.](../images/azure-architecture-02.png)
 
-参加者側は RG の手動作成、テンプレートの読み込み、既存 RG を指定した開始、完了確認です。
-CLI / Python による初期化を参加者の PC で実行する構成ではありません。
-内部のリソース・接続・RBAC は Bicep の依存関係に従い、準備が整ってから Deployment Scripts が開始します。
-図のリソース作成と権限設定の箱は責務を分けたもので、全リソースを一列に逐次作成する意味ではありません。
+[Full-size deployment / initialization PNG](../images/azure-architecture-02.png) ·
+[Deployment / initialization JSON](../diagrams/azure-architecture-deployment.json)
 
-Deployment Scripts は専用 UAMI で固定ソースを取得し、独立した Python 環境を準備します。
-`bootstrap_data.py` が文書の埋め込みを生成し、policy、approval の順に Search データを投入します。
-続いて評価用・最適化用の 2 datasets と共通 rubric を登録します。
-`--prepare-only` は登録後に終了するため、評価・最適化ジョブや Agent 作成は実行しません。
-最後の検証対象は接続情報、主要リソース、対象参加者の Foundry User ロール、
-API の health、Search のスキーマと件数です。参加者として全サービスを操作する通し試験ではありません。
-全段階の成功後にだけ `workshopContext.setup_status = complete` を返します。
-補助 ACI / Storage は成功時に片付け、失敗時の保持期間は 1 日、実行上限は 1 時間です。
-初期化専用 UAMI とその権限は専用 RG を削除するまで保持します。
+Participants manually create the RG, load the template, start against the existing
+RG, and check completion. They do not run CLI / Python initialization on their PCs.
+Internal resources, connections, and RBAC follow Bicep dependencies; Deployment
+Scripts starts when prerequisites are ready.
+Resource-creation and permission boxes separate responsibilities, not a fully
+sequential resource-creation pipeline.
 
-## Lab ごとの実行場所
+Deployment Scripts uses a dedicated UAMI to retrieve pinned source and prepare
+an isolated Python environment. `bootstrap_data.py` generates document embeddings
+and seeds Search data in policy, then approval order.
+It then registers 2 evaluation / optimization datasets and the shared rubric.
+`--prepare-only` exits after registration; it does not run evaluation / optimization
+jobs or create Agents.
+Final validation covers connection information, key resources, the intended
+participant's Foundry User role, API health, Search schema, and document counts.
+It is not an end-to-end test of all services operated as the participant.
+Only after every stage succeeds does it return `workshopContext.setup_status = complete`.
+Helper ACI / Storage are cleaned up on success, retained for 1 day on failure,
+and subject to a 1-hour execution limit.
+The bootstrap-only UAMI and permissions remain until dedicated RG deletion.
 
-1 枚目は Prompt Agent の接続を示しています。Lab 7 のローカル実行と Lab 8 の Hosted ワークフローは
-図の対象外ですが、後続 Lab での再利用先として次にまとめます。
+## Execution locations by Lab
 
-| 実行対象 | 実行場所 | 依存先 |
+Slide 1 shows Prompt Agent connections. Lab 7 local execution and the Lab 8 Hosted
+workflow are outside the diagram, but their reuse of services is summarized below.
+
+| Execution target | Location | Dependencies |
 |---|---|---|
-| Prompt Agent（Labs 3〜6） | Foundry Agent Service | 主モデルと Foundry IQ。Lab 4 で Toolbox を追加します。 |
-| Plain Agent / Harness（Lab 7） | Codespaces またはローカル Dev Container | 両方が主モデルと Foundry IQ を直接呼びます。Harness は Toolbox のツールと Skills も使います。 |
-| Hosted ワークフロー（Lab 8） | ソースコードのリモートビルド後、Foundry Agent Service で実行 | `intake_agent` → `policy_agent` → `reviewer_agent`。全員が主モデルを使い、Foundry IQ を呼ぶのは `policy_agent` だけです。 |
+| Prompt Agent (Labs 3–6) | Foundry Agent Service | Primary model and Foundry IQ; Toolbox added in Lab 4. |
+| Plain Agent / Harness (Lab 7) | Codespaces or local Dev Container | Both directly call the primary model and Foundry IQ. Harness also uses Toolbox tools and Skills. |
+| Hosted workflow (Lab 8) | Foundry Agent Service after remote source code build | `intake_agent` → `policy_agent` → `reviewer_agent`. All use the primary model; only `policy_agent` calls Foundry IQ. |
 
-Lab 7 の SDK / MCP はモデル・Foundry IQ・Toolbox を直接呼びます。
-ローカルの Harness が Foundry 内で動いたり、Hosted Agent 経由で検索したりする意味ではありません。
-Lab 8 のワークフローは Toolbox、Skills、Travel Ops API を呼びません。
-評価と Agent Optimizer は、Foundry IQ の検索計画にも使う `gpt-5.5` の同じデプロイを使います。
+Lab 7 SDK / MCP directly calls models, Foundry IQ, and Toolbox.
+The local Harness does not run inside Foundry or retrieve through the Hosted Agent.
+The Lab 8 workflow does not call Toolbox, Skills, or Travel Ops API.
+Evaluation and Agent Optimizer use the same `gpt-5.5` deployment as Foundry IQ retrieval planning.
 
-Toolbox から合成データ用の Travel Ops API への OpenAPI 接続は、匿名認証の HTTPS です。
-Foundry、Toolbox、Search への認証はこの例外に含まれません。
-これらには Microsoft Entra ID、プロジェクト・実行環境の ID、対象を限定したロールベースのアクセス制御（RBAC）を使います。
+The OpenAPI connection from Toolbox to the synthetic-data Travel Ops API is anonymous
+HTTPS. This exception does not apply to Foundry, Toolbox, or Search authentication.
+Those use Microsoft Entra ID, project / runtime identities, and narrowly scoped
+role-based access control (RBAC).
 
-## 構成図の編集
+## Editing architecture diagrams
 
-主成果物は `docs/diagrams/azure-architecture.pptx` です。
-サービスごとの公式 SVG・名前・説明をグループ化し、境界・文字・通信線は個別の
-PowerPoint オブジェクトにしています。図全体を 1 枚の画像として貼り付けたものではありません。
-選択ウィンドウの `service:`、`boundary:`、`flow:` で対象を探せます。
-サービスを移動すると接続端は追従しますが、折れ線の途中の経路は手動調整が必要です。
+The main deliverable is `docs/diagrams/azure-architecture.pptx`.
+Official SVG icons, names, and descriptions are grouped by service; boundaries,
+text, and communication lines are individual PowerPoint objects, not a single pasted image.
+Find objects by `service:`, `boundary:`, and `flow:` in the Selection Pane.
+Connection endpoints follow moved services, but intermediate elbow routes require manual adjustment.
 
-表示確認には PNG、編集にはデスクトップ版 PowerPoint を使ってください。
-今回の Copilot 内蔵プレビューでは、PPTX の SVG 拡張画像とネイティブ接続線が描画されませんでした。
-データが消えたわけではありません。PNG はデスクトップ版 PowerPoint から書き出しています。
+Use PNGs for viewing and desktop PowerPoint for editing.
+During the recorded diagram update, Copilot's built-in preview did not render
+PPTX SVG extension images or native connectors. This did not mean data was missing.
+PNGs were exported from desktop PowerPoint.
 
-再生成の正本はサービス接続図とデプロイ・初期化図の 2 つの JSON です。
-使用する 11 個の公式 SVG は `docs/diagrams/azure-icons/` に同梱し、
-[取得元・SHA-256](../diagrams/azure-icons/manifest.json)を記録しています。
-PPTX を手編集した内容は JSON に戻りません。手編集版を保存した後は、
-その変更を取り込まずに JSON から上書きしないでください。
+The 2 JSON files for service connections and deployment / initialization are the
+diagram specifications. The 11 official SVGs used are bundled in
+`docs/diagrams/azure-icons/`, with [sources / SHA-256](../diagrams/azure-icons/manifest.json)
+recorded. Manual PPTX edits do not flow back into JSON. After saving a manually
+edited version, do not overwrite it from JSON without incorporating those changes.
 
-再生成には Windows、デスクトップ版 PowerPoint、Python 3.10 以降、pywin32 と
-`azure-architecture-powerpoint` Skill が必要です。
-既存の `.venv` を使い、リポジトリルートの PowerShell から次を実行します。
-pywin32 がない場合だけ、同 Skill の `requirements.txt` からその仮想環境へ復元してください。
+Editing existing native objects in desktop PowerPoint is a supported maintenance
+path. Update the corresponding JSON specifications in the same change.
+For text-only translations, preserve service objects, connections, icon contents,
+and their relationships; translate text in shapes and speaker notes consistently
+with the JSON. Desktop PowerPoint COM automation on Windows can make these same
+native-object edits and export images without flattening the editable slides.
 
-```powershell
-$SkillDir = Join-Path $HOME '.copilot\skills\azure-architecture-powerpoint'
-$Python = '.\.venv\Scripts\python.exe'
-& $Python "$SkillDir\scripts\build_powerpoint.py" `
-  '.\docs\diagrams\azure-architecture.json' `
-  '.\docs\diagrams\azure-architecture-deployment.json' `
-  --icons-dir '.\docs\diagrams\azure-icons' `
-  --output '.\artifacts\architecture\azure-architecture.pptx'
-& $Python "$SkillDir\scripts\validate_powerpoint.py" `
-  '.\artifacts\architecture\azure-architecture.pptx'
-```
+Save the edited PPTX and export both slides from desktop PowerPoint as
+`azure-architecture-01.png` and `azure-architecture-02.png`, at 1800 × 1160 pixels.
+Check both PNGs for clipped text, crossings, line direction, and agreement with
+the JSON and editable PPTX. Keep the PPTX in `docs/diagrams/` and PNGs in
+`docs/images/`, and record label translation and export changes in
+[attribution](../images/ATTRIBUTION.md#architecture-diagrams).
 
-PowerPoint 本体から PPTX と `azure-architecture-01.png`、`azure-architecture-02.png` を生成します。
-既存出力があれば停止するため、次回は空の出力先を使ってください。
-両方の PNG で文字切れ・交差・線の向きを確認してから、PPTX を `docs/diagrams/`、
-PNG を `docs/images/` に反映します。構成を変えたら、日本語・英語の README とこの文書も更新します。
+The personal `azure-architecture-powerpoint` Skill was used for earlier generation,
+but its scripts are not included here. It is optional, not a prerequisite for
+repository development or native PowerPoint editing. There is no built-in
+repository regeneration command. If that optional generator is separately
+available, its requirements are Windows, desktop PowerPoint, Python 3.10 or later,
+and pywin32. Use an existing suitable virtual environment; restore pywin32 from
+that generator's `requirements.txt` only if missing. Its earlier workflow stops
+when outputs already exist, so use an empty output location and incorporate all
+manual changes into the JSON before regenerating.
 
-公開リポジトリへ反映する前に、組織の秘密度ラベルが公開可能な設定であることと、
-作成者・最終更新者の個人メタデータが残っていないことを確認します。
-秘密度は組織の方針に沿って PowerPoint で設定し、ラベルの削除で回避しません。
+For architecture changes, update the English-primary README, any explicitly
+maintained README variant, and this document together; no Japanese counterpart
+is promised on this branch.
 
-旧 [draw.io](../diagrams/azure-architecture.drawio) と
-[SVG](../images/azure-architecture.svg) は更新前の履歴として保持しています。
-現行構成の正本・再生成元には使いません。
+Before publishing to a public repository, verify that organizational sensitivity
+labels permit publication and that personal author / last-modifier metadata is
+absent. Set sensitivity in PowerPoint according to organizational policy; do not
+bypass it by removing labels.
 
-手順を中心にした図は、次の資料として残しています。
+Old [draw.io](../diagrams/azure-architecture.drawio) and
+[SVG](../images/azure-architecture.svg) files are retained as history from before
+the update, not sources of truth or regeneration inputs for the current architecture.
 
-- [環境作成の概要](../../docs/images/workshop-architecture.svg)（[Excalidraw の編集用データ](../../docs/diagrams/workshop-architecture.excalidraw)）
-- [学習の流れ](../../docs/images/workshop-learning-flow.svg)（[Excalidraw の編集用データ](../../docs/diagrams/workshop-learning-flow.excalidraw)）
+Procedure-oriented diagrams remain available:
 
-### 図の前提と出典
+- [Environment creation overview](../../docs/images/workshop-architecture.svg)
+  ([editable Excalidraw data](../../docs/diagrams/workshop-architecture.excalidraw))
+- [Learning flow](../../docs/images/workshop-learning-flow.svg)
+  ([editable Excalidraw data](../../docs/diagrams/workshop-learning-flow.excalidraw))
 
-確認日は **2026-09-19** です。今回の入力プロンプトは
-「Azure 構成図作成のスキルを用いて、現状の構成図をアップデートして！」です。
-追加指定「今は、Codespacesを使っておらず、カスタムテンプレートによるデプロイを実行しています。」
-に従い、Codespaces は図から除外しています。その後の接続追加の指定を反映し、
-1 枚目には Labs 2〜4 の Agent Service・Search・Foundry IQ・Toolbox 経由 API を加え、
-2 枚目を「Azure Portal から参加者にて実行」と「カスタムテンプレートの内部処理」に分けました。
+### Diagram assumptions and sources
 
-| 図の判断 | 確認したリポジトリ内の根拠 |
+The recorded review date is **2026-09-19**.
+The original request was "Use the Azure architecture diagram skill to update the
+current architecture diagram!" An additional instruction, "We are not using
+Codespaces now; we are deploying with a custom template," excluded Codespaces
+from the diagram. Later connection-addition instructions added Labs 2–4 Agent
+Service, Search, Foundry IQ, and Toolbox-mediated API connections to slide 1 and
+split slide 2 into "Participant operations from Azure Portal" and "Custom template internals."
+These are historical diagram-update decisions, not English release validation.
+
+| Diagram decision | Repository evidence reviewed |
 |---|---|
-| Search 直接接続を IQ に切り替える | [Lab 2](../../labs/02-prompt-agent.md#5-azure-ai-search-tool-を接続する)、[Lab 3](../../labs/03-rag-foundry-iq.md#2-knowledge-base-を-agent-に接続する)。Portal 操作の定義として確認。 |
-| IQ の 2 sources と検索計画モデル | [Lab 3 の設定](../../labs/03-rag-foundry-iq.md#1-foundry-iq-knowledge-base-を作成する)。`gpt-5.5`、Medium、2 index を指定。 |
-| Agent → MCP Toolbox → OpenAPI API | [Toolbox 接続](../../scripts/connect_toolbox.py#L37-L63)、[MCP 接続と Agent への追加](../../scripts/create_toolbox.py#L403-L513)、[OpenAPI 認証](../../scripts/create_toolbox.py#L83-L132)、[Lab 4](../../labs/04-tools-toolbox.md)。 |
-| API の 4 operation と合成データ処理 | [FastAPI router](../../src/travel-api/travel_api/adapters/api/routes.py#L49-L145)、[OpenAPI 正本](../../assets/openapi/travel-ops.openapi.json)。実承認ではなくシミュレーション。 |
-| 作成する基盤、待ち合わせ、完了出力 | [Bicep](../../infra/main.bicep#L113-L709)、[参加者操作](../../labs/01-setup.md#3-初期化の成功を待つ)。 |
-| 固定ソースと独立 Python 環境 | [Deployment Scripts ラッパー](../../scripts/bootstrap-custom-template.sh#L30-L180)。 |
-| データ投入 → 評価教材 → 検証 → complete | [初期化順序](../../scripts/bootstrap_custom_template.py#L163-L251)、[成功判定](../../scripts/bootstrap_custom_template.py#L263-L339)、[完了出力](../../scripts/bootstrap_custom_template.py#L365-L401)。 |
-| 初期化 Python が埋め込みを生成する | [OpenAI クライアントからの生成](../../scripts/bootstrap_data.py#L1068-L1107)。Search サービスが初期データを埋め込む図にはしていません。 |
-| 評価・最適化ジョブを初期化で実行しない | [`--prepare-only` の早期終了](../../scripts/run_evaluation.py#L724-L771)。 |
-| 初期化後に確認する範囲 | [検証項目](../../scripts/validate_environment.py#L471-L591)。Foundry User の権限付与を確認し、全参加者権限の実操作試験とは区別。 |
+| Replace direct Search with IQ | [Lab 2](../../labs/02-prompt-agent.md#5-connect-an-azure-ai-search-tool), [Lab 3](../../labs/03-rag-foundry-iq.md#2-connect-the-knowledge-base-to-the-agent), reviewed as Portal procedure definitions. |
+| IQ's 2 sources and retrieval planning model | [Lab 3 settings](../../labs/03-rag-foundry-iq.md#1-create-a-foundry-iq-knowledge-base): `gpt-5.5`, Medium, 2 indexes. |
+| Agent → MCP Toolbox → OpenAPI API | [Toolbox connection](../../scripts/connect_toolbox.py#L37-L63), [MCP connection / Agent attachment](../../scripts/create_toolbox.py#L403-L513), [OpenAPI authentication](../../scripts/create_toolbox.py#L83-L132), [Lab 4](../../labs/04-tools-toolbox.md). |
+| API's 4 operations and synthetic-data handling | [FastAPI router](../../src/travel-api/travel_api/adapters/api/routes.py#L49-L145), [OpenAPI source](../../assets/openapi/travel-ops.openapi.json). Simulation, not real approval. |
+| Infrastructure, dependencies, completed outputs | [Bicep](../../infra/main.bicep#L113-L709), [participant operations](../../labs/01-setup.md#3-wait-for-successful-initialization). |
+| Pinned source and isolated Python | [Deployment Scripts wrapper](../../scripts/bootstrap-custom-template.sh#L30-L180). |
+| Seed → evaluation materials → validation → complete | [Initialization order](../../scripts/bootstrap_custom_template.py#L163-L251), [success checks](../../scripts/bootstrap_custom_template.py#L263-L339), [completed outputs](../../scripts/bootstrap_custom_template.py#L365-L401). |
+| Initialization Python generates embeddings | [OpenAI client generation](../../scripts/bootstrap_data.py#L1068-L1107). Search is not depicted as embedding initial data. |
+| Initialization does not run evaluation / optimization jobs | [`--prepare-only` early exit](../../scripts/run_evaluation.py#L724-L771). |
+| Post-initialization validation scope | [Validation checks](../../scripts/validate_environment.py#L471-L591). Checks the Foundry User role grant, not an operational test of every participant permission. |
 
-テンプレートに固定された `sourceRevision` と作業ツリーの初期化用 5 ファイルも比較しました。
-差分は `run_evaluation.py` の docstring 内の参照先だけで、図示した初期化ロジックは一致しています。
-図の検査は [構成図の契約テスト](../../tests/contract/test_architecture_diagrams_contract.py) にあり、
-直接 API 接続、IQ の別サービス化、検索経路の同時有効化、参加者による初期化実行、
-初期化中の評価ジョブ実行、検証前の完了出力という 6 つの誤った検体を拒否することも確認します。
+At that historical review, the template's pinned `sourceRevision` was compared with
+5 bootstrap files in the working tree. Only a reference in the `run_evaluation.py`
+docstring differed; the depicted initialization logic matched.
+This is not a comparison against an unpublished English release.
+The [architecture contract tests](../../tests/contract/test_architecture_diagrams_contract.py)
+also verify rejection of 6 incorrect specimens: direct API connection, IQ as a
+separate service, simultaneous search paths, participant-run initialization,
+evaluation jobs during initialization, and completion output before validation.
 
-今回の図の更新では Azure へのデプロイ・Lab の通し実行は行っていません。
-実行中のデプロイについて Azure の状態照会も行っていないため、成否は未確認です。
-Basic Agent Setup のサービス管理ストレージ、RBAC の全定義、Labs 7〜8 の通信経路は図から省略しています。
+The recorded diagram update did not deploy to Azure or run all Labs.
+No Azure state query was made for an in-progress deployment, so its outcome was
+unverified. Basic Agent Setup service-managed storage, full RBAC definitions,
+and Labs 7–8 paths are omitted.
 
-| 確認した内容 | Microsoft Learn の一次情報 |
+| Reviewed topic | Microsoft Learn primary source |
 |---|---|
-| Foundry アカウント配下のプロジェクトとモデルの階層 | [projects（2026-05-01）](https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2026-05-01/accounts/projects)、[deployments（2026-05-01）](https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2026-05-01/accounts/deployments) |
-| Foundry IQ と Azure AI Search の関係 | [What is Foundry IQ?](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/what-is-foundry-iq)、[Agentic retrieval](https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-overview) |
-| Deployment Scripts の実行主体・補助リソース・出力 | [Use deployment scripts in ARM templates](https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template) |
-| Container Apps 環境からのログ送信 | [Log storage and monitoring options](https://learn.microsoft.com/en-us/azure/container-apps/log-options) |
-| Application Insights と Log Analytics の関係 | [Workspace-based Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource) |
-| GlobalStandard の推論処理場所 | [Foundry deployment types](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/deployment-types) |
+| Projects and models under a Foundry account | [projects (2026-05-01)](https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2026-05-01/accounts/projects), [deployments (2026-05-01)](https://learn.microsoft.com/en-us/azure/templates/microsoft.cognitiveservices/2026-05-01/accounts/deployments) |
+| Foundry IQ and Azure AI Search relationship | [What is Foundry IQ?](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/what-is-foundry-iq), [Agentic retrieval](https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-overview) |
+| Deployment Scripts identity, helper resources, outputs | [Use deployment scripts in ARM templates](https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-script-template) |
+| Container Apps environment logs | [Log storage and monitoring options](https://learn.microsoft.com/en-us/azure/container-apps/log-options) |
+| Application Insights / Log Analytics relationship | [Workspace-based Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource) |
+| GlobalStandard inference location | [Foundry deployment types](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/deployment-types) |
 
-この図は現行教材の Preview 接続定義を含む構成を示し、機能全体の GA・SLA を保証しません。
-アイコンの利用条件は[出典一覧](../images/ATTRIBUTION.md#構成図)を参照してください。
+The diagram includes Preview connection definitions used by these materials; it
+does not guarantee GA status or SLA for entire features.
+See [attribution](../images/ATTRIBUTION.md#architecture-diagrams) for icon usage terms.
 
-## 責務の分担
+## Responsibilities
 
-| 担当 | 責務 |
+| Owner | Responsibility |
 |---|---|
-| 参加者 / Azure Portal | 専用リソースグループ（RG）を 1 個手動作成し、テンプレートでその RG を選択します。他の既定値を維持し、成功を確認した後、終了時に RG を削除します。 |
-| Bicep / 生成した ARM テンプレート | 既存 RG 内の Foundry、モデル、Search、API、監視基盤、接続、対象を限定した RBAC を管理します。 |
-| Deployment Scripts | Search の 2 インデックスへデータを投入し、評価データと評価基準を準備・検証して、完了した接続情報を返します。 |
-| GitHub | `assets/` の共通 Skill ZIP・OpenAPI、Notebook、スクリプト、Python ソースを保持します。 |
-| Foundry Portal | Prompt Agent、Foundry IQ、Toolbox、評価、最適化、トレースの操作に使います。 |
-| Codespaces / ローカル Dev Container | Labs 7〜8 の共通 Notebook 環境です。本人の Azure CLI サインインと Hosted Agent の作成・削除を行います。 |
+| Participant / Azure Portal | Manually create 1 dedicated RG, select it in the template, retain other defaults, check success, and delete the RG at the end. |
+| Bicep / generated ARM | Manage Foundry, models, Search, API, monitoring, connections, and narrowly scoped RBAC in the existing RG. |
+| Deployment Scripts | Seed 2 Search indexes, prepare / validate evaluation data and rubrics, and return completed connection information. |
+| GitHub | Store shared Skill ZIPs / OpenAPI in `assets/`, Notebooks, scripts, and Python source. |
+| Foundry Portal | Operate Prompt Agent, Foundry IQ, Toolbox, evaluation, optimization, and traces. |
+| Codespaces / local Dev Container | Shared Notebook runtime for Labs 7–8, personal Azure CLI sign-in, and Hosted Agent creation / deletion. |
 
-Portal 用テンプレートは `infra/main.bicep` から生成します。
-初期化処理が準備するのはデータです。学習用エージェント、ナレッジベース、Toolbox は参加者が演習で作ります。
+The Portal template is generated from `infra/main.bicep`.
+Initialization prepares data; participants create learning Agents, Knowledge bases,
+and Toolbox during exercises.
 
-## Azure のリソースと制約
+## Azure resources and constraints
 
-Japan East の専用 RG に、次のリソースを配置します。
+The dedicated Japan East RG contains:
 
-- Foundry プロジェクト `contoso-travel`。構成は **Basic Agent Setup** です。
-- `GlobalStandard` の主モデル、評価・最適化用モデル、埋め込みモデル。
-  モデル名と容量は [管理者向けのモデル利用枠](../../docs/admin/prerequisites.md#モデルの利用枠) を参照します。
-- Search **Basic** と `contoso-travel-policy`、`contoso-travel-approval` の 2 インデックス。
-- 公開エンドポイントを持つ Container Apps の Travel Ops API。
-- Log Analytics と Application Insights。
-- システム割り当て ID、対象を限定した RBAC、初期化専用のユーザー割り当て ID。
+- Foundry project `contoso-travel`, using **Basic Agent Setup**.
+- `GlobalStandard` primary, evaluation / optimization, and embedding models.
+  See [administrator model quotas](../../docs/admin/prerequisites.md#model-quotas)
+  for model names and capacities.
+- Search **Basic** and 2 indexes: `contoso-travel-policy`, `contoso-travel-approval`.
+- Travel Ops API on Container Apps with a public endpoint.
+- Log Analytics and Application Insights.
+- System-assigned identities, narrowly scoped RBAC, and a bootstrap-only user-assigned identity.
 
-Search のリソース接続は AAD 認証、ナレッジベースの MCP と Application Insights の接続は
-**Project Managed Identity** を使います。接続名・API バージョン・設定は
-[インフラの接続スキーマ](../../infra/README.md#接続スキーマの例外) を参照します。
-Foundry と Search のローカル認証は無効、公開エンドポイントは有効です。
+The Search resource connection uses AAD authentication; Knowledge base MCP and
+Application Insights connections use **Project Managed Identity**.
+See [infrastructure connection schemas](../../infra/README.md#connection-schema-exceptions)
+for names, API versions, and settings. Foundry / Search local authentication is
+disabled and public endpoints are enabled.
 
-Application Insights と Log Analytics はトレースの収集・閲覧に使います。
-自動アラートは演習の対象外で、テンプレートはアラートルールや通知グループを作成しません。
-`Microsoft.AlertsManagement` の登録も前提条件に含めません。
-Azure が別途作る既定アラートの扱いは、[管理者向けの説明](../../docs/admin/troubleshooting.md#application-insights-の自動アラート)を参照してください。
+Application Insights and Log Analytics collect / display traces.
+Automatic alerts are outside the exercises; the template creates no alert rules
+or notification groups. `Microsoft.AlertsManagement` registration is not a prerequisite.
+See [administrator guidance](../../docs/admin/troubleshooting.md#application-insights-automatic-alerts)
+for Azure's separately created default alerts.
 
-初期化基盤の詳細は [インフラ実装ガイド](../../infra/README.md)、
-リリース既定値と公開前の確認は [管理者向け前提条件](../../docs/admin/prerequisites.md) にまとめています。
+See the [infrastructure implementation guide](../../infra/README.md) for initialization
+infrastructure and [administrator prerequisites](../../docs/admin/prerequisites.md)
+for release defaults / pre-publication checks.
 
-## 教材と接続情報の受け渡し
+## Materials and connection information handoff
 
-- Lab 4 は `assets/skills/travel-estimation.zip`、`assets/skills/preapproval-simulation.zip`、
-  `assets/openapi/travel-ops.openapi.json` を GitHub から直接取得します。
-  Skill ZIP の直下に `SKILL.md` を置き、ソースは `data/skills/` で管理します。
-  OpenAPI は `servers[0].url` だけを、本人の ARM 出力 `travelApiBaseUrl` に変更します。
-- ARM は `resourceOutputs`、`workshopContext`、`travelApiBaseUrl`、`foundryPortalUrl` を出力します。
-  初期化成功後にだけ `workshopContext.setup_status = complete` を返します。
-- コンテナー内の `notebooks/00-setup.ipynb` は `scripts/configure_workshop.py` を使い、
-  サブスクリプション ID と RG 名から成功した環境の情報を取得して `.workshop/context.json` に保存します。
-  スキーマ `2.0` の正規構造は `resource_outputs.<key>.value` です。
-- Dev Container の作成後処理は、チェックアウトの外に Python 3.12 の管理用仮想環境と
-  Python 3.13 の Hosted 用仮想環境を分けて準備します。Azure の認証や環境作成は行いません。
-  Notebook 実行前に本人が Azure CLI へサインインします。GitHub / Portal の認証とは別です。
-- 初期設定には **Python (Foundry Workshop)**、Labs 7〜8 には
-  **Python (Foundry Hosted Agent)** を使います。デプロイ・削除セルは明示的に管理用仮想環境を呼び、確認入力を要求します。
+- Lab 4 directly downloads `assets/skills/travel-estimation.zip`,
+  `assets/skills/preapproval-simulation.zip`, and
+  `assets/openapi/travel-ops.openapi.json` from GitHub.
+  Skill ZIPs place `SKILL.md` at their root; source is maintained in `data/skills/`.
+  Change only OpenAPI `servers[0].url` to the participant's ARM `travelApiBaseUrl`.
+- ARM outputs `resourceOutputs`, `workshopContext`, `travelApiBaseUrl`, and
+  `foundryPortalUrl`. Only successful initialization returns
+  `workshopContext.setup_status = complete`.
+- Container `notebooks/00-setup.ipynb` uses `scripts/configure_workshop.py` to
+  retrieve successful environment information from subscription ID / RG name and
+  save `.workshop/context.json`. Schema `2.0` uses canonical
+  `resource_outputs.<key>.value`.
+- Dev Container post-create processing prepares separate Python 3.12 management
+  and Python 3.13 Hosted virtual environments outside the checkout.
+  It does not authenticate to Azure or create environments.
+  Participants sign in to Azure CLI before Notebooks; this is separate from GitHub / Portal authentication.
+- Use **Python (Foundry Workshop)** for setup and **Python (Foundry Hosted Agent)**
+  for Labs 7–8. Deployment / deletion cells explicitly call the management virtual
+  environment and require confirmation input.
 
-共通 Skill ZIP と Hosted API に渡すソースコード ZIP は用途が異なり、両方を使います。
-環境固有の教材アーカイブを配布する構成ではありません。
+Shared Skill ZIPs and source code ZIPs submitted to the Hosted API serve different
+purposes; both are used. This is not environment-specific material archive distribution.
 
-## 終了時の操作
+## End-of-workshop operations
 
-成果物の保存・エクスポート、Hosted Agent の全バージョンの削除、Codespace の停止・削除の順に進みます。
-続けて Azure Portal の **Delete resource group** で本人の専用 RG を削除し、削除完了を確認します。
-デプロイ履歴を消すだけではリソースは削除されません。[Lab 9](../../labs/09-observability-cleanup.md) に従ってください。
+Save / export work, delete every Hosted Agent version, and stop / delete the
+Codespace, in that order. Then use **Delete resource group** in Azure Portal to
+delete the participant's dedicated RG and verify completion.
+Deleting deployment history alone does not delete resources.
+Follow [Lab 9](../../labs/09-observability-cleanup.md).

@@ -1,34 +1,35 @@
-# ドキュメント一覧
+# Documentation index
 
-演習を始める方は [ハンズオンの README](../README.md) から [Lab 1](../labs/01-setup.md) に進んでください。
-このページでは、準備・開催・トラブル対応で参照する資料を読者別に案内します。
+To begin, follow the [workshop README](../README.md) to [Lab 1](../labs/01-setup.md).
+This page groups references for preparation, delivery, and troubleshooting by audience.
 
-## 参加者向け
+## Participants
 
-| 資料 | 用途 |
+| Document | Purpose |
 |---|---|
-| [参加条件](participant/prerequisites.md) | 必要なアカウント、権限、環境の確認 |
-| [環境準備](participant/environments/custom-template.md) | 専用 RG の作成とテンプレートの利用 |
-| [Codespaces](participant/environments/codespaces.md) | Labs 7〜8 のブラウザー実行環境 |
-| [ローカル Dev Container](participant/environments/local-dev-container.md) | VS Code / Docker で使う同じ実行環境 |
-| [評価基準](participant/contoso-travel-rubric.md) | 出張・経費アシスタントの回答を評価する観点 |
-| [困ったとき](participant/troubleshooting.md) | 演習中の確認と復旧 |
-| [費用と片付け](participant/costs-and-cleanup.md) | 課金対象、成果物の保存、環境の削除 |
+| [Prerequisites](participant/prerequisites.md) | Check accounts, permissions, and environments |
+| [Environment setup](participant/environments/custom-template.md) | Create a dedicated RG and use the template |
+| [Codespaces](participant/environments/codespaces.md) | Browser-based environment for Labs 7–8 |
+| [Local Dev Container](participant/environments/local-dev-container.md) | The same environment in VS Code / Docker |
+| [Evaluation rubric](participant/contoso-travel-rubric.md) | Criteria for travel and expense assistant responses |
+| [Troubleshooting](participant/troubleshooting.md) | Checks and recovery during the labs |
+| [Costs and cleanup](participant/costs-and-cleanup.md) | Billable resources, saving results, and environment deletion |
 
-## 管理者・講師向け
+## Administrators and instructors
 
-| 資料 | 用途 |
+| Document | Purpose |
 |---|---|
-| [管理者向け前提条件](admin/prerequisites.md) | 利用枠・権限・配布するリリースの確認 |
-| [管理者向けトラブルシューティング](admin/troubleshooting.md) | 初期化・接続・削除の障害対応 |
-| [講師向けガイド](../instructor/README.md) | 開催準備と資料の使い分け |
-| [講師向けrunbook](../instructor/runbook.md) | 全 Lab の実行確認と終了判定 |
-| [追加演習](../labs/optional/README.md) | 本編とは別の許可・環境が必要な演習 |
+| [Administrator prerequisites](admin/prerequisites.md) | Check quotas, permissions, and the release to distribute |
+| [Administrator troubleshooting](admin/troubleshooting.md) | Initialization, connection, and deletion failures |
+| [Instructor guide](../instructor/README.md) | Event preparation and choosing references |
+| [Instructor runbook](../instructor/runbook.md) | Verify all labs and determine completion |
+| [Optional labs](../labs/optional/README.md) | Exercises requiring permissions and environments beyond the main workshop |
 
-## 構成図と教材開発
+## Architecture diagrams and workshop development
 
-[構成図](images/azure-architecture-01.png)、
-[デプロイと初期化の流れ](images/azure-architecture-02.png)、
-[編集用 PowerPoint](diagrams/azure-architecture.pptx)、
-[画像・アイコンの出典](images/ATTRIBUTION.md)を参照できます。
-教材を変更する方は [開発者向けガイド](development/README.md) へ進んでください。
+The existing [architecture diagram](images/azure-architecture-01.png),
+[deployment and initialization diagram](images/azure-architecture-02.png), and
+[editable PowerPoint](diagrams/azure-architecture.pptx) are historical/illustrative assets,
+not English operating instructions or evidence of success on the current revision.
+See [image and icon attribution](images/ATTRIBUTION.md).
+To modify the workshop, start with the [developer guide](development/README.md).

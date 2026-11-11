@@ -1,162 +1,157 @@
-# Lab 3 — Foundry IQ（25分）
+# Lab 3 — Foundry IQ (25 min)
 
-## ゴール
+## Goal
 
-Lab 2 では、Azure AI Search tool を使って、利用条件をまとめた 1 つの index を
-直接検索しました。この Lab では **Foundry IQ knowledge base** を作成し、次の 2 つの
-index を検索先（source）として登録します。
+Lab 2 directly searched one eligibility-policy index using an Azure AI Search tool.
+In this lab, create a **Foundry IQ knowledge base** with two source indexes:
 
-- 利用条件をまとめた `contoso-travel-policy`
-- 承認手続きをまとめた `contoso-travel-approval`
+- `contoso-travel-policy` for eligibility conditions
+- `contoso-travel-approval` for approval procedures
 
-Foundry IQ は質問を分解し、複数の source から必要な根拠を検索します。たとえば、
-「ビジネスクラスに乗れるか」と「誰にどの順番で承認してもらうか」が別の規程に
-書かれていても、両方を参照できます。この仕組みを Prompt Agent に接続し、Lab 2 と
-同じ質問を送って、Direct search より**回答の根拠が増えること**を確認します。
+Foundry IQ decomposes questions and retrieves evidence from multiple sources.
+For example, it can consult both eligibility for business class and the approvers and their order,
+even when they are in separate policies. Connect it to the Prompt Agent, send the same question as
+Lab 2, and verify **increased evidence coverage** compared with direct search.
 
-ここで作る `contoso-travel-knowledge-lab` は、Lab 7 の plain / Harness Agent と Lab 8 の Hosted
-workflow からも参照する共通の remote knowledge base です。
+The `contoso-travel-knowledge-lab` created here is a shared remote knowledge base
+also used by Lab 7's plain / Harness Agent and Lab 8's Hosted workflow.
 
 > [!WARNING]
-> 検索とモデルの呼び出しには料金が発生します。教材の合成データと質問例を使います。
+> Search and model calls incur charges. Use the workshop's synthetic data and example questions.
 
-## 1. Foundry IQ knowledge base を作成する
+## 1. Create a Foundry IQ knowledge base
 
-Agent に接続する前に、**Build > Knowledge** で knowledge base を作成します。
+Create the knowledge base under **Build > Knowledge** before attaching it to the agent.
 
-1. 左 navigation の **Build > Knowledge** を開きます。
-2. **Connection** に `contoso-travel-search` を選択します。
-3. **Create a knowledge base** を選択します。
+1. Open **Build > Knowledge** in the left navigation.
+2. Set **Connection** to `contoso-travel-search`.
+3. Select **Create a knowledge base**.
+4. In Lab 1's deployment **Outputs > resourceOutputs**, check `evaluation_model_deployment_name.value`.
+5. Set **Name**, then expand **Improve retrieval** to set the model and reasoning effort:
 
-![Knowledge で Search 接続を選び、knowledge base を作成する](../docs/images/lab03-knowledge-home.png)
-
-4. Lab 1 のデプロイの **Outputs > resourceOutputs** で
-   `evaluation_model_deployment_name.value` を確認します。
-5. **Basic configuration** を次のように設定します。
-
-   | 項目 | 値 |
+   | Field | Value |
    |---|---|
    | Name | `contoso-travel-knowledge-lab` |
-   | Chat completions model | `evaluation_model_deployment_name` の値（通常 `gpt-5.5`） |
+   | Chat completions model | Value of `evaluation_model_deployment_name` (normally `gpt-5.5`) |
    | Retrieval reasoning effort | **Medium** |
-   | Output mode | **Extractive data** |
 
-   ![Foundry IQ knowledge base の基本設定](../docs/images/lab03-knowledge-base.png)
+Select `gpt-5.5` from **Deployments** for **Chat completions model**.
+Change **Retrieval reasoning effort** from its default Minimal to **Medium**.
+Leave **Description** and **Retrieval instructions** empty for this exercise.
+The current Portal does not expose **Output mode**. Keep the Portal-created
+setting; do not use an SDK or REST request to force it. Verify the retrieved
+documents in Trace instead of inferring the effective mode from a service default.
 
-**Chat completions model** は **Deployments** の `gpt-5.5` を選びます。
-**Retrieval reasoning effort** は初期値の Minimal から **Medium** に変更します。
-**Description** と **Retrieval instructions** は、この演習では空のままで構いません。
+6. Select **Knowledge sources (Foundry IQ) > Add sources > Azure AI Search Index**.
+7. Configure the dialog and select **Create**:
 
-6. **Knowledge sources (Foundry IQ) > Add sources > Azure AI Search Index** を選択します。
-
-7. ダイアログを次のように設定し、**Create** を選択します。
-
-   | 項目 | 値 |
+   | Field | Value |
    |---|---|
    | Name | `travel-rules-source-lab` |
-   | Description | `出張の利用条件、フライト・宿泊・日当・領収書などの規程。承認手続きは別の source を参照する。` |
+   | Description | `Policies for travel eligibility, flights, accommodation, per diem, and receipts. Consult a separate source for approval procedures.` |
    | Select search index | `contoso-travel-policy` |
 
-   ![Azure AI Search Index を knowledge source にする](../docs/images/lab03-knowledge-source.png)
+8. Select **Add sources > Azure AI Search Index** again and add:
 
-8. もう一度 **Add sources > Azure AI Search Index** を選び、次を追加します。
-
-   | 項目 | 値 |
+   | Field | Value |
    |---|---|
    | Name | `approval-workflow-source-lab` |
-   | Description | `事前承認の申請機能、承認者と順序、標準処理日数を確認するための規程。` |
+   | Description | `Policies for the preapproval application feature, approvers and their order, and standard processing days.` |
    | Select search index | `contoso-travel-approval` |
 
+9. Verify both sources appear, then select **Save knowledge base**.
+10. Wait for `contoso-travel-knowledge-lab` to show **Active** in the list.
 
-9. 2 つの source が一覧にあることを確認して、**Save knowledge base** を選択します。
+The retained [Knowledge home](../docs/images/lab03-knowledge-home.png),
+[basic configuration](../docs/images/lab03-knowledge-base.png),
+[source configuration](../docs/images/lab03-knowledge-source.png), and
+[save knowledge base](../docs/images/lab03-save-knowledge-base.png) screenshots are
+historical/illustrative, not English instructions or success evidence for this revision.
 
-![2つの source を確認して knowledge base を保存する](../docs/images/lab03-save-knowledge-base.png)
+## 2. Connect the knowledge base to the agent
 
-10. 一覧で `contoso-travel-knowledge-lab` の Status が **Active** になるまで待ちます。
+1. Return to **Build > Agents > contoso-travel-assistant**.
+2. To keep comparison conditions consistent, select **Actions > Remove** for
+   **Azure AI Search** in **Tools**, then **Save**.
 
+This does not delete the Search service or indexes; it only changes the connection method.
+The [direct-search removal screenshot](../docs/images/lab03-remove-direct-search.png) is historical/illustrative.
 
-## 2. Knowledge base を agent に接続する
+3. Open `contoso-travel-knowledge-lab` from the **Knowledge** list.
+4. Select **Use in an agent > contoso-travel-assistant**.
+5. Verify the knowledge base appears under the agent's **Knowledge**.
+   This may save automatically. Click **Save** if enabled; otherwise continue.
 
-1. **Build > Agents > contoso-travel-assistant** に戻ります。
-2. 比較条件を揃えるため、**Tools** の **Azure AI Search** で
-   **Actions > Remove** を選び、**Save** します。
+## 3. Check agentic retrieval
 
-![直接検索の tool だけを Remove し、その後 Agent を Save する](../docs/images/lab03-remove-direct-search.png)
-
-Search service や index を削除する操作ではありません。接続方法だけを切り替えます。
-
-3. **Knowledge** の一覧から `contoso-travel-knowledge-lab` を開きます。
-4. **Use in an agent > contoso-travel-assistant** を選択します。
-5. Agent 画面の **Knowledge** に knowledge base が表示されることを確認します。
-   この操作で自動保存される場合があります。**Save** が有効なら押し、無効ならそのまま
-   次へ進みます。
-
-## 3. Agentic retrieval を確認する
-
-Playground で **New chat** を選び、Lab 2 と同じ質問を送ります。Direct search の回答が
-会話履歴から混入しないよう、必ず新しい会話で比較してください。
+Select **New chat** in Playground and send the same question as Lab 2.
+Always compare in a new conversation so direct-search answers do not leak in from chat history.
 
 ```text
-片道12時間の国際線を出発2日前にビジネスクラスで予約したいです。
-直前予約として添付が必要なもの、ビジネスクラスの承認者と順序、
-申請に使う機能名、申請から承認完了までの標準最大営業日数をまとめてください。
+I want to book business class on a 12-hour one-way international flight, 2 days before departure.
+Summarize the attachment required for a last-minute booking, the business-class approvers and their order,
+the feature used to apply, and the standard maximum number of business days from application to completed approval.
 ```
 
-回答内容と citation を、次の根拠文書と照合します。
+Compare the answer and citations against:
 
-| 確認項目 | 根拠文書 |
+| Item to check | Source document |
 |---|---|
-| 直前予約で添付するもの | [フライト規程](../data/policies/02-flights.md) |
-| 承認者と順序 | [承認プロセス規程](../data/policies/09-approval-process.md) |
-| 申請に使う機能 | [承認プロセス規程](../data/policies/09-approval-process.md) |
-| 標準最大所要期間 | [承認プロセス規程](../data/policies/09-approval-process.md) |
+| Last-minute booking attachment | [Flight policy](../data/policies/02-flights.md) |
+| Approvers and their order | [Approval process policy](../data/policies/09-approval-process.md) |
+| Application feature | [Approval process policy](../data/policies/09-approval-process.md) |
+| Standard maximum processing time | [Approval process policy](../data/policies/09-approval-process.md) |
 
-## 4. 回答の根拠を確認する
+## 4. Check the evidence behind the answer
 
-回答末尾の **根拠資料** に、フライト規程と承認プロセス規程が含まれることを確認します。
-category はそれぞれ `flights` と `approval_process` です。追加の FAQ などが
-含まれていても構いません。
+Verify that the citations or **Supporting documents** include flight
+and approval process policies. Check categories `flights` and `approval_process`
+in the retrieved documents in Trace.
+Additional sources such as FAQs are acceptable.
 
-Search index 型の Foundry IQ では、引用が `mcp://searchindex/...` という内部識別子で
-表示されることがあります。これは通常の Web URL ではないため、ブラウザーで直接
-開けることを成功条件にはしません。元資料は上の比較表の文書リンクから確認できます。
+For Search-index-based Foundry IQ, citations may appear as internal identifiers
+such as `mcp://searchindex/...`, or as authenticated Search document URLs.
+An internal identifier is not an ordinary web URL, and a Search document URL
+may require authentication. Do not make the index public or change authentication
+to open a citation. Compare document contents in Trace with the source links
+in the comparison table above.
 
-1. **Traces** で今回の **Trace ID** を開きます。
-2. **Trajectories > Find in trace** で `knowledge_base_retrieve` を検索し、
-   該当する処理の **Input + Output** を開きます。
-3. **Input** の質問と、**Output** に含まれる `flights` / `approval_process` の文書を確認します。
-   取得した文書と回答を見比べ、Lab 2 で記録した結果と比較してください。
+1. Select **Traces** below the answer to open its conversation.
+   Alternatively, find the corresponding conversation under the agent's **Traces**.
+2. Under **Trajectories > Find in trace**, search for `knowledge_base_retrieve`
+   and open the matching operation's **Input + Output**.
+3. Check the question in **Input** and documents with `flights` / `approval_process` in **Output**.
+   Compare retrieved documents with the answer and with the result recorded in Lab 2.
 
-## 完了チェック
+## Completion checklist
 
-- 4 項目すべてが正しく、Direct search より根拠付き回答数が増えている
-- 引用と根拠資料に、フライト規程と承認プロセス規程が含まれる
-- Traces の `knowledge_base_retrieve` 出力に `flights` と `approval_process` の文書がある
+- All four items are correct, with more evidence-backed items than direct search.
+- Citations and supporting documents include flight and approval process policies.
+- `knowledge_base_retrieve` output in Traces includes `flights` and `approval_process` documents.
 
 <details>
-<summary>回答後の確認ポイント</summary>
+<summary>Checks after answering</summary>
 
-比較用質問は次の 4 項目を確認します。
+The comparison question checks these four items:
 
-| 確認項目 | 規程に基づく内容 |
+| Item | Policy-based answer |
 |---|---|
-| 直前予約で添付するもの | Contoso Expense にマネージャーの承認コメントを添付 |
-| 承認者と順序 | マネージャー、次に部門 VP |
-| 申請に使う機能 | `事前承認リクエスト` |
-| 標準最大所要期間 | 4 営業日 |
+| Last-minute booking attachment | Attach the manager's approval comment in Contoso Expense |
+| Approvers and their order | Manager, then department VP |
+| Application feature | `Preapproval request` |
+| Standard maximum processing time | 4 business days |
 
-期待する比較結果は、Direct search が原則 1/4、Foundry IQ が 4/4 です。生成文の表現は
-変動しても、根拠文書を index 間で分離しているため citation coverage で同じ判定ができます。
+The expected comparison is generally 1/4 for direct search and 4/4 for Foundry IQ.
+Generated wording may vary, but separating source documents across indexes allows
+the same assessment through citation coverage.
 
 </details>
 
-背景仕様は
-[What is Foundry IQ?](https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-foundry-iq)、
-[Connect Agents to Foundry IQ](https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect)、
-[Retrieval reasoning effort](https://learn.microsoft.com/azure/search/agentic-retrieval-how-to-set-retrieval-reasoning-effort)、
-[MCP の応答形式](https://learn.microsoft.com/azure/search/agentic-retrieval-how-to-retrieve#review-the-mcp-response)
-を参照してください。
+Background: [What is Foundry IQ?](https://learn.microsoft.com/azure/foundry/agents/concepts/what-is-foundry-iq),
+[Connect Agents to Foundry IQ](https://learn.microsoft.com/azure/foundry/agents/how-to/foundry-iq-connect),
+[Retrieval reasoning effort](https://learn.microsoft.com/azure/search/agentic-retrieval-how-to-set-retrieval-reasoning-effort),
+and [MCP response format](https://learn.microsoft.com/azure/search/agentic-retrieval-how-to-retrieve#review-the-mcp-response).
 
-## 次の Lab
+## Next lab
 
-[Lab 4 — Travel Ops API の Toolbox](04-tools-toolbox.md)
+[Lab 4 — Travel Ops API Toolbox](04-tools-toolbox.md)

@@ -1,135 +1,125 @@
-# 選択ラボ — Work IQ（Microsoft 365 データへの接続、架空プロンプトのみ）
+# Optional lab — Work IQ (Microsoft 365 connections; fictional prompts only)
 
-## この文書の位置づけ
+## Scope of this document
 
-このラボは**本編の所要時間に含まれません**。Work IQ は Foundry agent から
-Microsoft 365 Copilot の Work IQ を呼び出す機能で、**呼び出したユーザー本人の
-Microsoft 365 権限とデータ**にアクセスします。本リポジトリは実在の Microsoft 365 テナント
-データを一切保持・参照しないため、このラボは**設計・接続手順の説明**にとどめ、実際に試す
-場合は必ず**自分自身の、許可されたテナント・アカウント**で、架空のプロンプトのみを使って
-ください。
+This lab is **not included in the main workshop duration**.
+Work IQ lets Foundry agents call Microsoft 365 Copilot Work IQ, accessing the
+**calling user's own Microsoft 365 permissions and data**.
+This repository holds/references no real Microsoft 365 tenant data, so this lab
+describes **design and connection steps** only.
+For practical use, use **your own authorized tenant/account** and fictional prompts only.
 
 > [!WARNING]
-> **Public preview**: Work IQ は public preview 機能で、SLA なしで提供され、本番ワークロード
-> には推奨されません。接続すると、モデルのトークン課金とは別に料金が発生し、データが Azure の
-> コンプライアンス境界の外に送信される場合があります
-> （[公式ドキュメントの Warning 節](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/work-iq)）。
+> **Public preview**: Work IQ has no SLA and is not recommended for production workloads.
+> Connections incur charges beyond model tokens and may send data outside Azure compliance boundaries;
+> see the [official Warning](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/work-iq).
 >
-> 本ラボの手順・サンプルプロンプトは**すべて架空**です。実在の同僚のメール・会議・ファイルを
-> 対象にした操作を、他者の許可なく行わないでください。
+> All procedures and sample prompts here are **fictional**.
+> Do not operate on real colleagues' email, meetings, or files without permission.
 
-## 1. ゴール
+## 1. Goal
 
-`contoso-travel-assistant` に Work IQ ツールを追加し、「自分自身の」架空の Microsoft 365
-コンテキスト（例: 自分宛のメール、自分のカレンダー）に対する自然言語の問い合わせを、
-Agent-to-Agent（A2A）プロトコル経由で Work IQ に委譲する仕組みを理解します。
+Add a Work IQ tool to `contoso-travel-assistant` and understand delegation over
+Agent-to-Agent (A2A) for natural-language questions about your own fictional Microsoft 365 context,
+such as mail addressed to you or your calendar.
 
-## 2. 前提条件（resource group Owner だけでは不足します）
+## 2. Prerequisites (resource group Owner is insufficient)
 
 > [!IMPORTANT]
-> Work IQ のテナント初期設定は **Microsoft Entra Global Administrator** の 1 回限りの作業です。
-> 本編の参加者権限（既存 resource group の Owner）では代替できません。すでに組織で Work IQ
-> connection が用意されている場合は、この節の「テナント初期設定」は読み飛ばして
-> 「agent へ追加する」節から進めてください。
+> Tenant setup is a one-time **Microsoft Entra Global Administrator** task.
+> Main-workshop Owner permissions on an existing RG cannot substitute for it.
+> If a Work IQ connection already exists, skip tenant setup and proceed to adding it to the agent.
 
-### 2.1 商用要件: 課金方式ごとの違い
+### 2.1 Commercial requirements by billing route
 
-| 接続経路 | 要件の種類 | 要件 |
+| Connection route | Requirement type | Requirement |
 |---|---|---|
-| A2A・REST・MCP 経由の Work IQ API | **従量課金** | [Copilot Credits の従量課金](https://learn.microsoft.com/microsoft-365-copilot/usage-based-billing-overview-copilot-credits) を有効化。コネクタライセンスは不要 |
-| コネクタ経由の Microsoft 365 ツール（Teams、Word、Outlook Calendar/Mail、SharePoint、OneDrive など） | **コネクタライセンス** | 選択したコネクタごとの前提条件を確認。呼び出す各ユーザーに [Microsoft 365 Copilot ライセンス](https://www.microsoft.com/microsoft-365-copilot/pricing/individuals) が必要な場合がある |
+| Work IQ API through A2A, REST, or MCP | **Usage-based billing** | Enable [Copilot Credits usage-based billing](https://learn.microsoft.com/microsoft-365-copilot/usage-based-billing-overview-copilot-credits); no connector license required |
+| Connector-based Microsoft 365 tools (Teams, Word, Outlook Calendar/Mail, SharePoint, OneDrive, etc.) | **Connector licenses** | Check each selected connector's prerequisites; each caller may need a [Microsoft 365 Copilot license](https://www.microsoft.com/microsoft-365-copilot/pricing/individuals) |
 
-「Work IQ Chat」（A2A エンドポイント経由）と、それ以外の個別コネクタ（Copilot Chat、Teams、
-Word、Outlook Calendar/Mail、Microsoft 365 user profile、SharePoint、OneDrive）とで、課金・
-ライセンスの性質が異なる点に注意してください。
+Distinguish billing/licensing for **Work IQ Chat** (A2A endpoint) from individual
+connectors (Copilot Chat, Teams, Word, Outlook Calendar/Mail, Microsoft 365 user profile,
+SharePoint, OneDrive).
 
-### 2.2 Azure RBAC ロール（Foundry 側）
+### 2.2 Azure RBAC roles (Foundry)
 
-| ロール | 対象 | 用途 |
+| Role | Assigned to | Purpose |
 |---|---|---|
-| **Foundry User** | 開発者本人、agent の実行時 identity、OAuth フローに関わるユーザー identity | Work IQ ツールを使う agent の作成・実行 |
-| **Foundry Project Manager** | 接続を作成する担当者 | Work IQ エンドポイントへの Foundry connection 作成 |
+| **Foundry User** | Developer, agent runtime identity, OAuth user identities | Create/run agents using Work IQ |
+| **Foundry Project Manager** | Connection creator | Create Foundry connections to Work IQ endpoints |
 
-### 2.3 テナント初期設定（1 回限り、Global Administrator が実施）
+### 2.3 Tenant setup (once, by Global Administrator)
 
-組織で最初の Work IQ connection を作る際、Global Administrator は次を行います。
+Before the organization's first Work IQ connection, the Global Administrator:
 
-1. Work IQ サービスプリンシパルをテナントにプロビジョニングする。
-2. delegated 権限 `WorkIQAgent.Ask` に対する**テナント全体の admin consent** を許可する。
+1. Provisions the Work IQ service principal in the tenant.
+2. Grants **tenant-wide admin consent** to delegated permission `WorkIQAgent.Ask`.
 
 > [!NOTE]
-> Global Administrator ロールは、この初期設定のためだけに
-> [Microsoft Entra Privileged Identity Management (PIM)](https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure)
-> で**ジャストインタイムに有効化**し、設定完了後は**非活性化**することが推奨されます。
-> 日常的に Work IQ を使うユーザーはこのロールを必要としません。
+> Activate Global Administrator **just in time** for this setup through
+> [Microsoft Entra Privileged Identity Management (PIM)](https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure),
+> then **deactivate** it. Ordinary Work IQ users do not need this role.
 
-この初期設定が完了していれば、以降は Foundry User + Foundry Project Manager ロールを持つ
-開発者が、Work IQ connection を作成し、agent に追加できます。
+After setup, developers with Foundry User + Foundry Project Manager can create
+Work IQ connections and add them to agents.
 
-### 2.4 委任ユーザーコンテキスト（delegated user context）と On-Behalf-Of（OBO）
+### 2.4 Delegated user context and On-Behalf-Of (OBO)
 
-Work IQ へのリクエストは、**呼び出したユーザー本人の Microsoft 365 権限**の範囲でのみ実行
-されます。Foundry は A2A プロトコル経由でリクエストを Work IQ に転送し、認証は
-**On-Behalf-Of (OBO)** フローを使うため、agent 自身の identity ではなく、サインインしている
-ユーザーの delegated 権限で実行されます。これにより、Work IQ は常にユーザー本人が Microsoft
-365 上で閲覧できる範囲のメール・会議・ファイル・チャットにしかアクセスできません。
+Requests run only within **the calling user's Microsoft 365 permissions**.
+Foundry forwards them over A2A using **On-Behalf-Of (OBO)** authentication,
+not the agent's own identity. Work IQ can access only mail, meetings, files,
+and chats visible to the signed-in user.
 
-### 2.5 Foundry Toolkit / Node.js 前提条件
+### 2.5 Foundry Toolkit / Node.js prerequisites
 
-- **Foundry Toolkit**: [Visual Studio Code](https://code.visualstudio.com/) と
+- **Foundry Toolkit**: Install [Visual Studio Code](https://code.visualstudio.com/) and
   [Foundry Toolkit for Visual Studio Code](https://code.visualstudio.com/docs/intelligentapps/overview#_install-and-setup)
-  をインストールしておくと、Toolbox 経由で Work IQ を追加する UI フローが使えます。
-- **JavaScript SDK を使う場合**: Node.js **22 以上**、`@azure/ai-projects` **2.4.0 以上**、
-  `@azure/identity` が必要です（Python SDK を使う場合は `azure-ai-projects>=2.3.0` で足ります）。
+  for the Toolbox UI route.
+- **JavaScript SDK**: Node.js **22 or later**, `@azure/ai-projects` **2.4.0 or later**,
+  and `@azure/identity`. For Python, `azure-ai-projects>=2.3.0` suffices.
 
-### 2.6 直接 A2A 呼び出しをする場合
+### 2.6 Direct A2A calls
 
-Work IQ は A2A プロトコルの **v1.0** と **v0.3** の両方をサポートします。新規実装では
-`A2A-Version: 1.0` ヘッダーを送って v1 のメソッド名を使うことが推奨されます（ヘッダー省略時は
-v0.3 として扱われます）。時刻に関連するリクエストには位置情報のメタデータを含め、常に
-delegated user authentication を使用してください。
+Work IQ supports A2A **v1.0** and **v0.3**.
+New implementations should send `A2A-Version: 1.0` and use v1 method names;
+omitting the header uses v0.3.
+Include location metadata for time-related requests and always use delegated user authentication.
 
-## 3. データ・コンプライアンスに関する重要な警告
+## 3. Important data and compliance warnings
 
 > [!WARNING]
-> - Work IQ に接続すると、コストが発生し、データが Azure のコンプライアンス境界の外に送信
->   される場合があります。データがどの境界を越えるか、組織のコンプライアンス・地理的境界に
->   どう影響するかを判断し、必要な許可・境界・承認を得るのは利用者の責任です。
-> - 本ラボで送ってよいのは、**自分自身が実際にアクセス権を持つ、かつ許可された範囲**の
->   架空・業務上問題のないプロンプトのみです。他者のメール・会議・ファイルの内容を、本人の
->   同意なしに要約・引用させる操作は行わないでください。
-> - 本リポジトリの Contoso データ（`data/`）は Microsoft 365 とは無関係な、規程文書・経費・
->   旅程の合成データです。Work IQ の応答に Contoso の合成データが混ざることはありません
->   （Work IQ は Microsoft 365 テナントのデータのみを扱います）。
+> - Work IQ incurs charges and may send data outside Azure compliance boundaries.
+>   Users must assess compliance/geographic boundaries and obtain necessary permissions/approvals.
+> - Use only fictional, business-appropriate prompts within **your own actual authorized access**.
+>   Do not summarize or quote others' mail, meetings, or files without their consent.
+> - Contoso `data/` is synthetic policy, expense, and itinerary data unrelated to Microsoft 365.
+>   It does not appear in Work IQ responses, which use only Microsoft 365 tenant data.
 
-## 4. Contoso シナリオでの適用イメージ（架空プロンプト例）
+## 4. Contoso scenario (fictional prompt examples)
 
-Work IQ 自体は実データにアクセスする機能のため、本ラボで使ってよいプロンプトは、
-「自分自身の実際のメール・カレンダー」に対する**一般的な操作の例**にとどめます（Contoso の
-架空の出張申請に関連する文脈だけを添えた、実データ照会の例）。
+Because Work IQ accesses real data, prompts are limited to **general operation examples**
+against your own mail/calendar, with fictional Contoso travel-request context:
 
-- 「直近の Contoso 出張申請に関するメールを要約して」
-- 「今週、出張の承認待ちになっている会議はある？」
+- "Summarize recent emails about my Contoso travel request."
+- "Are there meetings this week awaiting travel approval?"
 
-これらは Work IQ の一般的な使い方を示すためのテンプレートであり、実行結果は実際にサインイン
-したユーザー自身の Microsoft 365 データに基づきます。実行する場合は、必ず自分自身のテスト
-アカウントか、許可を得たアカウントで行ってください。
+These are usage templates; execution results depend on the actual signed-in user's Microsoft 365 data.
+Use your own test account or an explicitly authorized account.
 
-## 5. agent へ追加する
+## 5. Add to an agent
 
-### 5.1 Foundry Toolkit（推奨パターン）
+### 5.1 Foundry Toolkit (recommended)
 
-1. Foundry Toolkit の **My Resources > Tools** から **+ Add Toolbox**。
-2. **Build a Custom Toolbox** タブでツールボックス名・説明を入力。
-3. **Add tools** → **Work IQ** を選択。
-4. **Add the Work IQ Tool** で使いたい Microsoft 365 Copilot データを選択します。
-   **Work IQ Chat** は A2A エンドポイント経由、それ以外（Copilot Chat、Teams、Word、Outlook
-   Calendar/Mail、Microsoft 365 user profile、SharePoint、OneDrive）は MCP エンドポイント
-   経由で接続されます。
-5. 選択した各オプションについて、既存の connection を選ぶか **Create new connection** を選択。
-6. **Add** → **Publish**。
+1. In Foundry Toolkit **My Resources > Tools**, select **+ Add Toolbox**.
+2. Under **Build a Custom Toolbox**, enter a Toolbox name and description.
+3. Select **Add tools > Work IQ**.
+4. In **Add the Work IQ Tool**, select the Microsoft 365 Copilot data to use.
+   **Work IQ Chat** uses A2A; the others (Copilot Chat, Teams, Word,
+   Outlook Calendar/Mail, Microsoft 365 user profile, SharePoint, OneDrive) use MCP.
+5. For each option, select an existing connection or **Create new connection**.
+6. Select **Add > Publish**.
 
-### 5.2 SDK で確認する場合（参考。本編スクリプトは変更しません）
+### 5.2 SDK inspection (reference; do not change main scripts)
 
 ```python
 from azure.ai.projects import AIProjectClient
@@ -145,25 +135,24 @@ with (
         agent_name="contoso-travel-assistant-workiq-demo",
         definition=PromptAgentDefinition(
             model=PRIMARY_MODEL_DEPLOYMENT_NAME,
-            instructions="Work IQ を使って、ユーザー自身の Microsoft 365 コンテキストに関する質問に答えてください。",
+            instructions="Use Work IQ to answer questions about the user's own Microsoft 365 context.",
             tools=[tool_payload],
         ),
     )
 ```
 
-このコードは**参考実装**であり、`scripts/` 配下には追加しません。`WORK_IQ_PROJECT_CONNECTION_ID`
-は Global Administrator のテナント初期設定完了後に、Foundry Project Manager が作成した
-connection の完全なリソース ID です。
+This is a **reference implementation**, not an addition to `scripts/`.
+`WORK_IQ_PROJECT_CONNECTION_ID` is the full resource ID of the connection created by
+the Foundry Project Manager after Global Administrator tenant setup.
 
-## 6. Cleanup（本編の専用 resource group cleanup 対象外）
+## 6. Cleanup outside the main dedicated resource group
 
-- Work IQ 用に作成した agent version・Foundry connection は Foundry project 内のオブジェクトの
-  ため、Foundry portal または SDK（`project_client.agents.delete_version(...)`）から削除
-  できます。
-- テナント全体の Work IQ サービスプリンシパル・admin consent は組織単位の設定です。個々の
-  ワークショップ参加者が削除すべきものではなく、組織のテナント管理者の判断に委ねてください。
+- Work IQ agent versions and Foundry connections are project objects; delete them in
+  Foundry Portal or the SDK (`project_client.agents.delete_version(...)`).
+- The tenant-wide Work IQ service principal and admin consent are organizational settings.
+  Individual participants must not delete them; defer to tenant administrators.
 
-## 公式参照
+## Official references
 
 - [Connect agents to Microsoft 365 with Work IQ (preview)](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/work-iq)
 - [Work IQ API overview](https://learn.microsoft.com/microsoft-365/copilot/extensibility/work-iq-api-overview)
@@ -171,8 +160,8 @@ connection の完全なリソース ID です。
 - [Microsoft Entra Privileged Identity Management](https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure)
 - [Curate intent-based toolbox in Foundry](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/toolbox)
 
-## 関連リンク
+## Related links
 
-- [選択ラボ index](README.md)
-- [A2A・Routines・Publish](a2a-routines-publish.md)（Work IQ が使う A2A プロトコルの詳細）
-- [本編 Lab 4 — Tools・Toolbox](../04-tools-toolbox.md)
+- [Optional lab index](README.md)
+- [A2A, Routines, and Publish](a2a-routines-publish.md) (A2A protocol details)
+- [Lab 4 — Tools and Toolbox](../04-tools-toolbox.md)

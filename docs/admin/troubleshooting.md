@@ -1,75 +1,82 @@
-# 管理者向けトラブルシューティング
+# Administrator troubleshooting
 
-## テンプレート・利用枠・ポリシー
+## Template, quotas, and policies
 
-- 手動作成した専用 RG を選択し、`infra/azuredeploy.json` 本体を **Load file** で読み込んだか確認します。
-- RG の **Deployments / Activity log** で失敗した operation、provider registration、lock、
-  Policy、Japan East の固定モデルと Search Basic の利用枠を確認します。
-- Bicep と生成 JSON の一致、確認済みモデル・image・source の既定値を
-  [配布ガイド](prerequisites.md)と照合します。別リージョン・モデルに切り替えません。
+- Check that the manually created dedicated RG was selected and the actual
+  `infra/azuredeploy.json` template was loaded with **Load file**.
+- In the RG's **Deployments / Activity log**, check the failed operation, provider
+  registration, locks, Policy, fixed Japan East models, and Search Basic quotas.
+- Compare Bicep / generated JSON consistency and verified model, image, and source
+  defaults with the [distribution guide](prerequisites.md). Do not switch regions or models.
 
-## 初期化処理
+## Initialization
 
-1. Deployment Scripts の **Overview / Logs** で、source 取得、依存関係、
-   Search seed、評価データ・rubric の準備、validation のどこが失敗したかを特定します。
-2. `participantObjectIdOverride` と対象参加者、role scope を確認します。
-   bootstrap identity と参加者は別です。403 を広い権限の追加で回避しません。
-3. 同じ RG と確認済み入力で修復します。初期化を意図的に再実行する場合だけ `bootstrapRunId` を変更します。
-4. 全体が **Succeeded** になり、`workshopContext.setup_status = complete` と
-   `source_revision` が一致することを確認します。
+1. In Deployment Scripts **Overview / Logs**, identify the failing stage: source
+   retrieval, dependencies, Search seed, evaluation data / rubric preparation, or validation.
+2. Check `participantObjectIdOverride`, the intended participant, and role scopes.
+   The bootstrap identity and participant are different. Do not bypass 403 errors
+   by granting broader permissions.
+3. Repair using the same RG and verified inputs. Change `bootstrapRunId` only when
+   intentionally rerunning initialization.
+4. Verify that the entire deployment is **Succeeded**,
+   `workshopContext.setup_status = complete`, and `source_revision` matches.
 
-失敗時に自動 rollback されるとは限りません。以前の成功を今回の成功とみなさず、
-部分リソースも確認します。ログの保持・再試行・一時実行基盤の詳細は
-[infra/README.md](../../infra/README.md) を参照してください。
+Failure does not necessarily trigger automatic rollback. Do not treat a previous
+success as success for this run; also inspect partial resources.
+See [infra/README.md](../../infra/README.md) for log retention, retries, and temporary infrastructure.
 
-## Application Insights の自動アラート
+## Application Insights automatic alerts
 
-ハンズオンでは **トレース収集・閲覧だけを使い、自動アラートは演習の対象外**とします。
-テンプレートはアラートルールや通知先を作成しません。トレース収集には
-`Microsoft.Insights` と `Microsoft.OperationalInsights` を使い、
-`Microsoft.AlertsManagement` の登録は参加条件に含めません。
-`admin-preflight.sh` もこの provider を検査・警告・登録しません。
+The workshop uses **trace collection and viewing only; automatic alerts are outside
+the exercises**. The template creates neither alert rules nor notification targets.
+Trace collection uses `Microsoft.Insights` and `Microsoft.OperationalInsights`;
+registration of `Microsoft.AlertsManagement` is not a participation requirement.
+`admin-preflight.sh` does not check, warn about, or register this provider.
 
-ただし、これは **Azure 側の既定アラートの自動作成を停止する設定ではありません**。
-Application Insights の作成時には、Azure が Failure Anomalies アラートを別途作成します。
-`Failure-Anomalies-Alert-Rule-Deployment-*` だけが `MissingSubscriptionRegistration` で失敗し、
-`Microsoft.AlertsManagement` の未登録を示した場合は、ハンズオン本体とは分けて確認します。
-本体の deployment が **Succeeded**、`workshopContext.setup_status = complete`、
-さらに Lab 9 で使うトレースが記録・閲覧できることを確認してください。
+However, this **does not stop Azure from automatically creating default alerts**.
+When Application Insights is created, Azure separately creates a Failure Anomalies
+alert. If only `Failure-Anomalies-Alert-Rule-Deployment-*` fails with
+`MissingSubscriptionRegistration` indicating unregistered `Microsoft.AlertsManagement`,
+investigate separately from the workshop deployment.
+Check that the main deployment is **Succeeded**, `workshopContext.setup_status = complete`,
+and traces needed in Lab 9 can be recorded and viewed.
 
-この演習のために provider を追加登録したり、アラートを再作成したりする必要はありません。
-すでに作成済みのアラートや登録済み provider は、この変更では無効化・削除・登録解除しません。
-既定アラートの通知も止める必要がある場合は、管理者が対象ルールを特定し、別途無効化します。
-履歴を消して失敗を隠したり、参加者・bootstrap identity の権限を広げたりしません。
+You do not need to register another provider or recreate alerts for this exercise.
+This change does not disable / delete existing alerts or unregister existing providers.
+If default alert notifications must also stop, an administrator must identify the
+specific rule and disable it separately. Do not erase history to hide failures or
+broaden participant / bootstrap identity permissions.
 
-[既定アラートの作成と管理（Microsoft Learn）](https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#managing-failure-anomalies-alert-rules)
-を参照してください。
+See [creating and managing default alerts (Microsoft Learn)](https://learn.microsoft.com/azure/azure-monitor/alerts/proactive-failure-diagnostics#managing-failure-anomalies-alert-rules).
 
-## GitHub の共通教材と Notebook
+## GitHub shared materials and Notebooks
 
-| 症状 | 確認すること |
+| Symptom | Check |
 |---|---|
-| assets が取得できない | 配布参照先が公開され、bootstrap / 共通教材の revision が互換か |
-| Skill を登録できない | PC の ZIP を選び、直下に `SKILL.md` があるか |
-| OpenAPI が別 API を呼ぶ | `servers[0].url` が本人の `travelApiBaseUrl` と一致するか |
-| カーネルが出ない | **Select Kernel > Jupyter Kernel...** と post-create の成功を確認。既存のホスト環境を変更しない |
-| CLI 認証エラー | Notebook と同じコンテナーで本人が Azure CLI にサインインしたか |
-| context 取得が失敗 | subscription / RG、成功した schema `2.0` の `workshopContext`、読み取り権限を確認 |
-| deployment 候補が複数 | 対象を確認してから、管理者が `configure_workshop.py --deployment <name>` を指定。推測しない |
-| context の対象違い | 別環境の設定を上書きせず、現在の checkout と目的の環境を確認 |
+| Cannot retrieve assets | Is the distribution reference public, and are bootstrap / shared material revisions compatible? |
+| Cannot register a Skill | Select the ZIP on the PC; check that `SKILL.md` is at its root. |
+| OpenAPI calls another API | Does `servers[0].url` match the participant's `travelApiBaseUrl`? |
+| Kernel is missing | Check **Select Kernel > Jupyter Kernel...** and post-create success. Do not modify the existing host environment. |
+| CLI authentication error | Did the participant sign in to Azure CLI in the same container as the Notebook? |
+| Cannot retrieve context | Check subscription / RG, successful schema `2.0` `workshopContext`, and read permissions. |
+| Multiple deployment candidates | After confirming the target, an administrator specifies `configure_workshop.py --deployment <name>`. Do not guess. |
+| Context targets another environment | Check the current checkout and intended environment without overwriting another environment's settings. |
 
-操作は [Codespaces の共通手順](../participant/environments/codespaces.md#共通手順)を使います。
-API key、手動 token の注入、認証情報の共有で代替しません。
+Use the [shared Codespaces procedure](../participant/environments/codespaces.md#shared-steps).
+Do not substitute API keys, manually injected tokens, or shared credentials.
 
-## 削除に失敗した場合
+## When deletion fails
 
-[Lab 9](../../labs/09-observability-cleanup.md) の順に、保存、Hosted Agent versions の削除、
-Codespace の停止・削除を確認してから、Azure Portal で本人の専用 RG を削除します。
-削除中は再送せず、失敗時は **Activity log**、lock、deny assignment を確認します。
-**Resource groups** 一覧から消えたことまで確認し、deployment history の削除だけで完了にしません。
+Follow [Lab 9](../../labs/09-observability-cleanup.md): verify saving work, deleting
+Hosted Agent versions, and stopping / deleting the Codespace before deleting the
+participant's dedicated RG in Azure Portal. Do not resubmit during deletion.
+On failure, check **Activity log**, locks, and deny assignments.
+Verify that the RG disappears from **Resource groups**; deleting deployment history
+alone is not completion.
 
-## 検証結果の扱い
+## Handling validation results
 
-実 UI の検証では Azure Portal、Foundry Portal、Codespaces / VS Code の操作結果を確認します。
-CI、SDK 単体の成功や simulated JSON を、未実施の UI 操作の成功とみなしません。
-アカウント固有の情報・私的証跡は repository に保存しません。
+For real UI validation, check operation results in Azure Portal, Foundry Portal,
+and Codespaces / VS Code. CI, isolated SDK success, and simulated JSON are not
+proof that unperformed UI operations succeeded.
+Do not store account-specific information or private evidence in the repository.

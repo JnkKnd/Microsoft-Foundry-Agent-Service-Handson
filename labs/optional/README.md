@@ -1,18 +1,20 @@
-# 追加演習
+# Optional labs
 
-本編 Lab 1〜9 の完了後に、組織の許可と追加費用を確認して実施します。
-本編の RG 手動作成 → カスタムテンプレート → GitHub 共通教材・Codespaces を置き換える準備手順ではありません。
-追加インフラを伴う付録は別の承認済み検証環境で実施し、本編の固定構成を変更しません。
+After completing Labs 1–9, check organizational approval and additional costs before proceeding.
+These are not alternative preparation steps for the main workshop's manual RG creation →
+custom template → GitHub shared materials / Codespaces route.
+Use a separate approved test environment for appendices with additional infrastructure;
+do not change the main workshop's fixed configuration.
 
-| Lab | 追加要件 |
+| Lab | Additional requirements |
 |---|---|
-| [Hosted Agent の応用](advanced-hosted-agent.md) | コンテナーレジストリと追加の片付け |
-| [azd の付録](azd-appendix.md) | `azd` と独立した環境の作成・削除 |
-| [CI/CD と継続的評価](cicd-continuous-evaluation.md) | GitHub Actions、フェデレーション ID、承認環境 |
-| [A2A・定期実行・公開](a2a-routines-publish.md) | Preview 機能、チャネル、定期実行の権限 |
-| [Fabric IQ](fabric-iq.md) | Microsoft Fabric の容量、ワークスペース、接続 |
-| [Work IQ](work-iq.md) | Microsoft 365 Copilot と組織データ権限 |
+| [Advanced Hosted Agent](advanced-hosted-agent.md) | Container registry and additional cleanup |
+| [azd appendix](azd-appendix.md) | `azd` and creation/deletion of a separate environment |
+| [CI/CD and continuous evaluation](cicd-continuous-evaluation.md) | GitHub Actions, federated identity, and approval environments |
+| [A2A, routines, and publishing](a2a-routines-publish.md) | Preview features, channels, and scheduling permissions |
+| [Fabric IQ](fabric-iq.md) | Microsoft Fabric capacity, workspace, and connections |
+| [Work IQ](work-iq.md) | Microsoft 365 Copilot and organizational data permissions |
 
-追加リソースは、本編の専用リソースグループを削除しても残る場合があります。
-各ページの片付けを先に実施し、課金対象が残っていないことを確認してください。
-実在データ、秘密情報、本番環境への接続を、演習の合成データと混在させません。
+Additional resources may remain after the main dedicated RG is deleted.
+Perform each page's cleanup first and check for remaining billable resources.
+Do not mix real data, secrets, or production connections with workshop synthetic data.

@@ -10,7 +10,7 @@
     "amount": 14500,
     "amount_jpy": 14500,
     "has_image": true,
-    "note": "domestic_tier1 上限(15,000円)内"
+    "note": "Within the domestic_tier1 cap (JPY 15,000)"
   },
   {
     "receipt_id": "rcpt-0002",
@@ -23,7 +23,7 @@
     "amount": 1200,
     "amount_jpy": 1200,
     "has_image": true,
-    "note": "22時以降、終電なしのため利用"
+    "note": "Used after 22:00 because the last train was no longer available"
   },
   {
     "receipt_id": "rcpt-0003",
@@ -36,7 +36,7 @@
     "amount": 32000,
     "amount_jpy": 32000,
     "has_image": true,
-    "note": "東京-福岡 往復エコノミー"
+    "note": "Tokyo–Fukuoka round-trip economy"
   },
   {
     "receipt_id": "rcpt-0004",
@@ -49,7 +49,7 @@
     "amount": 11800,
     "amount_jpy": 11800,
     "has_image": true,
-    "note": "domestic_tier1 上限(15,000円)内"
+    "note": "Within the domestic_tier1 cap (JPY 15,000)"
   },
   {
     "receipt_id": "rcpt-0005",
@@ -62,7 +62,7 @@
     "amount": 4200,
     "amount_jpy": 630000,
     "has_image": true,
-    "note": "東京-ニューヨーク往復ビジネス。VP事前承認済みを想定した架空データ"
+    "note": "Tokyo–New York round-trip business. Fictional data assuming VP preapproval"
   },
   {
     "receipt_id": "rcpt-0006",
@@ -75,7 +75,7 @@
     "amount": 165,
     "amount_jpy": 24750,
     "has_image": true,
-    "note": "international_tier_a 上限(25,000円)内"
+    "note": "Within the international_tier_a cap (JPY 25,000)"
   },
   {
     "receipt_id": "rcpt-0007",
@@ -88,7 +88,7 @@
     "amount": 300,
     "amount_jpy": 45000,
     "has_image": false,
-    "note": "展示ブース什器レンタル。紛失申告書による精算上限5,000円のみ対象。残額40,000円は別途例外承認が必要な架空データ"
+    "note": "Exhibition booth furniture rental. Only JPY 5,000 is eligible under the lost-receipt affidavit cap. Fictional data requiring separate exception approval for the remaining JPY 40,000"
   },
   {
     "receipt_id": "rcpt-0008",
@@ -101,7 +101,7 @@
     "amount": 58000,
     "amount_jpy": 58000,
     "has_image": true,
-    "note": "東京-シンガポール往復プレミアムエコノミー"
+    "note": "Tokyo–Singapore round-trip premium economy"
   },
   {
     "receipt_id": "rcpt-0009",
@@ -114,7 +114,7 @@
     "amount": 240,
     "amount_jpy": 26400,
     "has_image": true,
-    "note": "international_tier_b 上限(20,000円)を超過。マネージャー事前承認済みを想定した架空データ"
+    "note": "Exceeds the international_tier_b cap (JPY 20,000). Fictional data assuming manager preapproval"
   },
   {
     "receipt_id": "rcpt-0010",
@@ -127,7 +127,7 @@
     "amount": 28000,
     "amount_jpy": 28000,
     "has_image": true,
-    "note": "大阪-札幌往復エコノミー"
+    "note": "Osaka–Sapporo round-trip economy"
   },
   {
     "receipt_id": "rcpt-0011",
@@ -140,7 +140,7 @@
     "amount": 3100,
     "amount_jpy": 589000,
     "has_image": true,
-    "note": "東京-ロンドン往復ビジネス。VP事前承認済みを想定した架空データ"
+    "note": "Tokyo–London round-trip business. Fictional data assuming VP preapproval"
   },
   {
     "receipt_id": "rcpt-0012",
@@ -153,7 +153,7 @@
     "amount": 130,
     "amount_jpy": 24700,
     "has_image": true,
-    "note": "international_tier_a 上限(25,000円)内"
+    "note": "Within the international_tier_a cap (JPY 25,000)"
   },
   {
     "receipt_id": "rcpt-0013",
@@ -166,7 +166,7 @@
     "amount": 4800,
     "amount_jpy": 91200,
     "has_image": true,
-    "note": "東京-香港往復エコノミー"
+    "note": "Tokyo–Hong Kong round-trip economy"
   },
   {
     "receipt_id": "rcpt-0014",
@@ -179,6 +179,6 @@
     "amount": 3400,
     "amount_jpy": 3400,
     "has_image": false,
-    "note": "重量機材運搬のため利用。領収書紛失のため紛失申告書で対応(規程の上限額の適用対象)"
+    "note": "Used to transport heavy equipment. Lost receipt handled with an affidavit (subject to policy caps)"
   }
 ]

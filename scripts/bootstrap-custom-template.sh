@@ -25,7 +25,7 @@ import time
 import urllib.error
 import urllib.request
 
-REPOSITORY = "matayuuu/Microsoft-Foundry-Agent-Service-Handson"
+REPOSITORY = "JnkKnd/Microsoft-Foundry-Agent-Service-Handson"
 MAX_ARCHIVE_BYTES = 128 * 1024 * 1024
 MAX_EXTRACTED_BYTES = 512 * 1024 * 1024
 MAX_MEMBERS = 20000

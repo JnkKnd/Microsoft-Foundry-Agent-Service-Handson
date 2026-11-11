@@ -1,36 +1,40 @@
 # Contoso Travel Ops API
 
-[開発者向けガイド](../../docs/development/README.md) / [ハンズオンの構成](../../docs/development/architecture.md)
+[Developer guide](../../docs/development/README.md) / [Workshop architecture](../../docs/development/architecture.md)
 
-Microsoft Foundry Agent Service ハンズオンの「Contoso 出張・経費」シナリオで使う、
-状態を保持しない模擬 API です。データベース、外部呼び出し、乱数は使いません。
-要求とメモリー上の固定データから応答を決定するため、エージェントの評価・最適化で同じ条件を再現できます。
+A stateless mock API for the "Contoso travel and expenses" scenario in the Microsoft
+Foundry Agent Service workshop. It uses no database, external calls, or randomness.
+Responses are determined from requests and fixed in-memory data, allowing identical
+conditions to be reproduced for agent evaluation and optimization.
 
-## 構成と制約
+## Structure and constraints
 
-- `travel_api/domain` は入出力を持たない規程ルール、
-  `travel_api/application` はフレームワークに依存しないユースケース、
-  `travel_api/adapters/api` は要求・応答の変換と HTTP ステータスへの対応付けを行う FastAPI アダプターです。
-- OpenAPI 3.1 を使い、各操作に `operationId` と型付きの Pydantic 要求・応答モデルを定義します。
-- `POST /preapprovals` は常にシミュレーションです。判定値は `simulated_` で始まり、
-  応答に注意書きを含めます。実際の出張承認を与えるものではありません。
-- 個人情報は扱いません。受け渡す識別子は `employee-001` などの合成データ用の別名だけです。
+- `travel_api/domain` contains policy rules without I/O;
+  `travel_api/application` contains framework-independent use cases;
+  `travel_api/adapters/api` is the FastAPI adapter converting requests / responses
+  and mapping them to HTTP status codes.
+- Uses OpenAPI 3.1, with an `operationId` and typed Pydantic request / response
+  models for each operation.
+- `POST /preapprovals` is always a simulation. Decision values begin with
+  `simulated_` and responses include a warning. It does not grant actual travel approval.
+- No personal information is handled. Identifiers are only aliases for synthetic
+  data, such as `employee-001`.
 
-## エンドポイント
+## Endpoints
 
-| メソッド | パス | operationId | 用途 |
+| Method | Path | operationId | Purpose |
 |---|---|---|---|
-| GET | `/health` | `getHealth` | 稼働・応答可能状態の確認 |
-| GET | `/per-diem?city=&date=` | `getPerDiem` | 都市・日付に対応する日当と宿泊上限 |
-| POST | `/trip-estimates` | `createTripEstimate` | 航空券・宿泊・食事の費用見積もり |
-| POST | `/preapprovals` | `createPreapproval` | 事前承認の模擬判定 |
+| GET | `/health` | `getHealth` | Check health and readiness |
+| GET | `/per-diem?city=&date=` | `getPerDiem` | Per diem and lodging limits for a city / date |
+| POST | `/trip-estimates` | `createTripEstimate` | Estimate airfare, lodging, and meal costs |
+| POST | `/preapprovals` | `createPreapproval` | Simulated preapproval decision |
 
-対話型の OpenAPI 文書は `/docs`（Swagger UI）と `/redoc`、
-JSON の仕様は `/openapi.json` で提供します。
+Interactive OpenAPI documentation is available at `/docs` (Swagger UI) and `/redoc`;
+the JSON specification is at `/openapi.json`.
 
-## ローカルでの実行
+## Running locally
 
-Python 3.12 が必要です。このディレクトリ（`src/travel-api`）から実行します。
+Requires Python 3.12. Run from this directory (`src/travel-api`).
 
 ```bash
 python -m venv .venv
@@ -41,14 +45,14 @@ python -m pip install -e ".[dev]"
 uvicorn travel_api.main:app --host 0.0.0.0 --port 8080
 ```
 
-別の Terminal から応答を確認します。
+Check responses from another Terminal:
 
 ```bash
 curl http://127.0.0.1:8080/health
 curl "http://127.0.0.1:8080/per-diem?city=Osaka&date=2026-05-11"
 ```
 
-## Docker での実行
+## Running with Docker
 
 ```bash
 docker build -t travel-ops-api:local .
@@ -58,20 +62,20 @@ docker run --rm -p 8080:8080 \
 curl http://127.0.0.1:8080/health
 ```
 
-コンテナーは root 以外のユーザーで動き、ポート 8080 で待ち受けます。
-`HEALTHCHECK` は Python 標準ライブラリで `/health` を確認します。
-`-slim` のベースイメージには `curl` / `wget` がないためです。
-永続ボリュームを使わず、Azure Container Apps で要求の間にゼロへスケールできます。
+The container runs as a non-root user and listens on port 8080.
+`HEALTHCHECK` uses the Python standard library to check `/health` because the
+`-slim` base image has no `curl` / `wget`.
+It uses no persistent volumes and can scale to zero between requests in Azure Container Apps.
 
-`WORKSHOP_SOURCE_BASE` は、応答中の規程参照用の仮 URL を置き換えます。
-ローカル実行で参照先が解決しない仮 URL を許容する場合は、省略できます。
+`WORKSHOP_SOURCE_BASE` replaces the placeholder URL for policy references in responses.
+It may be omitted for local runs where unresolved placeholder URLs are acceptable.
 
-## テスト
+## Tests
 
-このコンポーネントの依存関係は、ルートの `pyproject.toml` から分離しています。
-このディレクトリの `requirements.txt` / `pyproject.toml` を参照してください。
-`tests/unit/travel_api/` と `tests/contract/travel_api/` を実行するには、先に API の依存関係を導入します。
-次の例は、リポジトリのルートから始めます。
+This component's dependencies are separate from the root `pyproject.toml`.
+See this directory's `requirements.txt` / `pyproject.toml`.
+Install the API dependencies before running `tests/unit/travel_api/` and
+`tests/contract/travel_api/`. This example starts at the repository root:
 
 ```bash
 cd src/travel-api
@@ -83,22 +87,29 @@ cd ../..
 python -m pytest tests/unit/travel_api tests/contract/travel_api
 ```
 
-ドメインの単体テストは `travel_api` パッケージが `sys.path` にあれば実行でき、FastAPI は不要です。
-HTTP 層や `/openapi.json` を検査する契約テストには `fastapi` / `httpx` も必要です。
-不足している場合は `pytest.importorskip` でスキップするため、ルートの `make test` は
-このコンポーネントの依存関係を導入する前でも実行できます。
-スキップされた契約テストを、検証済みとして扱わないでください。
+Domain unit tests require only the `travel_api` package on `sys.path`, not FastAPI.
+Contract tests for the HTTP layer and `/openapi.json` also require `fastapi` / `httpx`.
+When missing, `pytest.importorskip` skips these tests, so root `make test` can run
+before this component's dependencies are installed. Do not count skipped contract
+tests as verified.
 
-## 規程データとの数値の整合
+## Numerical consistency with policy data
 
-`travel_api/domain/rates.py` の日当・宿泊上限は、
-`data/policies/03-hotels.md` と `data/policies/04-per-diem-meals.md` の表に合わせています。
-`tests/contract/data/test_per_diem_rates_match_policy.py` が Markdown の表を読み取り、
-実装と数値が一致することを確認します。規程と API のどちらを変更した場合も、この契約を維持します。
+Per diem and lodging limits in `travel_api/domain/rates.py` match the tables in
+`data/policies/03-hotels.md` and `data/policies/04-per-diem-meals.md`.
+`tests/contract/data/test_per_diem_rates_match_policy.py` reads the Markdown tables
+and checks numerical agreement with the implementation. Preserve this contract
+when changing either policies or the API.
 
-## コンテナーの公開
+## Publishing the container
 
-[公開ワークフロー](../../.github/workflows/publish-travel-api.yml)は、`travel-api-v*` のタグまたは手動実行を契機に
-公開 GHCR イメージをビルド・送信します。公開タグに `latest` は使いません。
-演習用 Bicep の `travelApiImageRef` には、ジョブの概要に出力された変更不能なダイジェスト参照を設定します。
-更新方法は [インフラ実装ガイド](../../infra/README.md) を参照してください。
+The [publication workflow](../../.github/workflows/publish-travel-api.yml) builds and
+pushes a public GHCR image on `travel-api-v*` tags or manual dispatch.
+Published tags do not use `latest`. Set the workshop Bicep `travelApiImageRef` to
+the immutable digest reference printed in the job summary.
+See the [infrastructure implementation guide](../../infra/README.md) for updates.
+
+The English source and API image are [published and pinned](../../infra/README.md#english-release-artifacts).
+Source CI and anonymous image pull were verified; full Azure / Lab acceptance is
+still incomplete. Future publication requires separate approval. Do not substitute
+a mutable branch for the bootstrap pin.

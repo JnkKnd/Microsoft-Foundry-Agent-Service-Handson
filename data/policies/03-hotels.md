@@ -1,6 +1,6 @@
 ---
 id: policy-hotels-001
-title: 宿泊に関する規程
+title: Hotel Policy
 category: hotels
 effective_date: 2026-04-01
 applies_to:
@@ -8,42 +8,41 @@ applies_to:
 source_url: "{{WORKSHOP_SOURCE_BASE}}/data/policies/03-hotels.md"
 ---
 
-# 宿泊に関する規程
+# Hotel Policy
 
-## 宿泊費の上限（1 泊あたり、税・サービス料込み）
+## Hotel caps (per night, including tax and service charges)
 
-宿泊費の上限は、都市の地域区分（Tier）によって決まります。地域区分の
-定義および具体的な日当額との対応は
-[日当・食事に関する規程](04-per-diem-meals.md) を参照してください。
+Hotel caps depend on the city's regional tier. See the
+[Per Diem and Meals Policy](04-per-diem-meals.md) for tier definitions and per diem rates.
 
-| 地域区分 | 代表都市（例） | 宿泊費上限（1 泊） |
+| Regional tier | Example cities | Hotel cap (per night) |
 |---|---|---|
-| domestic_tier1 | 東京、大阪、名古屋、横浜、福岡、札幌 | 15,000 円 |
-| domestic_tier2 | 上記以外の国内都市 | 12,000 円 |
-| international_tier_a | ニューヨーク、サンフランシスコ、ロンドン、パリ | 25,000 円 |
-| international_tier_b | シンガポール、香港、シドニー | 20,000 円 |
-| international_tier_c | 上記以外の海外都市 | 18,000 円 |
+| domestic_tier1 | Tokyo, Osaka, Nagoya, Yokohama, Fukuoka, Sapporo | JPY 15,000 |
+| domestic_tier2 | Other domestic cities | JPY 12,000 |
+| international_tier_a | New York, San Francisco, London, Paris | JPY 25,000 |
+| international_tier_b | Singapore, Hong Kong, Sydney | JPY 20,000 |
+| international_tier_c | Other international cities | JPY 18,000 |
 
-## 上限超過の扱い
+## Exceeding the cap
 
-- 会議会場のホテルが上限を超える場合など、やむを得ない事情があるときは、
-  出張前にマネージャーの事前承認を得た上で上限超過分の精算が可能です
-  （[承認プロセス](09-approval-process.md)参照）。
-- 事前承認のない上限超過分は自己負担となります。
+- In unavoidable circumstances, such as a conference hotel exceeding the cap,
+  the excess can be reimbursed with your manager's preapproval before travel
+  (see the [Approval Process](09-approval-process.md)).
+- Any excess without preapproval is the traveler's responsibility.
 
-## 予約方法
+## Booking method
 
-- 宿泊予約は Contoso Travel Portal を優先し、上限額以下のプランを
-  自動的に提示します。
-- Portal 外で予約する場合も、本規程の上限額を超えないようにしてください。
+- Prefer Contoso Travel Portal for hotel bookings; it automatically suggests options
+  within the cap.
+- Bookings outside the Portal must also stay within this policy's cap.
 
-## 同室・同行者
+## Shared rooms and companions
 
-- 私的な同行者の宿泊費は一切会社負担になりません。
-- 同僚との相部屋は本人同士の合意がある場合のみ認められ、宿泊費の
-  上限は 1 部屋あたりではなく 1 人あたりで判定します。
+- The company does not cover any hotel costs for personal companions.
+- Sharing a room with a colleague is permitted only with both travelers' agreement.
+  The cap applies per person, not per room.
 
-## キャンセル・ノーショー
+## Cancellations and no-shows
 
-- 業務都合によるキャンセル料は会社負担、個人都合によるキャンセル料・
-  ノーショー料は自己負担です。
+- The company covers business-related cancellation fees. Personal cancellation and
+  no-show fees are the traveler's responsibility.

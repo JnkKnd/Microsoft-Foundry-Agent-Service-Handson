@@ -1,269 +1,321 @@
-# Azure Portal テンプレートの実装
+# Azure Portal template implementation
 
-[開発者向けガイド](../docs/development/README.md) / [ハンズオンの構成](../docs/development/architecture.md)
+[Developer guide](../docs/development/README.md) / [Workshop architecture](../docs/development/architecture.md)
 
-`main.bicep` がインフラ定義の正本です。`azuredeploy.json` はコンパイルして生成した
-Portal 用 ARM テンプレートであり、別の実装として管理しません。
-Portal での環境作成にはローカルの CLI は不要です。Labs 7〜8 は共通 Dev Container で実行します。
+`main.bicep` is the infrastructure source of truth. `azuredeploy.json` is its
+compiled ARM template for Portal, not a separately maintained implementation.
+Portal environment creation requires no local CLI. Labs 7–8 run in the shared Dev Container.
 
-## デプロイの対象と操作
+> [!IMPORTANT]
+> English source and API image artifacts are published and pinned.
+> Full live acceptance of all Labs, redeployment, and cleanup is not complete;
+> do not describe publication or CI as successful participant-path verification.
+> Operative source references use `JnkKnd/Microsoft-Foundry-Agent-Service-Handson`.
+> Never substitute a mutable English branch for the bootstrap commit pin.
 
-1. Azure Portal の **Resource groups > Create** で、演習終了後に削除する専用リソースグループ（RG）を 1 個作成します。
-2. **Deploy a custom template > Build your own template in the editor > Load file** を開き、
-   `azuredeploy.json` を読み込みます。
-3. **Subscription** と作成済みの **Resource group** を選び、他のパラメーターは
-   参加者 ID の空の上書き値を含め、リリース既定値を維持します。ここでは **Create new** を使いません。
-4. **Review + create > Create** で開始し、`ds-fdyws-bootstrap-*` の Deployment Script を含む
-   デプロイ全体の成功を待ちます。
-5. `workshopContext.setup_status = complete` を確認します。教材は GitHub の共通ファイルを使います。
-   環境別のダウンロードや参加者向け Blob コンテナーはありません。
+## English release artifacts
 
-ルートの `targetScope = 'resourceGroup'` は `resourceGroup()` を読み取ります。
-RG やサブスクリプションスコープのデプロイ・ロール割り当ては作成しません。
-リソース名は RG の ID と `japaneast` から決まり、デプロイ名、ソースコミット、実行時刻、
-実行 ID には依存しません。ロール割り当ての GUID も同じ入力から同じ値を生成します。
-新しい専用 RG 向けの構成であり、既存リソースやローカル状態の自動移行は行いません。
+| Artifact | Verified reference |
+|---|---|
+| English source | [`0900bcbad443b055d6c4b7aefc0cfb55420ceaaa`](https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/commit/0900bcbad443b055d6c4b7aefc0cfb55420ceaaa) |
+| Public API image | `ghcr.io/jnkknd/travel-ops-api@sha256:cc196ae1ca215a52f9d83f2a497401a48da76e6899d0617223a1c13f6d644b62` |
+| Source validation | [Validate: all six jobs succeeded](https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/actions/runs/42769945248) |
+| Image publication | [Publish Travel Ops API](https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/actions/runs/42770607231), from the same source commit |
+
+Anonymous image pull by this digest was verified on 2026-11-10 using an empty
+Docker credential directory. Publication includes provenance and an SBOM.
+These checks do not prove Azure deployment or any Lab's live acceptance.
+The distribution commit containing this template may differ from the source
+commit above; bootstrap data, code, and policy citations use the pinned source.
+
+## Deployment target and operations
+
+1. In Azure Portal **Resource groups > Create**, create 1 dedicated resource group
+   (RG) to delete after the workshop.
+2. Open **Deploy a custom template > Build your own template in the editor > Load file**
+   and load `azuredeploy.json`.
+3. Select **Subscription** and the existing **Resource group**, keeping release
+   defaults for all other parameters, including the empty participant ID override.
+   Do not use **Create new** here.
+4. Start with **Review + create > Create** and wait for the entire deployment,
+   including the `ds-fdyws-bootstrap-*` Deployment Script, to succeed.
+5. Check `workshopContext.setup_status = complete`.
+   Materials use shared GitHub files; there are no per-environment downloads or
+   participant Blob containers.
+
+The root `targetScope = 'resourceGroup'` reads `resourceGroup()`.
+It creates no RG or subscription-scope deployments / role assignments.
+Resource names derive from the RG ID and `japaneast`, not the deployment name,
+source commit, execution time, or run ID. Role-assignment GUIDs are also deterministic
+for the same inputs. This configuration targets a new dedicated RG; it does not
+automatically migrate existing resources or local state.
 
 <a id="template-parameters"></a>
 
-## テンプレートのパラメーター
+## Template parameters
 
-9 個すべてのパラメーターに `main.bicep` でリリース既定値を設定し、`azuredeploy.json` に反映します。
-本人がデプロイする参加者は **Subscription** と既存 **Resource group** だけを選びます。
-モデルバージョン、イメージのダイジェスト、ソースの SHA、自分のオブジェクト ID の調査は不要です。
+For a published release, all 9 parameters have release defaults in `main.bicep`,
+reflected in `azuredeploy.json`. Self-deploying participants select only
+**Subscription** and an existing **Resource group**; they need not investigate
+model versions, image digests, source SHAs, or their own object ID.
+English source / image defaults use the published references above in both Bicep
+and the parameter example. Existing `fail()` guards still reject empty or mutable
+values. No additional release flag or parameter is used.
 
-`azuredeploy.parameters.example.json` は、仮の値やアカウント固有値を含めず既定値を反映します。
-管理者向けの任意の参考ファイルであり、参加者が追加で読み込むファイルではありません。
+`azuredeploy.parameters.example.json` reflects defaults without invented or
+account-specific values. It is an optional administrator reference, not an
+additional file participants load.
 
-| パラメーター | 既定値と上書き条件 |
+| Parameter | Default and override conditions |
 |---|---|
-| `location` | `japaneast` だけを許可し、既定値も `japaneast`。RG 自体のメタデータ上の場所では上書きされません。 |
-| `primaryModelVersion` | Japan East / GlobalStandard の `gpt-5.6-luna` に対して `2026-07-09`。 |
-| `evaluationModelVersion` | Japan East / GlobalStandard の `gpt-5.5` に対して `2026-04-24`。 |
-| `embeddingModelVersion` | Japan East / GlobalStandard の `text-embedding-3-small` に対して `1`。 |
-| `travelApiImageRef` | `ghcr.io/matayuuu/travel-ops-api@sha256:173f7e954cd284057bf2a2fe10d53efae83547a060ec2ac23172dd5458816dcf`。上書きは公開 GHCR のダイジェスト参照に限定し、タグ、非公開レジストリの秘密情報、代替イメージは使いません。 |
-| `sourceRevision` | `05bd80776c0091ae03d8cfae9312a14b0db00b5f`。上書きは `matayuuu/Microsoft-Foundry-Agent-Service-Handson` で公開済みの小文字 40 桁のコミット SHA に限定し、ブランチ名や別リポジトリは使いません。 |
-| `participantObjectIdOverride` | 既定値は空で、ルートの `deployer().objectId` を参加者とします。管理者・自動処理によるデプロイや再デプロイでは、対象参加者の Entra **User** オブジェクト ID を指定します。 |
-| `bootstrapRunId` | 既定値は `1`。通常の再デプロイでは維持し、初期化を意図的に再実行する場合に変更します。 |
-| `enableBootstrapPolicyExclusion` | 既定値は `true`。組織が `SecurityControl=Ignore` の利用を承認したハンズオン環境向けです。除外を利用しない環境では `false` にします。タグの追加先は初期化用 Deployment Script に限定します。 |
+| `location` | Only `japaneast` is permitted; default `japaneast`. The RG's metadata location does not override it. |
+| `primaryModelVersion` | `2026-07-09` for Japan East / GlobalStandard `gpt-5.6-luna`. |
+| `evaluationModelVersion` | `2026-04-24` for Japan East / GlobalStandard `gpt-5.5`. |
+| `embeddingModelVersion` | `1` for Japan East / GlobalStandard `text-embedding-3-small`. |
+| `travelApiImageRef` | Published English API digest in [release artifacts](#english-release-artifacts). Never use a tag, private registry secret, or substitute image. |
+| `sourceRevision` | Published English source SHA in [release artifacts](#english-release-artifacts), never a branch name or another repository. |
+| `participantObjectIdOverride` | Empty by default; root `deployer().objectId` identifies the participant. For administrator / automated deployment or redeployment, specify the intended participant's Entra **User** object ID. |
+| `bootstrapRunId` | Default `1`. Keep for normal redeployment; change to intentionally rerun initialization. |
+| `enableBootstrapPolicyExclusion` | Default `true` for workshop environments where the organization approves `SecurityControl=Ignore`. Set `false` where exclusions are not used. Add the tag only to the bootstrap Deployment Script. |
 
-モデルの既定値は、2026-09-12 時点で Japan East / GlobalStandard の対象 3 モデルについて
-確認したバージョンを固定したものです。`latest` を動的に解決しません。
-Travel API の公開イメージは `v1.0.4` として公開したダイジェスト、
-ソースは [公開済みの教材リビジョン](https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson/commit/05bd80776c0091ae03d8cfae9312a14b0db00b5f) を使います。
+Model defaults pin the versions verified for the 3 target Japan East /
+GlobalStandard models on 2026-09-12. They do not dynamically resolve `latest`.
 
-新しいリリースでは、管理者がモデルの提供状況と利用枠を確認し、互換性のあるソースと公開イメージを先に公開します。
-`main.bicep`、パラメーター例、文書の既定値を同時更新し、後述の方法で ARM を再生成してください。
-ソース SHA は公開済みである必要がありますが、テンプレート自身を含むコミットである必要はありません。
-デプロイ失敗時に、参加者へ値の推測やリージョン・モデルの変更を求めません。
+Historical upstream release provenance, **not an English release pin or readiness claim**:
+Travel API `v1.0.4` was published as
+`ghcr.io/matayuuu/travel-ops-api@sha256:173f7e954cd284057bf2a2fe10d53efae83547a060ec2ac23172dd5458816dcf`,
+with source [05bd80776c0091ae03d8cfae9312a14b0db00b5f](https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson/commit/05bd80776c0091ae03d8cfae9312a14b0db00b5f).
+Do not treat these historical values as published JnkKnd English artifacts.
 
-参加者の ID はルートで一度だけ解決し、すべての参加者向け権限と正規の接続情報へ渡します。
-UPN、スクリプトの ID、Microsoft Graph のサインインユーザー検索から推測しません。
-別の担当者が再デプロイする場合も、対象参加者の ID を維持します。
+For a new release, administrators verify model availability / quotas and, with
+separate publication approval, publish
+compatible source and a public image first. Update defaults in `main.bicep`,
+the parameter example, and documentation together, then regenerate ARM as below.
+The source SHA must be public but need not contain the template itself.
+Do not ask participants to guess values or change regions / models after deployment failure.
 
-モデル名、SKU、容量は固定です。
+Resolve the participant ID once at the root and pass it to every participant role
+and the canonical connection information. Do not infer it from a UPN, script ID,
+or Microsoft Graph signed-in-user lookup. Preserve the intended participant ID
+when another operator redeploys.
 
-| デプロイ名 | モデル | SKU | 容量（K TPM） |
+Model names, SKUs, and capacities are fixed.
+
+| Deployment name | Model | SKU | Capacity (K TPM) |
 |---|---|---|---|
 | `gpt-5.6-luna` | `gpt-5.6-luna` | GlobalStandard | 40 |
 | `gpt-5.5` | `gpt-5.5` | GlobalStandard | 100 |
 | `embedding` | `text-embedding-3-small` | GlobalStandard | 40 |
 
-評価と最適化の出力は、同じ `gpt-5.5` デプロイへの別名です。
-利用枠、モデルの提供状況、ポリシー、イメージ・ソースの公開は管理者が満たす前提条件であり、
-テンプレート自体が利用可能性を保証するものではありません。容量不足では停止し、別リージョン・モデルへ切り替えません。
-ARM の文字列パラメーターには正規表現の制約がないため、文字種・長さと `fail()` による検査で、
-固定されていないイメージ・ソース入力を使用前に拒否します。
+Evaluation and optimization outputs alias the same `gpt-5.5` deployment.
+Quotas, model availability, policies, and image / source publication are administrator
+prerequisites, not availability guarantees from the template.
+Stop on insufficient capacity; do not switch regions or models.
+ARM string parameters do not support regex constraints, so character / length
+checks and `fail()` reject unpinned image / source inputs before use.
 
-## リソースと認証
+## Resources and authentication
 
-- Foundry の AIServices アカウントと、システム割り当て ID を持つプロジェクト `contoso-travel`。
-  Basic Agent Setup を使い、ローカル認証を無効にします。
-  子リソースは **project → primary → evaluation → embedding → connections** の順で作成します。
-- 専用の Search **Basic**。レプリカ・パーティションは各 1、無料のセマンティック検索、
-  システム割り当て ID、公開エンドポイント、`disableLocalAuth: true` を使います。
-  両立しない `authOptions` は指定しません。
-- Log Analytics は `PerGB2018` と 30 日の保持期間を使います。
-  ワークスペースベースの Application Insights はローカル認証を無効にし、既存の監視用権限を維持します。
-- Container Apps の Travel Ops API はポート 8080、HTTPS の受信、
-  0.25 vCPU / 0.5 GiB、0〜1 のスケールを使います。指定した公開 GHCR ダイジェストを匿名で取得します。
-  規程の引用は初期化と同じ固定 `sourceRevision` を使います。
-- Codespaces とローカル VS Code は同じ Dev Container を使います。
-  テンプレートは Azure ML ワークスペース、Compute、恒久的な演習用 Storage / Key Vault を作りません。
-- Cosmos DB、capability host、ACR、仮想ネットワーク、プライベートエンドポイントは作りません。
+- Foundry AIServices account and `contoso-travel` project with system-assigned identity.
+  Uses Basic Agent Setup and disables local authentication.
+  Child resources are created in order: **project → primary → evaluation → embedding → connections**.
+- Dedicated Search **Basic** with 1 replica and 1 partition, free semantic search,
+  system-assigned identity, public endpoint, and `disableLocalAuth: true`.
+  Do not specify incompatible `authOptions`.
+- Log Analytics uses `PerGB2018` and 30-day retention.
+  Workspace-based Application Insights disables local authentication and preserves
+  existing monitoring permissions.
+- Travel Ops API on Container Apps uses port 8080, HTTPS ingress,
+  0.25 vCPU / 0.5 GiB, and scale 0–1. It anonymously pulls the specified public GHCR digest.
+  Policy citations use the same fixed `sourceRevision` as initialization.
+- Codespaces and local VS Code use the same Dev Container.
+  The template creates no Azure ML workspace, Compute, or permanent workshop Storage / Key Vault.
+- Cosmos DB, capability host, ACR, and virtual networks are outside the core workshop.
 
-監視基盤の用途はテレメトリーの収集・トレースの閲覧であり、演習用アラートではありません。
-テンプレートはアラートルールや通知アクショングループを作成しません。
-`Microsoft.Insights` と `Microsoft.OperationalInsights` は必要ですが、
-`Microsoft.AlertsManagement` は前提条件に含めず、`admin-preflight.sh` でも照会・登録しません。
-Azure が別途作る既定の Failure Anomalies アラートを抑止したり、既存ルールを無効にしたりする設定ではありません。
-[自動アラートの扱い](../docs/admin/troubleshooting.md#application-insights-の自動アラート)を参照してください。
+Monitoring collects telemetry and displays traces; it does not provide workshop alerts.
+The template creates no alert rules or notification action groups.
+`Microsoft.Insights` and `Microsoft.OperationalInsights` are required, but
+`Microsoft.AlertsManagement` is not a prerequisite and `admin-preflight.sh` neither
+queries nor registers it. This does not suppress Azure's separately created default
+Failure Anomalies alert or disable existing rules.
+See [automatic alerts](../docs/admin/troubleshooting.md#application-insights-automatic-alerts).
 
-参加者向けの 6 個の権限付与と、Foundry プロジェクト・Search の ID は、リソース単位のアクセスを維持します。
-撤去した実行・配布用リソースに対するロール割り当ては残しません。
-初期化用 ID にストレージのデータ用ロールは不要です。
+The 6 participant role assignments and Foundry project / Search identities retain
+resource-scoped access. Do not leave role assignments for removed execution /
+distribution resources. The bootstrap identity needs no storage data role.
 
-### 接続スキーマの例外
+### Connection schema exceptions
 
-Foundry アカウント・プロジェクト・モデルのデプロイと `CognitiveSearch` / `AAD` 接続は `2026-05-01` を使います。
-Project Managed Identity の 2 接続は、既存の `2026-05-15-preview` の通信形式を維持します。
+Foundry account / project / model deployments and the `CognitiveSearch` / `AAD`
+connection use `2026-05-01`. The 2 Project Managed Identity connections retain
+the existing `2026-05-15-preview` wire format.
 
-| 接続 | 維持する設定 |
+| Connection | Preserved configuration |
 |---|---|
-| `contoso-travel-search` | `CognitiveSearch`、`AAD`、Search リソース ID と場所のメタデータ。 |
-| `contoso-travel-knowledge-lab-mcp` | `RemoteTool`、`ProjectManagedIdentity`、`useWorkspaceManagedIdentity: true`、audience `https://search.azure.com`、`2026-08-01-preview` を使うナレッジベースの MCP URL。 |
-| `contoso-travel-appinsights` | `AppInsights`、`ProjectManagedIdentity`、Application Insights リソース ID、内部接続文字列のルーティング用メタデータ。 |
+| `contoso-travel-search` | `CognitiveSearch`, `AAD`, Search resource ID and location metadata. |
+| `contoso-travel-knowledge-lab-mcp` | `RemoteTool`, `ProjectManagedIdentity`, `useWorkspaceManagedIdentity: true`, audience `https://search.azure.com`, knowledge base MCP URL using `2026-08-01-preview`. |
+| `contoso-travel-appinsights` | `AppInsights`, `ProjectManagedIdentity`, Application Insights resource ID, internal connection-string routing metadata. |
 
-すべての接続はプロジェクトスコープ（`isSharedToAll: false`）です。
-この実装で参照した [Preview の公式定義](https://learn.microsoft.com/azure/templates/microsoft.cognitiveservices/2026-05-15-preview/accounts/projects/connections)
-には `ProjectManagedIdentity` の判別値と MCP の `audience` が含まれていません。
-Bicep 0.46.1 は、対象 2 接続の `authType` で **BCP036** を報告します。
-この 2 箇所だけで警告を抑止し、生成した接続オブジェクト全体を静的契約テストで確認します。
-診断の全体抑止や `any()` による型変換は使いません。
-資格情報の契約が異なる `ManagedIdentity` へ置き換えないでください。
-リリース配布前に、実際の Portal で Preview の操作を通して確認します。
+All connections are project-scoped (`isSharedToAll: false`).
+The [official Preview definition](https://learn.microsoft.com/azure/templates/microsoft.cognitiveservices/2026-05-15-preview/accounts/projects/connections)
+consulted for this implementation omits the `ProjectManagedIdentity` discriminator
+and MCP `audience`. Bicep 0.46.1 reports **BCP036** for `authType` on these 2 connections.
+Suppress only those 2 warnings and check entire generated connection objects with
+static contract tests. Do not suppress diagnostics globally or cast with `any()`.
+Do not substitute `ManagedIdentity`, whose credential contract differs.
+Verify Preview operations through the real Portal before release distribution.
 
-Application Insights の接続文字列メタデータと、Container Apps の Log Analytics 共有キー連携は
-リソース内部の接続にだけ使います。初期化処理の環境変数・接続情報・参加者向け出力にはコピーしません。
+Application Insights connection-string metadata and Container Apps Log Analytics
+shared-key integration are only for internal resource connections. Do not copy
+them into bootstrap environment variables, connection information, or participant outputs.
 
-## マネージド ID による初期化
+## Managed identity initialization
 
-`Microsoft.Resources/deploymentScripts@2023-08-01` の `AzureCLI` 形式を使い、
-実際の `scripts/bootstrap-custom-template.sh` を `loadTextContent` で埋め込みます。
-指定 SHA の固定リポジトリだけをダウンロードし、独立した Python 環境を準備して
-`scripts/bootstrap_custom_template.py` を実行します。
-Deployment Scripts がマネージド ID でログインし、アダプターは `AzureCliCredential` を使います。
-ソースの展開、仮想環境、パッケージのビルドには、Azure Files 上のスクリプトディレクトリではなく
-コンテナー内の `/tmp` を使います。この一時ファイルシステムの境界を越えるのはサービス出力の JSON だけです。
+Use the `AzureCLI` form of `Microsoft.Resources/deploymentScripts@2023-08-01`,
+embedding the actual `scripts/bootstrap-custom-template.sh` with `loadTextContent`.
+Download only the fixed repository at the specified SHA, prepare an isolated Python
+environment, and run `scripts/bootstrap_custom_template.py`.
+Deployment Scripts signs in with managed identity; adapters use `AzureCliCredential`.
+Source extraction, virtual environments, and package builds use the container's
+`/tmp`, not the Azure Files script directory. Only service-output JSON crosses this
+temporary filesystem boundary.
 
-Azure CLI は **2.87.0** に固定しています。CLI 2.88 での組み込み Python 3.14 への変更前に公開された
-Azure Linux 用リリースです。[Microsoft Artifact Registry](https://mcr.microsoft.com/v2/azure-cli/tags/list) と
-[CLI リリースノート](https://learn.microsoft.com/cli/azure/release-notes-azure-cli)を参照してください。
-CI は同じ CLI イメージに独立した環境を作り、Azure 認証を行わずに初期化用依存関係をインポートします。
-これは現在のリージョンでの Deployment Scripts の対応確認や、Portal 上の通し検証を代替しません。
+Azure CLI is pinned to **2.87.0**, the Azure Linux release preceding CLI 2.88's
+embedded Python 3.14 change. See [Microsoft Artifact Registry](https://mcr.microsoft.com/v2/azure-cli/tags/list)
+and [CLI release notes](https://learn.microsoft.com/cli/azure/release-notes-azure-cli).
+CI creates an isolated environment in the same CLI image and imports bootstrap
+dependencies without Azure authentication. This does not replace checking current
+regional Deployment Scripts support or Portal end-to-end validation.
 
-リリース前には、サービスが固定バージョンを受け付けることと、実行環境に Python 3.10〜3.13、
-`venv`、`ensurepip`、TLS があり、初期化用依存関係を導入できることを確認します。
-ラッパーは前提条件が不足した場合、明示的に失敗します。
-Azure CLI 自身のインタープリターを変更したり、任意の GHCR 初期化イメージをサービスが受け付けると仮定したりしません。
-シェルの変更後は `azuredeploy.json` を再コンパイルします。
-テンプレートは Linux 実行前に CRLF を LF へ正規化しますが、再現性のためソースも LF で保存してください。
+Before release, verify that the service accepts the pinned version and that the
+runtime provides Python 3.10–3.13, `venv`, `ensurepip`, TLS, and the ability to install
+bootstrap dependencies. The wrapper explicitly fails when prerequisites are missing.
+Do not change Azure CLI's own interpreter or assume the service accepts arbitrary
+GHCR initialization images.
+Recompile `azuredeploy.json` after shell changes.
+The template normalizes CRLF to LF before Linux execution; also save source with LF for reproducibility.
 
-初期化専用のユーザー割り当てマネージド ID（UAMI）へ付与する権限は次のとおりです。
+The bootstrap-only user-assigned managed identity (UAMI) receives:
 
-| スコープ | ロール |
+| Scope | Role |
 |---|---|
-| Foundry アカウント | 必要なデータ操作のための Foundry User。 |
-| Search サービス | Search Service Contributor と Search Index Data Contributor。 |
-| 既存の専用 RG | リソースの検証と ARM のロール割り当て読み取りのための Reader。 |
+| Foundry account | Foundry User for required data operations. |
+| Search service | Search Service Contributor and Search Index Data Contributor. |
+| Existing dedicated RG | Reader for resource validation and ARM role-assignment reads. |
 
-この ID に Owner、ロール割り当ての書き込み、サブスクリプション全体の権限、
-ストレージアカウント全体のデータ権限、デプロイ用リソースの作成権限は付けません。
-宣言したリソース・ロール・UAMI の関連付けと補助用 ACI / Storage を作る権限は、
-スクリプトの ID ではなくデプロイ実行者が持つ必要があります。
-参加者は、本人の Azure CLI サインイン後に初期設定 Notebook から秘密を含まない接続情報を取得できるよう、
-RG 内のデプロイを読む権限が必要です。
+Do not grant this identity Owner, role-assignment write access, subscription-wide
+permissions, storage-account-wide data permissions, or permission to create deployment
+resources. The deployer, not the script identity, must be able to create declared
+resources, roles, UAMI associations, and helper ACI / Storage.
+Participants need permission to read RG deployments so the setup Notebook can
+retrieve secret-free connection information after their own Azure CLI sign-in.
 
-スクリプトは、必要なリソース、すべての接続、すべてのロール割り当てに依存します。
-テンプレートから渡す環境変数は次の 2 つです。
+The script depends on required resources, all connections, and all role assignments.
+The template supplies 2 environment variables:
 
-- `WORKSHOP_SOURCE_REVISION`：検証済みのソースコミット。
-- `WORKSHOP_CONTEXT_JSON`：秘密を含まない正規の接続情報を JSON 化したもの。
+- `WORKSHOP_SOURCE_REVISION`: verified source commit.
+- `WORKSHOP_CONTEXT_JSON`: canonical secret-free connection information serialized as JSON.
 
-接続情報は `schema_version: "2.0"`、`provisioning_method: "azure-custom-template"`、
-`setup_status: "infrastructure-ready"` に加え、サブスクリプション、RG、場所、ソースの URL・リビジョン、
-参加者 ID、24 個の `resource_outputs.<key>.value` を持ちます。
-初期化処理は Search の 2 インデックス、Lab 5 の評価データ、Lab 6 の Agent Optimizer 用データ、
-共通の評価基準を準備して環境を検証します。
-すべての段階が成功した後にだけ、`status: complete` と `source_revision` を `AZ_SCRIPTS_OUTPUT_PATH` に保存します。
-教材のビルド、参加者用 ZIP の生成、Blob Storage の読み書きは行いません。
+Connection information contains `schema_version: "2.0"`,
+`provisioning_method: "azure-custom-template"`, `setup_status: "infrastructure-ready"`,
+subscription, RG, location, source URL / revision, participant ID, and
+24 `resource_outputs.<key>.value` entries.
+Initialization prepares 2 Search indexes, Lab 5 evaluation data, Lab 6 Agent Optimizer
+data, and shared rubrics, then validates the environment.
+Only after all stages succeed does it save `status: complete` and `source_revision`
+to `AZ_SCRIPTS_OUTPUT_PATH`. It does not build materials, create participant ZIPs,
+or read / write Blob Storage.
 
-ARM の出力は、秘密を含まない次の 4 個です。
+ARM exposes these 4 secret-free outputs:
 
-| 出力 | 用途 |
+| Output | Purpose |
 |---|---|
-| `workshopContext` | 初期化成功後に返す、完了済みのスキーマ 2.0 の接続情報。 |
-| `resourceOutputs` | リソース名・エンドポイントの正規マッピング。 |
-| `travelApiBaseUrl` | 共通 OpenAPI JSON の `servers[0].url` の置き換え。 |
-| `foundryPortalUrl` | Foundry で演習用プロジェクトを開く URL。 |
+| `workshopContext` | Completed schema 2.0 connection information, returned only after successful initialization. |
+| `resourceOutputs` | Canonical resource-name / endpoint mapping. |
+| `travelApiBaseUrl` | Replacement for `servers[0].url` in shared OpenAPI JSON. |
+| `foundryPortalUrl` | URL opening the workshop project in Foundry. |
 
-Dev Container で `az login --use-device-code` を実行した後、
-`scripts/configure_workshop.py --subscription <id> --resource-group <name>` がデプロイを読み、
-`.workshop/context.json` を保存します。
-デプロイの状態、スコープ、スキーマ、エンドポイントを検証し、候補が曖昧な環境を拒否します。
-別プロジェクトの接続情報は上書きしません。対象を明示する場合は `--deployment <name>` を使えます。
-資格情報、SAS リンク、参加者固有の設定を GitHub へ公開しません。
+After `az login --use-device-code` inside the Dev Container,
+`scripts/configure_workshop.py --subscription <id> --resource-group <name>` reads
+deployments and saves `.workshop/context.json`. It validates deployment state,
+scope, schema, and endpoints and rejects ambiguous candidates.
+It does not overwrite another project's connection information.
+Use `--deployment <name>` to explicitly identify a target.
+Never publish credentials, SAS links, or participant-specific settings to GitHub.
 
-### 承認済み環境で初期化用の除外タグを使う
+### Using bootstrap exclusion tags in approved environments
 
-`enableBootstrapPolicyExclusion` は、承認済みのハンズオン環境向けに既定で `true` としています。
-組織のポリシーが `SecurityControl=Ignore` を除外条件として扱い、その利用を承認しているか
-事前に確認してください。承認されていない環境や除外が不要な環境では `false` にします。
-このタグ自体に、任意の Azure Policy を無効化する機能はありません。
+`enableBootstrapPolicyExclusion` defaults to `true` for approved workshop environments.
+First verify that organizational policy treats `SecurityControl=Ignore` as an
+exclusion condition and approves its use. Set `false` where unapproved or unnecessary.
+The tag itself cannot disable arbitrary Azure Policy.
 
-有効にすると、`bootstrap` の既存タグにだけ `SecurityControl=Ignore` を追加します。
-共通のタグ、RG、Foundry、Search、初期化用 ID など、ほかのリソースのタグは変更しません。
-Deployment Scripts の仕様により、タグはサービスが自動作成する補助 Storage と ACI にも渡されます。
-恒久的な Storage や、ポリシー割り当て・Policy Exemption リソースは追加しません。
+When enabled, add `SecurityControl=Ignore` only to `bootstrap`'s existing tags.
+Do not change common tags or tags on the RG, Foundry, Search, bootstrap identity,
+or other resources. Deployment Scripts also propagates tags to automatically
+created helper Storage and ACI. Add no permanent Storage, policy assignments,
+or Policy Exemption resources.
 
-承認済みの設定で新規作成し、補助 Storage のタグと必要な認証・ネットワーク設定、
-デプロイ全体の `Succeeded`、`workshopContext.setup_status = complete` を確認します。
-このオプションは、既にポリシーで変更された既存 Storage の設定を復元する処理ではありません。
-初期化の失敗を無視したり、成功条件や片付けの設定を緩めたりするものでもありません。
-対象テナントでの有効時・無効時の実行結果は、分けて記録してください。
+Create a new deployment with the approved settings; check helper Storage tags,
+required authentication / network settings, overall `Succeeded`, and
+`workshopContext.setup_status = complete`.
+This option does not restore existing Storage settings already changed by policy.
+It neither ignores initialization failure nor relaxes success criteria or cleanup.
+Record enabled / disabled results separately in the target tenant.
 
-- 参考 : [Deployment Scripts のタグと補助リソース](https://learn.microsoft.com/azure/azure-resource-manager/templates/deployment-script-template)
+- Reference: [Deployment Scripts tags and helper resources](https://learn.microsoft.com/azure/azure-resource-manager/templates/deployment-script-template)
 
-### 再試行・補助リソース・片付け
+### Retries, helper resources, and cleanup
 
-`forceUpdateTag = guid(sourceRevision, bootstrapRunId)` は同じ入力から同じ値を返します。
-コミットまたは実行 ID を変えると、演習リソースを改名せずに初期化を再実行します。
-スクリプト内容の変更や、保持期間が切れた後の再デプロイでも再実行される場合があるため、
-初期化の冪等性を維持します。
+`forceUpdateTag = guid(sourceRevision, bootstrapRunId)` is deterministic for the
+same inputs. Changing commit or run ID reruns initialization without renaming
+workshop resources. Script changes or redeployment after retention expiry may also
+rerun it, so initialization must remain idempotent.
 
-サービスは独立した一時 ACI と、Azure Files 用の補助 Storage を自動作成します。
-`storageAccountSettings` は意図的に指定しません。
-プロバイダー登録、ポリシー、利用枠では、Microsoft.Resources Deployment Scripts、
-Microsoft.ManagedIdentity、Microsoft.ContainerInstance、Microsoft.Storage に加えて、
-補助 Azure Files / 共有キーへのアクセスを許可する必要があります。
+The service automatically creates independent temporary ACI and helper Storage
+for Azure Files. `storageAccountSettings` is deliberately omitted.
+Provider registration, policy, and quota must allow Microsoft.Resources Deployment
+Scripts, Microsoft.ManagedIdentity, Microsoft.ContainerInstance, Microsoft.Storage,
+and helper Azure Files / shared-key access.
 
-`timeout: PT1H`、`cleanupPreference: OnSuccess`、`retentionInterval: P1D` で
-実行時間と失敗時の保持期間を制限します。成功時は補助リソースを片付け、
-失敗時は設定した期間だけ診断情報を保持します。
-UAMI と対象を限定した権限は、専用 RG を削除するまで再実行用に維持します。
-保持中のリソースには課金されるため、実際の削除状況も確認してください。
+`timeout: PT1H`, `cleanupPreference: OnSuccess`, and `retentionInterval: P1D` limit
+execution and failed-run retention. Helper resources are cleaned up on success;
+diagnostics remain only for the configured retention on failure.
+Retain the UAMI and narrowly scoped permissions for reruns until dedicated RG deletion.
+Retained resources incur charges, so verify their actual deletion.
 
-デプロイ失敗はトランザクションのロールバックではなく、作成済みのリソースや投入データが残る場合があります。
-デプロイとスクリプトのエラーを調べ、入力や前提条件を修正した後、同じ RG・参加者 ID で再デプロイします。
-強制的に再実行する場合は `bootstrapRunId` を変更します。途中までの初期化を完了扱いにしません。
+Deployment failure is not a transactional rollback; created resources and seeded
+data may remain. Inspect deployment / script errors, correct inputs or prerequisites,
+and redeploy with the same RG / participant ID.
+Change `bootstrapRunId` to force a rerun. Do not treat partial initialization as complete.
 
-終了時は成果物を保存し、Hosted Agent のバージョンを削除し、Codespace を停止・削除してから、
-Azure Portal で専用 RG を削除して完了を確認します。
-デプロイ履歴の削除だけではリソースは消えません。
-無関係なリソース、既存のローカル状態、キャッシュは削除しません。
+At the end, save results, delete Hosted Agent versions, stop / delete the Codespace,
+then delete the dedicated RG in Azure Portal and verify completion.
+Deleting deployment history alone does not delete resources.
+Do not delete unrelated resources, existing local state, or caches.
 
-## 開発者向けの再生成・検証
+## Developer regeneration and validation
 
-共通 Dev Container を使い、リポジトリのルートから実行します。
+Use the shared Dev Container and run from the repository root:
 
 ```bash
 az bicep build --file infra/main.bicep --outfile infra/azuredeploy.json
 python -m pytest tests/contract/test_custom_template_contract.py -q
 ```
 
-Bicep CLI は **v0.46.1 (545b338e2c)** に固定し、生成 ARM のメタデータでは **0.46.1.21595** として記録します。
-このテンプレートのためにコンパイラーを更新する必要はありません。
-バイト単位で再現するには、同じコンパイラーとソースを使います。
-コンパイラー更新時は生成メタデータも変わる可能性があるため、成果物と合わせて確認してください。
+Bicep CLI is pinned to **v0.46.1 (545b338e2c)**, recorded as **0.46.1.21595** in
+generated ARM metadata. No compiler upgrade is required for this template.
+Use the same compiler / source for byte-for-byte reproduction.
+Compiler upgrades may change generated metadata; review it with the artifacts.
 
-静的テストは ARM の構造、依存グラフ、固定入力の式、RBAC スコープ、接続ペイロード、
-埋め込んだシェル、出力、接続情報を検査します。
-Azure の実行時の利用可能性や、実際の Portal での通し検証を保証するものではありません。
+Static tests check ARM structure, dependency graph, fixed-input expressions,
+RBAC scopes, connection payloads, embedded shell, outputs, and connection information.
+They do not guarantee Azure runtime availability or real Portal end-to-end success.
 
-## 公式リファレンス
+## Official references
 
-- [デプロイ実行者の ID](https://learn.microsoft.com/azure/azure-resource-manager/bicep/bicep-functions-deployment#deployer)
+- [Deployer identity](https://learn.microsoft.com/azure/azure-resource-manager/bicep/bicep-functions-deployment#deployer)
 - [Deployment Scripts API](https://learn.microsoft.com/azure/templates/microsoft.resources/2023-08-01/deploymentscripts)
-- [実行環境・ID・片付け](https://learn.microsoft.com/azure/azure-resource-manager/bicep/deployment-script-develop)
-- [Foundry アカウント](https://learn.microsoft.com/azure/templates/microsoft.cognitiveservices/2026-05-01/accounts)
-- [Search Basic と認証](https://learn.microsoft.com/azure/templates/microsoft.search/2025-05-01/searchservices)
+- [Runtime, identity, and cleanup](https://learn.microsoft.com/azure/azure-resource-manager/bicep/deployment-script-develop)
+- [Foundry account](https://learn.microsoft.com/azure/templates/microsoft.cognitiveservices/2026-05-01/accounts)
+- [Search Basic and authentication](https://learn.microsoft.com/azure/templates/microsoft.search/2025-05-01/searchservices)

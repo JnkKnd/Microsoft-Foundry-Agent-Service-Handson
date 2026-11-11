@@ -15,10 +15,10 @@
       "value": "1"
     },
     "travelApiImageRef": {
-      "value": "ghcr.io/matayuuu/travel-ops-api@sha256:173f7e954cd284057bf2a2fe10d53efae83547a060ec2ac23172dd5458816dcf"
+      "value": "ghcr.io/jnkknd/travel-ops-api@sha256:cc196ae1ca215a52f9d83f2a497401a48da76e6899d0617223a1c13f6d644b62"
     },
     "sourceRevision": {
-      "value": "05bd80776c0091ae03d8cfae9312a14b0db00b5f"
+      "value": "0900bcbad443b055d6c4b7aefc0cfb55420ceaaa"
     },
     "participantObjectIdOverride": {
       "value": ""

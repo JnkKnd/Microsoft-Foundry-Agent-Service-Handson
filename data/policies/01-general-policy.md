@@ -1,6 +1,6 @@
 ---
 id: policy-general-001
-title: 出張・経費規程 総則
+title: Travel and Expense Policy — General Provisions
 category: general_policy
 effective_date: 2026-04-01
 applies_to:
@@ -8,54 +8,54 @@ applies_to:
 source_url: "{{WORKSHOP_SOURCE_BASE}}/data/policies/01-general-policy.md"
 ---
 
-# 出張・経費規程 総則
+# Travel and Expense Policy — General Provisions
 
-本規程は、Contoso 社（架空の企業です）の全従業員が国内外に出張する際の
-予約、経費精算、承認プロセスの基本方針を定めます。個別の詳細は本規程集の
-各章（フライト、宿泊、日当・食事、陸上交通、領収書、海外渡航、
-アクセシビリティ、承認プロセス）を参照してください。
+This policy defines the basic booking, expense reimbursement, and approval rules for
+domestic and international business travel by employees of Contoso (a fictional company).
+See the individual chapters for flights, hotels, per diem and meals, ground transport,
+receipts, international travel, accessibility, and approval processes.
 
-## 適用範囲
+## Scope
 
-- 正社員および契約社員のうち、会社の業務命令により出張する全員に適用します。
-- インターン、業務委託先の担当者は個別契約に定めがある場合を除き対象外です。
+- Applies to all permanent and contract employees traveling on company business.
+- Interns and vendor personnel are excluded unless their individual contracts specify otherwise.
 
-## 基本原則
+## Basic principles
 
-1. **費用は必要最小限**: 出張の目的に照らして合理的な範囲の費用のみを
-   会社負担とします。
-2. **予約は社内ツールを優先**: フライト・宿泊の予約は原則として
-   Contoso Travel Portal（社内予約システム）を通じて行います。
-   Portal 外で予約した場合、上限額を超える差額は自己負担となります。
-3. **報告通貨は日本円**: 経費はすべて日本円（JPY）に換算して
-   Contoso Expense（社内経費精算システム）に登録します。外貨で支払った
-   領収書には、支払日の参考レートを併記してください。
-4. **早期予約の推奨**: フライトは可能な限り出発の 7 日前まで、国際線は
-   14 日前までに予約することを推奨します（詳細は
-   [フライトに関する規程](02-flights.md) を参照）。
-5. **精算期限**: 出張終了日から 30 日以内に Contoso Expense へ経費を
-   登録してください。期限を超えた申請は原則として却下されます。
+1. **Keep costs to the necessary minimum**: The company covers only expenses reasonable
+   for the business purpose of the trip.
+2. **Prefer internal booking tools**: Normally book flights and hotels through
+   Contoso Travel Portal (the internal booking system). For bookings outside the Portal,
+   any amount above the applicable cap is the traveler's responsibility.
+3. **Report in Japanese yen**: Convert all expenses to Japanese yen (JPY) and register
+   them in Contoso Expense (the internal expense system). For foreign-currency receipts,
+   also record the reference exchange rate on the payment date.
+4. **Book early**: Where possible, book domestic flights at least 7 days before departure
+   and international flights at least 14 days before departure
+   (see the [Flight Policy](02-flights.md)).
+5. **Reimbursement deadline**: Register expenses in Contoso Expense within 30 days of
+   the trip end date. Late submissions are generally rejected.
 
-## 役割
+## Roles
 
-| 役割 | 責任 |
+| Role | Responsibility |
 |---|---|
-| 出張者 (Traveler) | 規程の遵守、証憑の保存、期限内の精算申請 |
-| 承認者 (Approving Manager) | 事前承認・事後レビューの実施 |
-| Travel Ops チーム | 規程の維持管理、例外対応、Portal の運用 |
+| Traveler | Follow policy, retain supporting documents, and submit expenses on time |
+| Approving Manager | Provide preapproval and post-trip review |
+| Travel Ops team | Maintain policies, handle exceptions, and operate the Portal |
 
-## 本規程集の構成
+## Policy chapters
 
-- [フライト](02-flights.md)
-- [宿泊](03-hotels.md)
-- [日当・食事](04-per-diem-meals.md)
-- [陸上交通](05-ground-transport.md)
-- [領収書](06-receipts.md)
-- [海外渡航・セキュリティ](07-international-travel-security.md)
-- [アクセシビリティ・例外対応](08-accessibility-exceptions.md)
-- [承認プロセス](09-approval-process.md)
+- [Flights](02-flights.md)
+- [Hotels](03-hotels.md)
+- [Per Diem and Meals](04-per-diem-meals.md)
+- [Ground Transport](05-ground-transport.md)
+- [Receipts](06-receipts.md)
+- [International Travel and Security](07-international-travel-security.md)
+- [Accessibility and Exceptions](08-accessibility-exceptions.md)
+- [Approval Process](09-approval-process.md)
 - [FAQ](10-faq.md)
 
-## 改定履歴
+## Revision history
 
-- 2026-04-01: 本バージョンを制定（ハンズオン用シナリオデータ、架空の内容）。
+- 2026-04-01: This version established (fictional scenario data for the workshop).

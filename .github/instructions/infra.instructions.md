@@ -1,21 +1,26 @@
 ---
-description: Bicep 正本、生成 ARM、Deployment Scripts の整合を維持する規約。
+description: Keep Bicep source, generated ARM, and Deployment Scripts consistent.
 applyTo: "infra/**,scripts/bootstrap_custom_template.py,scripts/bootstrap-custom-template.sh,scripts/check_template_artifact.py"
 ---
 
-# テンプレートと初期化の変更
+# Template and initialization changes
 
-- 作業前に [インフラ実装ガイド](../../infra/README.md) と
-  [AGENTS の環境作成条件](../../AGENTS.md#環境作成で守る条件) を確認します。
-  モデル・容量・接続名などの値は `infra/main.bicep` を正本とし、指示ファイルに複製しません。
-- `infra/azuredeploy.json` は生成物です。直接修正せず、Bicep の変更後に
-  `make bicep-build` で再生成し、`make bicep-validate` で一致を確認します。
-  実行環境と固定コンパイラーは [開発者向けガイド](../../docs/development/README.md) に従います。
-- リリース既定値を変える場合は、パラメーター例・管理者向け文書・生成 ARM を揃えます。
-  ソース SHA とイメージのダイジェストは公開済みの値を確認し、未公開の値を推測しません。
-- 初期化用 ID と参加者 ID を分離し、既存 RG 内の対象に限定した RBAC を維持します。
-  リソース名・ロール割り当て・再実行時の冪等性を保ちます。
-- 初期化の失敗・再試行上限をデプロイ結果へ伝え、完了前の接続情報を成功として公開しません。
-  `resource_outputs` の契約と関連テストを同時に確認します。
-- コンパイルと契約テストはデプロイ成功の証明ではありません。
-  実デプロイ・権限変更・削除は静的検証に混ぜず、既存 runbook と承認範囲に従います。
+- Read the [infrastructure guide](../../infra/README.md) and
+  [AGENTS environment requirements](../../AGENTS.md#environment-creation-requirements)
+  before editing. `infra/main.bicep` defines models, capacities, and connections;
+  do not duplicate those values in instruction files.
+- `infra/azuredeploy.json` is generated. Do not edit it manually. Regenerate with
+  `make bicep-build` after Bicep changes and verify equality with `make bicep-validate`.
+  Follow the [developer guide](../../docs/development/README.md) for environments
+  and the pinned compiler.
+- Keep release defaults, the parameter example, administrator documentation, and
+  generated ARM synchronized. Verify published source SHAs and image digests;
+  never guess unpublished values. Empty English release pins must fail explicitly.
+- Separate bootstrap and participant identities. Keep RBAC scoped to intended
+  resources in the existing RG. Preserve names, role assignments, and rerun idempotency.
+- Surface initialization failures and exhausted retries in deployment results.
+  Never publish incomplete connection information as success. Check the
+  `resource_outputs` contract and related tests together.
+- Compilation and contract tests do not prove deployment success. Keep real
+  deployment, permission changes, and deletion out of static validation and follow
+  the existing runbook and approved scope.

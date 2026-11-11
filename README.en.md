@@ -1,81 +1,17 @@
-[日本語](README.md) | **English**
-
 # Microsoft Foundry Agent Service Hands-on
 
-Build a synthetic Contoso travel and expense assistant in nine labs.
-Explore retrieval, tools, evaluation, optimization, and Hosted Agents.
+English is the source language on this branch. The primary
+[workshop README](README.md) contains the workshop flow, agenda, schedule, prerequisites,
+and documentation index. This file remains as a compatibility entry for existing English links.
 
 [**Start with Lab 1**](labs/01-setup.md) ·
 [Prerequisites](docs/participant/prerequisites.md) ·
 [Setup guide](docs/participant/environments/custom-template.md)
 
-![Custom-template infrastructure and the connections configured in Labs 2–4: Foundry Agent Service, Azure AI Search, Foundry IQ, and Travel Ops API through Toolbox.](docs/images/azure-architecture-01.png)
-
-[Full-size PNG](docs/images/azure-architecture-01.png) ·
-[Editable PowerPoint (2 slides)](docs/diagrams/azure-architecture.pptx) ·
-[Deployment and initialization flow](docs/images/azure-architecture-02.png) ·
-[Architecture and connection details](docs/development/architecture.md)
-
-
-## Workshop flow
-
-1. **Lab 1**: In Azure Portal, **manually create exactly one dedicated RG first**,
-   then deploy the administrator-provided template into that existing RG.
-   Select **only Subscription and Resource group**, keep the other defaults, and wait for
-   data preparation and validation to succeed.
-2. **Labs 2–6**: Build the agent in Microsoft Foundry Portal.
-   Download the shared Skill ZIPs and OpenAPI for Lab 4 directly from GitHub.
-3. **Labs 7–8**: Use [GitHub Codespaces](docs/participant/environments/codespaces.md),
-   sign in to Azure in the container, and enter your subscription ID and RG name in the setup notebook.
-   The [local Dev Container](docs/participant/environments/local-dev-container.md) uses the same steps.
-   Lab 7 runs Plain Agent and Harness Agent inside the Dev Container for comparison.
-   Lab 8 builds a separate sequential workflow and deploys it as a Hosted Agent.
-4. **Lab 9**: Save/export your results, delete Hosted Agents, stop/delete your Codespace,
-   then delete only your dedicated RG and verify its removal.
-
-The repository already contains the notebooks and Python source; no manual folder upload is needed.
-The browser-based Codespaces route requires no local Docker or Python installation.
-
-## Agenda
-
-| Lab | Topic | Estimate |
-|---|---|---:|
-| [Lab 1](labs/01-setup.md) | Create the environment and verify initialization | [Check the event schedule](#schedule-and-preparation) |
-| [Lab 2](labs/02-prompt-agent.md) | Prompt Agent and Azure AI Search | 20 min |
-| [Lab 3](labs/03-rag-foundry-iq.md) | Foundry IQ | 25 min |
-| — | Break | 10 min |
-| [Lab 4](labs/04-tools-toolbox.md) | Toolbox, OpenAPI, Skills, and Tool Search | 30 min |
-| [Lab 5](labs/05-evaluation.md) | Agent evaluation | 15 min |
-| [Lab 6](labs/06-optimization.md) | Agent Optimizer | 20 min |
-| [Lab 7](labs/07-agent-framework-harness.md) | Codespaces setup, Agent Framework, and Harness Agents | 50 min |
-| [Lab 8](labs/08-hosted-multi-agent.md) | Hosted Agent workflow | 30 min |
-| [Lab 9](labs/09-observability-cleanup.md) | Traces and cleanup | 20 min |
-
-## Schedule and preparation
-
-The estimates total **220 minutes (3 hours 40 minutes), including the break and excluding Lab 1**.
-Use these as planning estimates, not measured end-to-end timings for the current configuration.
-For scheduling purposes, Lab 1 is treated as not measured here and is excluded from that total.
-Evaluation, optimization, deployment waits, and troubleshooting can change the actual finish time.
-
-Check the event announcement to learn whether Lab 1 is performed in advance or on the day.
-Complete Lab 1's initialization checks before starting Lab 2.
-Organizers should use a live rehearsal to budget setup time and contingency.
-For advance provisioning, they should also communicate costs, retention, and cleanup ownership.
-See the [instructor scheduling guide](instructor/README.md#開催時間の計画).
-
-## Documentation by audience
-
-| Audience | References |
-|---|---|
-| Participants | [Documentation index](docs/README.md), [troubleshooting](docs/participant/troubleshooting.md), [costs and cleanup](docs/participant/costs-and-cleanup.md) |
-| Administrators and instructors | [Prerequisites and models](docs/admin/prerequisites.md), [instructor guide](instructor/README.md) |
-| Workshop developers | [Developer guide](docs/development/README.md), [architecture](docs/development/architecture.md) |
-
-Japanese is the source language for the documentation. This README is the explicit English edition;
-the linked guides are maintained in Japanese.
-
 > [!IMPORTANT]
 > Use synthetic data only; never share or save credentials or tokens.
 > Azure and Codespaces usage may incur charges.
-> Follow Lab 9 to delete **only your dedicated RG** and verify that deletion completed.
+> Follow [Lab 9](labs/09-observability-cleanup.md) to delete **only your dedicated RG**
+> and verify that deletion completed.
+
+<sub>English artifacts are published and pinned; participant distribution awaits live acceptance of all Labs, redeployment, and cleanup. Branch links are mutable; existing Azure environments are not automatically translated. [Release details](infra/README.md#english-release-artifacts).</sub>

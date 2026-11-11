@@ -1,130 +1,120 @@
-# Lab 6 — Agent Optimizer（20分）
+# Lab 6 — Agent Optimizer (20 min)
 
-## ゴール
+## Goal
 
-Lab 5 と同じ評価データを使って Prompt Agent の構成候補を生成し、
-baseline より良い候補だけを agent に反映します。
+Generate candidate Prompt Agent configurations using the same evaluation data as Lab 5,
+and apply only a candidate that improves on baseline.
 
-改善前の **baseline** と、生成された **candidate** を同じ質問集・採点基準で比較し、
-変更内容と結果から採用を判断します。
+Compare the original **baseline** and generated **candidate** using the same questions
+and scoring criteria, and decide whether to adopt the changes based on their content and results.
 
 > [!WARNING]
-> Agent と tool を dataset の各行で繰り返し実行するため、
-> model と外部 tool の料金が発生します。
+> The agent and tools run repeatedly for dataset rows, incurring model and external tool charges.
 
-## 1. Optimization wizard を開く
+## 1. Open the optimization wizard
 
-1. **Build > Agents > contoso-travel-assistant** を開きます。
-2. **Optimize** tab を選択します。
-3. 初回は **Optimize my agent**、2 回目以降は **Create optimization run** を選択します。
+1. Open **Build > Agents > contoso-travel-assistant**.
+2. Select the **Optimize** tab.
+3. Select **Optimize my agent** initially, or **Create optimization run** on later runs.
 
-## 2. Target を設定する
+## 2. Set Target
 
-Lab 1 のデプロイの **Outputs > resourceOutputs** で、
-`optimizer_model_deployment_name` と `evaluation_model_deployment_name` の値を確認します。
-このハンズオンでは、どちらも `gpt-5.5` です。
+In Lab 1's deployment **Outputs > resourceOutputs**, check
+`optimizer_model_deployment_name` and `evaluation_model_deployment_name`.
+Both are `gpt-5.5` in this workshop.
 
-**Target** step で次を設定します。
+In **Target**, set:
 
-| 項目 | 値 |
+| Field | Value |
 |---|---|
-| Version | Lab 4 までの変更を保存した最新の version |
-| Optimization model | `optimizer_model_deployment_name` の値（`gpt-5.5`） |
+| Version | Latest version with changes saved through Lab 4 |
+| Optimization model | `optimizer_model_deployment_name` (`gpt-5.5`) |
 | Max candidates | `1` |
-| Evaluation model | `evaluation_model_deployment_name` の値（`gpt-5.5`） |
+| Evaluation model | `evaluation_model_deployment_name` (`gpt-5.5`) |
 | Compare across models | Off |
 
-両方のモデルに **gpt-5.5** を選びます。`gpt-5.6-luna` と `embedding` は選びません。
-候補数はトークン消費を抑えるため **1** に限定します。
+Choose **gpt-5.5** for both models, not `gpt-5.6-luna` or `embedding`.
+Limit candidates to **1** to reduce token usage.
+Check settings and select **Next**.
 
-設定を確認して **Next** を押します。
+## 3. Select the dataset
 
-![対象 version、2つのモデル、候補数、モデル比較 Off を設定する](../docs/images/lab06-target-settings.png)
+1. Under **Data**, select **Select dataset and criteria**.
+   Do not use the initial **Generate data** selection; no new question set is needed.
+2. Check the `contoso-travel-optimizer-live-subset` row on the right.
+   Do not choose `skill_...` data.
+3. Select **Next**.
 
+This dataset contains the same 7 questions as Lab 5, with the optimizer-required
+reference answer (`ground_truth`) populated on every row.
 
-## 3. Dataset を選択する
+## 4. Select Criteria
 
-1. **Data** では **Select dataset and criteria** を選択します。
-   初期選択の **Generate data** は使いません。質問集を新たに生成する必要はありません。
+1. Under **Criteria**, select **[Contoso Travel Rubric](../docs/participant/contoso-travel-rubric.md)**
+   registered by Lab 1.
+2. Add no other evaluators; select **Next**.
 
-![Select dataset and criteria に切り替える](../docs/images/lab06-existing-data.png)
+This evaluator scores policy compliance, citations, tool use, and scope/safety.
+Inspect actual selected tools and their arguments/outputs in each candidate's Conversation / Trace.
 
-2. 右側の一覧で `contoso-travel-optimizer-live-subset` の行にチェックを付けます。
-   `skill_...` のデータは選びません。
-3. **Next** を選択します。
+The retained [Target settings](../docs/images/lab06-target-settings.png),
+[existing dataset](../docs/images/lab06-existing-data.png), and
+[custom rubric selection](../docs/images/lab06-optimizer-criteria.png) screenshots
+are historical/illustrative, not English instructions or success evidence for this revision.
 
-この dataset は Lab 5 と同じ 7 件の質問に、Optimizer が必要とする参照回答
-（`ground_truth`）をすべて設定したものです。
+## 5. Check Cost estimate and run
 
-## 4. Criteria を選択する
+In **Review**, check the agent, dataset, models, candidate count, evaluator, and **Estimated cost**,
+then select **Submit**. The estimate's **Maximum** is not a billing cap.
 
-1. **Criteria** で、Lab 1 が登録した
-   **[Contoso Travel Rubric](../docs/participant/contoso-travel-rubric.md)** を選択します。
-2. ほかの評価器は追加せず、**Next** を選択します。
+## 6. Compare candidates
 
-この評価器は、規程への準拠、引用、Tool の利用、対象範囲と安全性の 4 項目で回答を採点します。
-実際に選ばれた Tool とその引数・出力は、候補ごとの Conversation / Trace で確認します。
+Wait until Run detail status is **Succeeded**. Do not resubmit the same run.
 
-![Optimizer の custom rubric 選択](../docs/images/lab06-optimizer-criteria.png)
+1. Compare **Improvement**, **Baseline**, and **Best score**.
+2. Under **Candidate results > View changes**, inspect before/after changes and select **Close**.
+3. Open the `evalrun_...` link in **Score details** at the table's far right
+   for the candidate you want to inspect.
 
-## 5. Cost estimate を確認して実行する
+With **Max candidates = 1**, two rows may appear: one generated candidate plus baseline.
 
-**Review** で Agent、dataset、モデル、候補数、評価器と **Estimated cost** を確認し、
-**Submit** を選択します。見積もりの **Maximum** は請求額の上限ではありません。
+Read `system_prompt` changes and responses, checking:
 
-## 6. Candidate を比較する
+- Instructions to clarify missing information and avoid claims of actual booking/approval remain.
+- Policy amounts, approval conditions, and processing days are not copied into instructions in a way that overrides retrieval.
+- Questions previously answered correctly do not gain unnecessary clarification questions.
+- The candidate does not invent unconsulted sources or results of unexecuted tools.
+- Changes do not hide either `tool_search` / `call_tool` or downstream operations.
+- Estimate requests do not unnecessarily invoke `createPreapproval`, Web Search, or Code Interpreter.
 
-Run detail の status が **Succeeded** になるまで待ちます。同じ run を再送しないでください。
+In the Evaluation run, select **View rubric details** beside scores in **Detailed metrics result**.
+Inspect criterion weights, scores, and reasons; select **Done** to return to comparison.
+This is a small question set. Do not adopt a higher-scoring candidate if content or safety deteriorated,
+and do not infer improvement from a small score difference alone.
 
-1. **Improvement**、**Baseline**、**Best score** を比較します。
-2. **Candidate results** の **View changes** で変更前後を確認し、**Close** で閉じます。
-3. 表の右端の **Score details** にある `evalrun_...` のリンクを開きます。
-   確認したい candidate の行を選んでください。
+Completing the comparison meets this lab's goal even if no candidate is worth adopting.
+In that case, skip promotion and proceed to Lab 7.
 
-**Max candidates = 1** では、生成した候補 1 つに baseline を加えた 2 行が表示される場合があります。
+## 7. Promote an improved candidate
 
-`system_prompt` の変更と回答を読み、次を確認します。
+Do this only if a candidate clearly improves on baseline.
 
-- 不足情報を確認する指示や、予約・承認を実行したと誤認させない指示が残っている
-- 規程の金額・承認条件・処理日数が指示文へ書き写され、検索結果より優先される構成になっていない
-- 正しい回答ができていた質問で、不要な確認質問が増えていない
-- 参照していない出典や、実行していない tool の結果を作らせていない
-- `tool_search` / `call_tool` と downstream operation のどちらかを隠す変更になっていない
-- 見積もり依頼で `createPreapproval`、Web Search、Code Interpreter を不要に呼んでいない
+1. Select **Promote candidate**.
+2. Recheck the score difference between best candidate and baseline, and the changes.
+3. In the confirmation dialog, select **Promote to agent version**.
 
-Evaluation run を開いたら、**Detailed metrics result** のスコア横の詳細ボタン
-（**View rubric details**）を選びます。
+Verify **Promoted**. Return to the agent and verify model `gpt-5.6-luna`
+and the Knowledge/Toolbox connections remain.
+In Toolbox, verify Code Interpreter, Web Search, both Skills, existing policies/guardrail,
+and Tool Search On remain. Maintain Skill registration/publication for Lab 7,
+but regard Prompt Agent Skill use as proven only by `load_skill` or `resources/read` in Trace.
+Lab 7's Harness Agent loads Skills through the Skill provider and verifies execution records.
 
-観点ごとの重み・スコア・理由を確認し、**Done** で閉じて比較画面へ戻ります。
-少数の質問による評価なので、点数が上がっても、内容や安全性が悪化していれば採用しません。
-小さなスコア差だけで改善を判断することも避けてください。
+In **New chat**, retry Lab 3 / 4 questions and verify policy retrieval and
+`tool_search → call_tool → createTripEstimate` still work.
 
-採用できる改善案がなくても、ここまで比較できればこの Lab の目的は達成しています。
-その場合は次の「反映する」を飛ばし、Lab 7 へ進みます。
+Details: [Quickstart: Optimize a prompt agent](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent).
 
-## 7. 改善した candidate を反映する
+## Next lab
 
-明確に改善した candidate がある場合だけ実行します。
-
-1. **Promote candidate** を選択します。
-2. Best candidate と baseline の score 差、変更内容を再確認します。
-3. 確認ダイアログの **Promote to agent version** を選択します。
-
-**Promoted** の表示を確認します。
-Agent に戻り、モデルが `gpt-5.6-luna`、Knowledge と Toolbox の接続が残っていることを
-確認します。Toolbox 側では Code Interpreter、Web Search、2 つの Skills、既存の
-policies/guardrail、Tool Search On が残っていることも確認します。Skills は Lab 7 用に
-登録・公開を維持しますが、Prompt Agent が利用した証拠は `load_skill` または
-`resources/read` の Trace がある場合だけです。次の Lab 7 の Harness Agent は共有 factory の
-Skill provider で Skills を読み込み、その実行記録を確認します。
-
-**New chat** で Lab 3 / 4 の質問を試し、規程確認と
-`tool_search → call_tool → createTripEstimate` が引き続き動作するか確認してください。
-
-詳細は
-[Quickstart: Optimize a prompt agent](https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-optimize-prompt-agent)
-を参照してください。
-
-## 次の Lab
-
-[Lab 7 — Agent Framework で Agent と Harness Agent を作る](07-agent-framework-harness.md)
+[Lab 7 — Build an Agent and Harness Agent with Agent Framework](07-agent-framework-harness.md)

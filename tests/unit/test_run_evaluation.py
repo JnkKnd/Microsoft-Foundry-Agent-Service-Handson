@@ -42,9 +42,9 @@ REAL_SCHEMA = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
 VALID_CASE = {
     "id": "eval-001",
     "category": "direct_policy_fact",
-    "query": "東京から大阪へ日帰り出張する場合、食事の日当はいくらですか?",
-    "expected_behavior": "1,500円と回答する。",
-    "ground_truth": "1,500円",
+    "query": "What is the meal per diem for a day trip from Tokyo to Osaka?",
+    "expected_behavior": "Answer JPY 1,500.",
+    "ground_truth": "JPY 1,500",
     "expected_citations": ["policy-per-diem-001"],
     "requires_citation": True,
     "v1_expected_outcome": "pass",
@@ -153,7 +153,7 @@ def test_optimizer_dataset_rejects_invalid_copy(field: str, value: object, messa
 
 
 def test_optimizer_dataset_requires_expected_citations_in_reference_answer() -> None:
-    optimizer_case = dict(VALID_CASE, ground_truth="国内日帰りの日当は1,500円です。")
+    optimizer_case = dict(VALID_CASE, ground_truth="The domestic day-trip per diem is JPY 1,500.")
 
     with pytest.raises(run_evaluation.WorkshopContextError, match="policy-per-diem-001"):
         run_evaluation.validate_optimizer_dataset([VALID_CASE], [optimizer_case])
@@ -224,8 +224,18 @@ def test_build_rubric_definition_has_pass_threshold_and_dimensions() -> None:
     definition = run_evaluation.build_rubric_definition(pass_threshold=0.7)
 
     assert definition.pass_threshold == 0.7
-    assert len(definition.dimensions) >= 3
-    assert all(1 <= d.weight <= 10 for d in definition.dimensions)
+    assert [(dimension.id, dimension.weight) for dimension in definition.dimensions] == [
+        ("policy_grounding", 9),
+        ("citation_when_required", 7),
+        ("tool_usage_correctness", 6),
+        ("scope_and_safety_boundary", 6),
+    ]
+    assert run_evaluation.build_rubric_definition().pass_threshold == 0.6
+    descriptions = {dimension.id: dimension.description for dimension in definition.dimensions}
+    assert "does not invent amounts or conditions" in descriptions["policy_grounding"]
+    assert "not applicable" in descriptions["citation_when_required"]
+    assert "valid arguments" in descriptions["tool_usage_correctness"]
+    assert "rather than guessing" in descriptions["scope_and_safety_boundary"]
 
 
 def test_rubric_matches_true_for_identical_definition() -> None:

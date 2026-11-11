@@ -1,54 +1,53 @@
-# 選択ラボ — A2A・Routines・Teams/M365 publish（プレビュー機能）
+# Optional lab — A2A, Routines, and Teams/M365 publishing (preview)
 
-## この文書の位置づけ
+## Scope of this document
 
-このラボは、Foundry agent を外部から呼び出す・自動でトリガーする・Teams や Microsoft 365 に
-公開する、3 つの独立したプレビュー機能を扱います。いずれも本編には含まれておらず、
-**すべて preview** です。安全のため、外部 agent との通信は本ラボ内でホストするローカルの
-モック（simulated）で代替し、実在の外部サービスや秘密情報を扱いません。
+This lab covers three independent preview capabilities: calling Foundry agents externally,
+automatically triggering them, and publishing to Teams or Microsoft 365.
+None is part of the main workshop; **all are preview**.
+For safety, external-agent communication uses a local simulated mock within this lab,
+not real external services or secrets.
 
 > [!WARNING]
-> 本ラボのコード例・手順は、実際の Microsoft Entra アプリ登録・実際の Bot Service リソース
-> ・実際の Teams への公開を行うものではありません。すべて「これから何をどう設定するか」の
-> 説明と、ローカルで完結する simulated なやり取りの例です。実施する場合は組織のセキュリティ
-> ・コンプライアンス担当者の承認を得てください。
+> These examples do not register real Microsoft Entra applications, create real Bot Service
+> resources, or publish to real Teams environments. They explain future configuration
+> and show simulated local interactions. Obtain organizational security/compliance approval
+> before implementing them.
 
-## 1. Incoming A2A（agent を外部から呼び出し可能にする、preview）
+## 1. Incoming A2A (external agent access, preview)
 
-### 1.1 前提条件
+### 1.1 Prerequisites
 
-| 項目 | 要件 |
+| Item | Requirement |
 |---|---|
-| プロトコル | agent が **Responses プロトコル**を実装していること（[Advanced Hosted Agent](advanced-hosted-agent.md) 参照）。prompt agent は標準で Responses に対応済み |
-| Azure ロール | **Foundry User** |
-| ネットワーク | project の public network access が有効であること（無効な場合は A2A ではなく REST API + 別のネットワーキング手順が必要） |
-| 対象 | prompt agent、および Responses プロトコルを実装した hosted agent |
+| Protocol | Agent implements **Responses**; see [Advanced Hosted Agent](advanced-hosted-agent.md). Prompt agents support Responses by default |
+| Azure role | **Foundry User** |
+| Network | Project public network access enabled; otherwise use REST API and separate networking procedures, not A2A |
+| Targets | Prompt agents and Hosted Agents implementing Responses |
 
 > [!NOTE]
-> **Foundry agent 同士**の委任には A2A は不要です。同じ Foundry project 内の複数 agent を
-> 連携させたい場合は、本編 [Lab 8](../08-hosted-multi-agent.md) が使う Microsoft Agent
-> Framework の workflow、または prompt agent の connected agents 機能を使ってください。
-> A2A は **Foundry の外にある agent**（他プラットフォーム、他ベンダーの agent）との相互運用
-> のための preview プロトコルです。
+> A2A is unnecessary for delegation **between Foundry agents**.
+> Within one Foundry project, use Microsoft Agent Framework workflows as in
+> [Lab 8](../08-hosted-multi-agent.md), or prompt-agent connected agents.
+> A2A is a preview interoperability protocol for **agents outside Foundry**,
+> including other platforms/vendors.
 
-### 1.2 有効化の概念フロー
+### 1.2 Conceptual enablement flow
 
-1. Foundry portal または SDK で、公開したい agent（例: 本編の
-   `contoso-travel-assistant`）に対して A2A を有効化する。
-2. Foundry が **agent card**（agent の能力・エンドポイント・認証方式を記述したメタデータ）
-   を生成する。
-3. 呼び出し側の外部 agent は、agent card を取得してからリクエストを送る。
+1. In Foundry Portal or the SDK, enable A2A for the agent to expose
+   (for example, `contoso-travel-assistant`).
+2. Foundry generates an **agent card**, metadata describing capabilities, endpoint, and authentication.
+3. The external caller retrieves the card, then sends a request.
 
-### 1.3 安全な simulated 外部 agent（このラボ専用、実際の通信なし）
+### 1.3 Safe simulated external agent (lab only, no actual communication)
 
-以下は、外部 agent が A2A 経由で呼び出す際にどのようなリクエスト形状になるかを示す
-**参考疑似コード**です。`https://example-invalid.contoso-lab.invalid` は意図的に**解決不能な
-架空ドメイン**にしてあり、実行してもどこにも接続されません。実際の A2A エンドポイントに
-接続する場合は、必ず自分の Foundry project の agent card から得た本物のエンドポイントと
-資格情報を使ってください。
+This **illustrative pseudocode** shows the shape of an external agent's A2A request.
+`https://example-invalid.contoso-lab.invalid` is deliberately a **nonresolving fictional domain**,
+not a real destination. Real A2A connections must use the endpoint and credentials
+obtained from your Foundry project's agent card.
 
 ```python
-# 参考疑似コード。実行しても外部通信は発生しません（ドメインが解決不能なため）。
+# Illustrative pseudocode. No external request is sent.
 SIMULATED_EXTERNAL_AGENT_CARD = {
     "name": "contoso-partner-demo-agent",
     "endpoint": "https://example-invalid.contoso-lab.invalid/a2a",
@@ -58,7 +57,7 @@ SIMULATED_EXTERNAL_AGENT_CARD = {
 
 
 def simulated_a2a_call(prompt: str) -> dict:
-    """外部 agent への A2A 呼び出しがどう構成されるかを示すだけの関数。実際には送信しない。"""
+    """Illustrate an A2A request to an external agent without sending it."""
     return {
         "request_would_be_sent_to": SIMULATED_EXTERNAL_AGENT_CARD["endpoint"],
         "headers": {"A2A-Version": "1.0"},
@@ -67,90 +66,87 @@ def simulated_a2a_call(prompt: str) -> dict:
     }
 ```
 
-### 1.4 バージョン
+### 1.4 Versions
 
-A2A は v1.0（推奨、`A2A-Version: 1.0` ヘッダーを送信）と v0.3（ヘッダー省略時の既定）の
-両方をサポートします。新規実装では v1.0 を明示的に指定することが推奨されます。
+A2A supports v1.0 (recommended; send `A2A-Version: 1.0`) and v0.3
+(default when the header is omitted). Explicit v1.0 is recommended for new implementations.
 
-## 2. Routines（preview）
+## 2. Routines (preview)
 
-### 2.1 概要
+### 2.1 Overview
 
-Routine は、**1 つのトリガーに対して 1 つのアクション**を紐づける自動化の仕組みです。
-Workflow（本編 Lab 8 の Agent Framework）が扱う複雑な分岐・複数 agent の連携とは異なり、
-Routine は次のようなシンプルな自動化に向いています。
+A Routine associates **one trigger with one action**.
+Unlike workflows (Agent Framework in Lab 8), which handle complex branching and
+multi-agent orchestration, Routines suit simple automation:
 
-| トリガーの種類 | 例 |
+| Trigger | Example |
 |---|---|
-| タイマー（1 回限り） | 「明日 9:00 に一度だけ、未承認の出張申請一覧を要約して投稿する」 |
-| 定期スケジュール | 「毎週月曜 9:00 に、先週の Contoso 出張精算サマリーを生成する」 |
-| イベント | 「GitHub issue が作成されたら、内容を要約してコメントする」 |
+| One-time timer | Once tomorrow at 9:00, summarize and post pending travel requests |
+| Recurring schedule | Every Monday at 9:00, generate last week's Contoso travel expense summary |
+| Event | When a GitHub issue is created, summarize it in a comment |
 
-### 2.2 Contoso シナリオでの架空の例
+### 2.2 Fictional Contoso scenario
 
 ```text
-トリガー: 毎週金曜 17:00（定期スケジュール）
-アクション: contoso-travel-assistant を呼び出し、
-  「今週承認された Contoso 出張申請の件数と合計金額を要約してください」
-  というプロンプトを実行する
+Trigger: Every Friday at 17:00 (recurring schedule)
+Action: Invoke contoso-travel-assistant with:
+  "Summarize the count and total amount of Contoso travel requests approved this week."
 ```
 
-これは**架空の設定例**であり、実データに対して実行するものではありません。実行結果の履歴は
-Foundry portal 上の run history で確認できます。preview 機能のため、対応するトリガー種別・
-アクション種別は今後変わる可能性があります。
+This is a **fictional configuration**, not an operation on real data.
+Execution results are available in Foundry Portal run history.
+Supported trigger/action types may change during preview.
 
-### 2.3 使い分けの目安
+### 2.3 Choosing between them
 
-- 単純な「決まった時刻に決まった 1 つのプロンプトを実行する」「特定イベントで 1 アクション
-  を起動する」だけなら **Routines**。
-- 複数 agent のオーケストレーション、条件分岐、人間の承認ステップを含む場合は、引き続き
-  本編の **Agent Framework workflow**（[Lab 8](../08-hosted-multi-agent.md)）を使う。
+- Use **Routines** for one fixed prompt at a fixed time or one action on an event.
+- Continue using **Agent Framework workflows** ([Lab 8](../08-hosted-multi-agent.md))
+  for multiple agents, conditional branches, or human approval steps.
 
-## 3. Teams・Microsoft 365 への publish（preview）
+## 3. Publish to Teams and Microsoft 365 (preview)
 
-### 3.1 前提条件
+### 3.1 Prerequisites
 
-| 項目 | 要件 |
+| Item | Requirement |
 |---|---|
-| プロトコル | agent が Responses プロトコルを実装（Activity プロトコルへは自動でブリッジされる） |
-| Azure ロール（RG スコープ） | **Azure Bot Service Contributor**（`Microsoft.BotService/botServices/write` と `channels/write` を含む。Contributor や Owner でも足りる） |
-| Foundry ロール | **Foundry User** |
-| ネットワーク | project の public network access が有効であること |
-| 組織全体への公開 | Microsoft 365 / Teams 管理者による**組織の管理者承認**（Teams admin center 経由） |
+| Protocol | Agent implements Responses (automatically bridged to Activity) |
+| Azure role (RG scope) | **Azure Bot Service Contributor**, including `Microsoft.BotService/botServices/write` and `channels/write`; Contributor or Owner also suffices |
+| Foundry role | **Foundry User** |
+| Network | Project public network access enabled |
+| Organization-wide publication | **Organizational administrator approval** by Microsoft 365 / Teams administrators through Teams admin center |
 
 > [!IMPORTANT]
-> 「個人で試す（自分だけがインストールできる状態にする）」ことと、「組織の全員が使える状態
-> にする」ことは別の話です。後者には Microsoft 365 / Teams 管理者の承認が必要です。本ラボの
-> 参加者権限（resource group Owner）だけでは、組織全体への公開はできません。
+> Personal testing (only you can install) and organization-wide availability are different.
+> The latter requires Microsoft 365 / Teams administrator approval.
+> Workshop participant RG Owner permissions alone do not authorize organization-wide publication.
 
-### 3.2 概念フロー
+### 3.2 Conceptual flow
 
-1. Foundry portal で agent を選び、**Channels** から Teams / M365 Copilot を選択して bot
-   registration を作成する（この操作に Azure Bot Service Contributor 権限が必要）。
-2. 個人アカウントでのテスト利用であれば、生成された Teams アプリのマニフェストを
-   sideload してすぐに試せる。
-3. 組織全体に配布する場合は、Teams admin center から組織の承認を申請する。
+1. Select the agent in Foundry Portal, then Teams / M365 Copilot under **Channels**,
+   creating a bot registration (requires Azure Bot Service Contributor).
+2. For personal testing, sideload the generated Teams app manifest.
+3. For organization-wide distribution, request approval through Teams admin center.
 
-本ラボでは、実際の bot registration や Teams アプリの発行は行いません。上記フローの
-「どのロールが何を承認するか」を理解することが目的です。
+This lab does not create actual bot registrations or publish Teams apps.
+Its purpose is understanding which roles approve each operation.
 
-## 4. データ・セキュリティ上の注意
+## 4. Data and security considerations
 
-- 本節で扱った 3 つの機能はいずれも **preview** であり、SLA の対象外です。
-- 本ラボのコード・設定例は実際の外部通信・実際の Azure リソース作成を伴いません。
-- 実際に有効化する場合は、[費用と片付け](../../docs/participant/costs-and-cleanup.md) の
-  コスト方針と、組織のデータガバナンス方針の両方を確認してください。
+- All three capabilities are **preview**, without SLA coverage.
+- Code/configuration examples do not make real external calls or create Azure resources.
+- Before enabling them, check both [costs and cleanup](../../docs/participant/costs-and-cleanup.md)
+  and organizational data governance policies.
 
-## 公式参照
+## Official references
 
 - [Enable incoming Agent-to-Agent (A2A) requests](https://learn.microsoft.com/azure/foundry/agents/how-to/enable-agent-to-agent-endpoint)
 - [Routines in Foundry Agent Service (preview)](https://learn.microsoft.com/azure/foundry/agents/concepts/routines)
 - [Publish an agent to Microsoft 365 Copilot and Microsoft Teams](https://learn.microsoft.com/azure/foundry/agents/how-to/publish-copilot)
 - [Hosted agents in Foundry Agent Service](https://learn.microsoft.com/azure/foundry/agents/concepts/hosted-agents)
 
-## 関連リンク
+## Related links
 
-- [選択ラボ index](README.md)
-- [Advanced Hosted Agent](advanced-hosted-agent.md)（Responses/Activity プロトコルの詳細）
-- [Work IQ](work-iq.md)（Work IQ 自体が A2A + OBO を使う実例）
-- [本編 Lab 8 — Agent Framework workflow](../08-hosted-multi-agent.md)
+- [Optional lab index](README.md)
+- [Advanced Hosted Agent](advanced-hosted-agent.md) (Responses/Activity details)
+- [Work IQ](work-iq.md) (an example using A2A + OBO)
+- [Lab 8 — Agent Framework workflow](../08-hosted-multi-agent.md)

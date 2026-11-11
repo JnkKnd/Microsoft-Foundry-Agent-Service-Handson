@@ -22,7 +22,7 @@ CODESPACES_GUIDE = ENVIRONMENTS / "codespaces.md"
 LOCAL_GUIDE = ENVIRONMENTS / "local-dev-container.md"
 LEGACY_GUIDE = ENVIRONMENTS / "cloud-shell.md"
 HISTORY_START = (
-    "<details>\n<summary>旧手順の履歴資料</summary>\n\n<!-- historical-content:start -->\n"
+    "<details>\n<summary>Historical procedure</summary>\n\n<!-- historical-content:start -->\n"
 )
 HISTORY_END = "<!-- historical-content:end -->\n</details>\n"
 ADMIN_GUIDE = REPO_ROOT / "docs" / "admin" / "prerequisites.md"
@@ -58,7 +58,7 @@ DOCUMENTS = [
     *sorted((REPO_ROOT / "instructor").rglob("*.md")),
     REPO_ROOT / "src" / "hosted-agent" / "README.md",
 ]
-REPOSITORY = "matayuuu/Microsoft-Foundry-Agent-Service-Handson"
+REPOSITORY = "JnkKnd/Microsoft-Foundry-Agent-Service-Handson"
 COMMON_ASSETS = (
     "assets/skills/travel-estimation.zip",
     "assets/skills/preapproval-simulation.zip",
@@ -92,10 +92,21 @@ RETIRED_IMAGES = (
     "lab01-private-zip-download.png",
 )
 LINK_PATTERN = re.compile(r"\[[^\]\n]+\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+JAPANESE_TEXT = re.compile(r"[\u3041-\u3096\u30a1-\u30fa\u3400-\u4dbf\u4e00-\u9fff]")
 
 
 def normalized(text: str) -> str:
     return " ".join(text.replace("**", "").replace("`", "").split())
+
+
+def assert_no_unexpected_japanese(text: str) -> None:
+    assert not JAPANESE_TEXT.search(text), "unexpected Japanese documentation text"
+
+
+def assert_public_source_revision(revision: str) -> None:
+    assert revision == "English" or re.fullmatch(r"[a-f0-9]{40}", revision), (
+        f"expected English browsing branch or immutable commit, got {revision!r}"
+    )
 
 
 def assert_in_order(text: str, steps: tuple[str, ...]) -> None:
@@ -238,6 +249,10 @@ def test_path_instructions_are_discovered_and_linked_from_developer_guide() -> N
 
 @pytest.mark.parametrize("readme", [REPO_ROOT / "README.md", REPO_ROOT / "README.en.md"])
 def test_readmes_link_all_labs_and_supported_environments(readme: Path) -> None:
+    text = read(readme)
+    if readme.name == "README.en.md" and "compatibility entry" in text:
+        assert "README.md" in links(readme)
+        readme = REPO_ROOT / "README.md"
     targets = links(readme)
     for index, lab in CORE_LABS.items():
         assert lab.is_file()
@@ -259,7 +274,7 @@ def test_documents_do_not_reintroduce_retired_handoffs(path: Path) -> None:
 
 
 def test_history_filter_is_limited_to_the_explicit_legacy_section() -> None:
-    current = "# 現行手順への案内\n"
+    current = "# Current procedure references\n"
     archived = f"{current}{HISTORY_START}scripts/setup.sh\n{HISTORY_END}"
     assert current_document_text(LEGACY_GUIDE, archived) == current
     assert current_document_text(CODESPACES_GUIDE, archived) == archived
@@ -277,8 +292,13 @@ def test_legacy_guide_preserves_history_and_routes_to_supported_guides() -> None
     assert source.count(HISTORY_START) == source.count(HISTORY_END) == 1
     assert source.endswith(HISTORY_END)
     current = read(LEGACY_GUIDE)
-    for token in ("履歴資料", "現行構成では使用しません", "リンク", "保証"):
-        assert token in current
+    for token in (
+        "historical documentation",
+        "not used by the current configuration",
+        "links",
+        "do not guarantee current availability",
+    ):
+        assert token in normalized(current)
     for target in ("custom-template.md", "codespaces.md", "local-dev-container.md"):
         assert target in links(LEGACY_GUIDE)
 
@@ -314,38 +334,52 @@ def test_runbook_covers_every_lab_and_distinguishes_incomplete_runs() -> None:
     for lab in CORE_LABS.values():
         assert f"../labs/{lab.name}" in links(runbook)
     for token in (
-        "全Lab",
-        "同一revision",
+        "every participant Lab (1\u20139)",
+        "same revision",
         "Partial",
-        "未完了",
-        "未実施",
-        "中断",
-        "評価ジョブ",
-        "最適化ジョブ",
+        "Incomplete",
+        "Not performed",
+        "Interrupted",
+        "Run all 7 evaluation rows",
+        "Run optimization with 1 candidate",
         "plan",
         "execute",
         "todos",
         "cleanup",
     ):
-        assert token in text
-    assert "代表操作を確認" not in text
+        assert token in normalized(text)
+    assert "verify representative operations" not in text
     instructions = read(COPILOT_INSTRUCTIONS)
     assert "../instructor/runbook.md" in links(COPILOT_INSTRUCTIONS)
-    for token in ("全Lab", "同一revision", "未完了", "未実施", "中断", "事前に了承"):
-        assert token in instructions
+    for token in (
+        "all Labs (1-9)",
+        "same revision",
+        "incomplete",
+        "not run",
+        "interrupted",
+        "prior approval",
+    ):
+        assert token in normalized(instructions)
     assert "representative labs" not in instructions
 
 
-def test_repository_documentation_language_policy_preserves_explicit_english_version() -> None:
+def test_repository_documentation_language_policy_preserves_english_primary_entry() -> None:
     instructions = read(COPILOT_INSTRUCTIONS)
-    for token in ("docs/", "日本語", "README.en.md", "UI", "識別子"):
+    for token in ("docs/", "English", "README.md", "README.en.md", "UI", "identifiers"):
         assert token in instructions
+    assert "English is the source language" in normalized(instructions)
+    assert "README.md is the primary entry point" in normalized(instructions)
 
 
 def test_agents_routes_to_github_without_duplicating_the_moved_policies() -> None:
     agents = read(REPO_ROOT / "AGENTS.md")
     assert ".github/copilot-instructions.md" in links(REPO_ROOT / "AGENTS.md")
-    for token in ("## 文書の言語と正本", "## Portal E2E", "全Lab", "README.en.md"):
+    for token in (
+        "## Documentation language and source of truth",
+        "## Portal E2E",
+        "all Labs (1-9)",
+        "README.en.md",
+    ):
         assert token not in agents
 
 
@@ -359,7 +393,11 @@ def test_documentation_layout_separates_audiences() -> None:
     assert not (REPO_ROOT / "docs" / "costs-and-cleanup.md").exists()
     for target in ("docs/README.md", "docs/development/README.md", "instructor/README.md"):
         assert target in links(REPO_ROOT / "README.md")
-        assert target in links(REPO_ROOT / "README.en.md")
+        english_links = links(REPO_ROOT / "README.en.md")
+        assert target in english_links or (
+            "README.md" in english_links
+            and "compatibility entry" in read(REPO_ROOT / "README.en.md")
+        )
     for target in ("architecture.md", "feature-support-matrix.md", "../../infra/README.md"):
         assert target in links(DEVELOPMENT_DIR / "README.md")
     assert "development/README.md" in links(REPO_ROOT / "docs" / "README.md")
@@ -382,10 +420,44 @@ def test_documentation_layout_separates_audiences() -> None:
         "labs/optional/README.md",
     ],
 )
-def test_basic_documentation_has_japanese_titles(relative_path: str) -> None:
+def test_basic_documentation_has_english_titles(relative_path: str) -> None:
     title = read(REPO_ROOT / relative_path).splitlines()[0]
     assert title.startswith("# ")
-    assert re.search(r"[ぁ-んァ-ヶ一-鿿]", title)
+    assert re.search(r"[A-Za-z]", title)
+    assert_no_unexpected_japanese(title)
+
+
+@pytest.mark.parametrize(
+    "path",
+    list(dict.fromkeys([*DOCUMENTS, *AI_GUIDANCE, *DEVELOPER_DOCUMENTS])),
+    ids=lambda path: str(path.relative_to(REPO_ROOT)),
+)
+def test_documentation_has_no_unexpected_japanese(path: Path) -> None:
+    assert_no_unexpected_japanese(path.read_text(encoding="utf-8"))
+
+
+@pytest.mark.parametrize("text", ["\u65e5\u672c\u8a9e", "\u304b\u306a", "\u30ab\u30ca"])
+def test_english_language_contract_rejects_japanese(text: str) -> None:
+    with pytest.raises(AssertionError, match="unexpected Japanese"):
+        assert_no_unexpected_japanese(text)
+
+
+@pytest.mark.parametrize("text", ["English · UI → ✓ \u00d7 ±", "JPY 1,500 — 2026-09-10", "API_ID"])
+def test_english_language_contract_accepts_unicode_and_identifiers(text: str) -> None:
+    assert_no_unexpected_japanese(text)
+
+
+def test_maintainer_guides_expose_translated_contract_anchors() -> None:
+    assert {
+        "getting-started-with-development",
+        "ai-configuration-responsibilities",
+        "working-with-ai-on-changes",
+        "change-targets-and-checks",
+    } <= markdown_anchors(read(DEVELOPMENT_DIR / "README.md"))
+    assert "model-quotas" in markdown_anchors(read(ADMIN_GUIDE))
+    assert "real-environment-validation-scope" in markdown_anchors(
+        read(REPO_ROOT / "instructor" / "runbook.md")
+    )
 
 
 def test_developer_quickstart_covers_setup_validation_and_change_ownership() -> None:
@@ -400,9 +472,9 @@ def test_developer_quickstart_covers_setup_validation_and_change_ownership() -> 
         "make assets-check",
         "make bicep-validate",
         "make validate",
-        "変更対象",
-        "正本",
-        "実環境",
+        "Change targets",
+        "source of truth",
+        "real-environment",
     ):
         assert token in guide
     workflow = read(REPO_ROOT / ".github" / "workflows" / "validate.yml")
@@ -421,30 +493,35 @@ def test_developer_quickstart_covers_setup_validation_and_change_ownership() -> 
 def test_agenda_distinguishes_planning_estimates_from_setup_time(name: str) -> None:
     path = REPO_ROOT / name
     text = read(path)
+    if name == "README.en.md" and "compatibility entry" in text:
+        assert "README.md" in links(path)
+        path = REPO_ROOT / "README.md"
+        text = read(path)
     durations = [
         int(value)
         for value in re.findall(r"^\|[^|]+\|[^|]+\|\s*(\d+)\s*(?:分|min)\s*\|", text, re.M)
     ]
     assert len(durations) == 9
-    total_pattern = r"合計(\d+)分" if name == "README.md" else r"total \*\*(\d+) minutes"
+    total_pattern = r"total \*\*(\d+) minutes"
     declared_total = re.search(total_pattern, text)
     assert declared_total and int(declared_total.group(1)) == sum(durations)
     assert "instructor/README.md" in links(path)
-    for token in (
-        ("Lab 1", "未計測", "開催案内", "事前", "当日")
-        if name == "README.md"
-        else ("Lab 1", "not measured", "event announcement", "in advance", "on the day")
-    ):
+    for token in ("Lab 1", "not measured", "event announcement", "in advance", "on the day"):
         assert token in text
 
 
 def test_readmes_distinguish_local_harness_from_separate_hosted_workflow() -> None:
-    japanese = read(REPO_ROOT / "README.md")
-    english = read(REPO_ROOT / "README.en.md")
-    assert "Lab 7ではPlain AgentとHarness AgentをDev Container内で実行" in japanese
-    assert "Lab 8では別の順次実行ワークフロー" in japanese
-    assert "Lab 7 runs Plain Agent and Harness Agent inside the Dev Container" in english
-    assert "Lab 8 builds a separate sequential workflow" in english
+    for name in ("README.md", "README.en.md"):
+        text = read(REPO_ROOT / name)
+        if name == "README.en.md" and "compatibility entry" in text:
+            assert "README.md" in links(REPO_ROOT / name)
+            text = read(REPO_ROOT / "README.md")
+        text = normalized(text)
+        assert (
+            "In Lab 7, run and compare Plain Agent and Harness Agent inside the Dev Container"
+            in text
+        )
+        assert "In Lab 8, build a separate sequential workflow" in text
 
 
 @pytest.mark.parametrize(
@@ -458,7 +535,7 @@ def test_readmes_distinguish_local_harness_from_separate_hosted_workflow() -> No
 def test_overviews_reference_capacity_source_without_duplicating_numbers(path: Path) -> None:
     assert not re.search(r"\d+K TPM", read(path))
     assert any(
-        target.endswith("docs/admin/prerequisites.md#モデルの利用枠") for target in links(path)
+        target.endswith("docs/admin/prerequisites.md#model-quotas") for target in links(path)
     )
 
 
@@ -473,7 +550,7 @@ def test_lab_one_creates_rg_then_deploys_defaults_and_waits_for_initialization()
             "Load file",
             "Subscription",
             "Resource group",
-            "既定値",
+            "defaults",
             "Review + create > Create",
             "Deployment Scripts",
             "Succeeded",
@@ -482,13 +559,18 @@ def test_lab_one_creates_rg_then_deploys_defaults_and_waits_for_initialization()
             "foundryPortalUrl",
         ),
     )
-    for token in ("1 個手動作成", "Create new", "Participant Object Id Override", "空欄"):
+    for token in (
+        "Manually create one dedicated RG",
+        "Create new",
+        "Participant Object Id Override",
+        "empty",
+    ):
         assert token in lab
     for output in ("resourceOutputs", "travelApiBaseUrl", "foundryPortalUrl"):
         assert output in lab
 
 
-def test_public_source_links_use_main_or_published_revision() -> None:
+def test_public_source_links_use_english_or_published_revision() -> None:
     prefixes = (
         f"https://github.com/{REPOSITORY}/blob/",
         f"https://github.com/{REPOSITORY}/tree/",
@@ -501,11 +583,11 @@ def test_public_source_links_use_main_or_published_revision() -> None:
                     revision, _, path = (
                         urlsplit(target).path.removeprefix(urlsplit(prefix).path).partition("/")
                     )
-                    assert revision == "main" or re.fullmatch(r"[a-f0-9]{40}", revision)
+                    assert_public_source_revision(revision)
                     resolved = REPO_ROOT / unquote(path)
                     assert resolved.exists(), target
                     if (
-                        revision == "main"
+                        revision == "English"
                         and resolved.suffix == ".md"
                         and urlsplit(target).fragment
                     ):
@@ -517,6 +599,39 @@ def test_public_source_links_use_main_or_published_revision() -> None:
     assert "../../assets/README.md" in links(PARTICIPANT_PREREQUISITES)
 
 
+@pytest.mark.parametrize("revision", ["main", "latest", "a" * 39, "A" * 40, "not-a-sha"])
+def test_public_source_revision_contract_rejects_mutable_or_invalid_pins(revision: str) -> None:
+    with pytest.raises(AssertionError, match="English browsing branch or immutable commit"):
+        assert_public_source_revision(revision)
+
+
+@pytest.mark.parametrize("revision", ["English", "0123456789abcdef" * 2 + "01234567"])
+def test_public_source_revision_contract_accepts_browsing_or_immutable_commit(
+    revision: str,
+) -> None:
+    assert_public_source_revision(revision)
+
+
+def test_release_assets_require_fixed_source_separately_from_branch_browsing() -> None:
+    lab = normalized(read(CORE_LABS[4]))
+    admin = normalized(read(ADMIN_GUIDE))
+    assert "mutable browsing/download references, not release pins" in lab
+    assert "pinned to a fixed source SHA" in lab
+    assert "same public SHA for sourceRevision and distributed material references" in admin
+    parameters = json.loads(read(REPO_ROOT / "infra" / "azuredeploy.json"))["parameters"]
+    source = parameters["sourceRevision"]["defaultValue"]
+    image = parameters["travelApiImageRef"]["defaultValue"]
+    if source or image:
+        assert re.fullmatch(r"[a-f0-9]{40}", source)
+        assert re.fullmatch(r"ghcr\.io/jnkknd/[^@\s]+@sha256:[a-f0-9]{64}", image)
+    else:
+        for document in (REPO_ROOT / "README.md", PARTICIPANT_PREREQUISITES, CORE_LABS[1]):
+            text = normalized(read(document))
+            assert "not yet deployment-ready" in text or "unreleased English branch" in text
+            assert "published" in text and "digest" in text
+        assert "guards explicitly reject the empty source / image defaults" in admin
+
+
 def test_portal_labs_read_arm_outputs_without_requiring_local_context() -> None:
     for index in (2, 3, 5, 6):
         text = read(CORE_LABS[index])
@@ -524,7 +639,7 @@ def test_portal_labs_read_arm_outputs_without_requiring_local_context() -> None:
         assert ".workshop/context.json" not in text
     for index in (3, 5, 6):
         assert "gpt-5.5" in read(CORE_LABS[index])
-    assert "Microsoft Entra ID 認証の Azure AI Search connection" in read(CORE_LABS[2])
+    assert "Microsoft Entra ID-authenticated Azure AI Search connection" in read(CORE_LABS[2])
     assert "contoso-travel-eval-live-subset" in read(CORE_LABS[5])
     assert "contoso-travel-optimizer-live-subset" in read(CORE_LABS[6])
 
@@ -540,9 +655,9 @@ def test_lab_four_downloads_shared_zip_files_and_replaces_only_the_openapi_serve
         )
         assert (REPO_ROOT / asset).is_file()
     for token in (
-        "PC に保存",
+        "Save these shared files to your PC",
         "SKILL.md",
-        "直下",
+        "at its root",
         "servers[0].url",
         "travelApiBaseUrl",
         "OpenAPI 3.0+ schema",
@@ -566,13 +681,13 @@ def test_codespaces_guides_browser_creation_login_and_two_input_setup() -> None:
             "00-setup.ipynb",
             "Python (Foundry Workshop)",
             "subscription ID",
-            "RG 名",
+            "RG name",
             ".workshop/context.json",
         ),
     )
     for token in (
-        "GitHub や Azure Portal",
-        "別",
+        "GitHub and Azure Portal",
+        "separate from Azure CLI sign-in",
         "scripts/configure_workshop.py",
         "workshopContext",
         "2.0",
@@ -592,12 +707,12 @@ def test_codespaces_guides_browser_creation_login_and_two_input_setup() -> None:
 
 def test_local_guide_uses_same_container_not_a_native_python_setup() -> None:
     guide = read(LOCAL_GUIDE)
-    assert "ローカルで実施される方は以下の前提条件を確認下さい" in guide
+    assert "Prerequisites for local execution" in guide
     for prerequisite in ("Git", "Visual Studio Code", "Dev Containers", "Docker", "Azure"):
         assert prerequisite in guide
     assert_in_order(
         guide,
-        ("git clone", "Dev Containers: Reopen in Container", "codespaces.md#共通手順"),
+        ("git clone", "Dev Containers: Reopen in Container", "codespaces.md#shared-steps"),
     )
     for unsupported in ("pip install", "python -m venv", "conda create", "conda activate"):
         assert unsupported not in guide
@@ -627,7 +742,7 @@ def test_hosted_labs_use_hosted_kernel_and_confirm_management_actions() -> None:
         ):
             assert token in text
     lab_eight = read(CORE_LABS[8])
-    for token in ("DEPLOY", "Agent 名", "foundry-workshop", "venv", "3.12", "ソースコード ZIP"):
+    for token in ("DEPLOY", "Agent name", "foundry-workshop", "venv", "3.12", "source ZIP"):
         assert token in lab_eight
 
 
@@ -643,8 +758,8 @@ def test_model_defaults_match_generated_template() -> None:
         assert f"{capacity}K TPM" in row
     for token in (
         "sourceRevision",
-        "公開済み",
-        "互換",
+        "published",
+        "compatible",
         "participantObjectIdOverride",
         "bootstrapRunId",
         "enableBootstrapPolicyExclusion",
@@ -658,20 +773,20 @@ def test_cleanup_saves_results_before_hosted_codespace_and_rg_deletion() -> None
         cleanup,
         (
             "Save All",
-            "Export",
+            "export",
             "Python (Foundry Hosted Agent)",
-            "Agent 名",
+            "Agent name",
             "foundry-workshop",
-            "全 versions",
+            "all versions",
             "Stop codespace",
             "Delete",
             "Delete resource group",
-            "RG が消えたことを確認",
+            "verify the RG is gone",
         ),
     )
     assert "https://github.com/codespaces" in cleanup
-    assert re.search(r"自分.*専用 RG", cleanup)
-    assert re.search(r"デプロイ履歴.*リソース.*消えません", cleanup)
+    assert "only your dedicated RG" in cleanup
+    assert "Deleting deployment history does not delete resources" in cleanup
 
 
 @pytest.mark.parametrize("name", ["workshop-architecture", "workshop-learning-flow"])

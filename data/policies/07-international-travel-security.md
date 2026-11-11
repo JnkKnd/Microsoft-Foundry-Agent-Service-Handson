@@ -1,6 +1,6 @@
 ---
 id: policy-international-security-001
-title: 海外渡航・セキュリティに関する規程
+title: International Travel and Security Policy
 category: international_security
 effective_date: 2026-04-01
 applies_to:
@@ -8,34 +8,34 @@ applies_to:
 source_url: "{{WORKSHOP_SOURCE_BASE}}/data/policies/07-international-travel-security.md"
 ---
 
-# 海外渡航・セキュリティに関する規程
+# International Travel and Security Policy
 
-## パスポート・ビザ
+## Passports and visas
 
-- パスポートの有効期限は、出発日から 6 か月以上残っていることを
-  出張者自身が確認してください。
-- ビザの要否確認・取得も出張者の責任です。取得費用は実費精算できます
-  （[領収書に関する規程](06-receipts.md)に従い領収書を提出してください）。
+- Travelers must verify that their passport remains valid for at least 6 months
+  from the departure date.
+- Travelers are also responsible for checking visa requirements and obtaining visas.
+  Visa costs are reimbursable at actual cost; submit receipts under the
+  [Receipt Policy](06-receipts.md).
 
-## 渡航前の登録
+## Pre-travel registration
 
-- すべての国際出張は、出発の 5 営業日前までに Contoso Travel Safety Desk
-  （社内の海外安全管理窓口、架空の組織です）へ渡航登録を行ってください。
-- 渡航登録により、緊急連絡・渡航保険の適用が有効になります。
-  渡航保険は全ての国際出張者に自動的に付帯されます。
+- Register every international trip with Contoso Travel Safety Desk (a fictional
+  internal international-travel safety office) at least 5 business days before departure.
+- Registration activates emergency contact arrangements and travel-insurance coverage.
+  Travel insurance is automatically included for all international business travelers.
 
-## ハイリスク渡航先
+## High-risk destinations
 
-- 社内のハイリスク渡航リストに指定された国・地域への渡航は、
-  Travel Ops チームおよび Contoso Travel Safety Desk の両方の事前承認が
-  必要です。リストは Contoso Travel Portal 内で随時更新されます。
-- 制裁対象国・地域として社内リストに指定された国・地域への渡航は、
-  理由の如何を問わず認められません。
+- Travel to countries or regions on the internal high-risk list requires preapproval
+  from both the Travel Ops team and Contoso Travel Safety Desk. The list is updated
+  as needed in Contoso Travel Portal.
+- Travel to countries or regions on the internal sanctions list is prohibited
+  regardless of the reason.
 
-## 現地での注意事項
+## Precautions at the destination
 
-- 会社支給デバイスの携行時は、渡航前に IT セキュリティチームの
-  渡航用セキュリティ設定（画面ロック強化、VPN 設定確認等）を
-  受けてください。
-- 現地で事故・盗難・体調不良などが発生した場合は、速やかに
-  Contoso Travel Safety Desk の緊急連絡先へ連絡してください。
+- Before traveling with company-issued devices, have the IT security team apply
+  travel security settings, such as stronger screen locking and VPN checks.
+- In the event of an accident, theft, illness, or similar incident, promptly contact
+  Contoso Travel Safety Desk's emergency contact.

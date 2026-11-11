@@ -1,122 +1,134 @@
-# 管理者向け事前準備
+# Administrator prerequisites
 
-開催前に、参加者が使う Azure 環境と開発環境を確認し、検証済みのテンプレートを配布します。
-モデルのバージョン、イメージのハッシュ、教材の SHA は推測せず、公開・動作確認済みの値を使います。
+Before an event, check participants' Azure and development environments and distribute
+a verified template. Do not guess model versions, image hashes, or material SHAs;
+use published, operationally verified values.
 
-## 1. 権限と利用枠を確認する
+> [!IMPORTANT]
+> English source and API image artifacts are [published and pinned](../../infra/README.md#english-release-artifacts).
+> Full live verification is still required before participant distribution.
+> Translation and publication alone are not release readiness. Operative distribution uses
+> `JnkKnd/Microsoft-Foundry-Agent-Service-Handson`; do not reuse an upstream release
+> as proof of the English release or use a mutable branch as the bootstrap pin.
 
-### Azure の権限とサービス
+## 1. Check permissions and quotas
 
-- 参加者が Azure Portal で専用のリソース グループ（RG）を作成・削除できること。
-- 作成した RG 内で、ロール割り当てを含む **Owner 相当の権限**を持つこと。
-  実行用のマネージド ID にサブスクリプション全体の権限は付与しません。
-- Azure AI Search **Basic**、Container Apps、Deployment Scripts を利用できること。
-  実行基盤の要件は [infra/README.md](../../infra/README.md) を参照してください。
-- Application Insights と Log Analytics はトレース収集に使います。
-  自動アラートは演習の対象外なので、`Microsoft.AlertsManagement` の登録は不要です。
-  Azure 側の既定アラートについては[自動アラートの扱い](troubleshooting.md#application-insights-の自動アラート)を参照してください。
+### Azure permissions and services
 
-### モデルの利用枠
+- Participants must be able to create and delete a dedicated resource group (RG) in Azure Portal.
+- They must have **Owner-equivalent permissions**, including role assignment, within
+  that RG. Do not grant the execution managed identity subscription-wide permissions.
+- Azure AI Search **Basic**, Container Apps, and Deployment Scripts must be available.
+  See [infra/README.md](../../infra/README.md) for runtime requirements.
+- Application Insights and Log Analytics collect traces.
+  Automatic alerts are outside the exercises, so `Microsoft.AlertsManagement`
+  registration is unnecessary. See [automatic alerts](troubleshooting.md#application-insights-automatic-alerts)
+  for Azure's default alerts.
 
-各参加者のサブスクリプションで、**Japan East / GlobalStandard** の次の利用枠を確認します。
+### Model quotas
 
-| モデル | 必要な利用枠 |
+Check the following **Japan East / GlobalStandard** quotas in each participant's subscription.
+
+| Model | Required quota |
 |---|---:|
 | `gpt-5.6-luna` | 40K TPM |
 | `gpt-5.5` | 100K TPM |
 | `embedding` / `text-embedding-3-small` | 40K TPM |
 
 > [!NOTE]
-> 利用枠の確認は、容量の予約ではありません。不足している場合はリージョンやモデルを変更せず、
-> 原因を確認してください。
+> Checking quota does not reserve capacity. If insufficient, investigate the cause
+> without changing the region or model.
 
-### 開発環境とネットワーク
+### Development environment and networking
 
-- GitHub Codespaces の利用枠と組織ポリシーを確認すること。
-- GitHub、GHCR、パッケージ配布元へ接続できること。
-- ローカルで参加する場合は、
-  [Dev Container の前提条件](../participant/environments/local-dev-container.md)を満たすこと。
+- Check GitHub Codespaces quotas and organizational policies.
+- Ensure connectivity to GitHub, GHCR, and package distribution services.
+- Local participants must meet the [Dev Container prerequisites](../participant/environments/local-dev-container.md).
 
-<a id="2-配布するテンプレートと既定値"></a>
+<a id="2-template-and-defaults-to-distribute"></a>
 
-## 2. テンプレートと配布内容を確認する
+## 2. Check the template and distribution contents
 
-参加者には、使用するサブスクリプションを案内します。
-テンプレートと共通教材の取得先は、[参加者向け事前準備](../participant/prerequisites.md#テンプレートと共通教材)にまとめています。
+Tell participants which subscription to use. Template and shared material locations
+are listed in [participant prerequisites](../participant/prerequisites.md#template-and-shared-materials).
 
-参加者本人がデプロイする場合、選ぶのは **Subscription** と作成済みの **Resource group** だけです。
-その他の項目は既定値のまま進めるため、モデルのバージョンやハッシュを手入力する必要はありません。
+After an approved release is published, participants deploying for themselves select
+only **Subscription** and their existing **Resource group**.
+All other fields use release defaults; participants do not manually enter model versions or hashes.
 
-### テンプレートの既定値
+### Template defaults
 
-モデルの既定値は、**2026-09-12 時点の Japan East / GlobalStandard の最新提供バージョン**で固定しています。
+Model defaults pin the **latest available Japan East / GlobalStandard versions verified on 2026-09-12**.
 
-| パラメーター | 既定値 / 管理者が変更する場合 |
+| Parameter | Default / administrator override |
 |---|---|
 | `location` | `japaneast` |
 | `primaryModelVersion` | `2026-07-09` |
 | `evaluationModelVersion` | `2026-04-24` |
 | `embeddingModelVersion` | `1` |
-| `travelApiImageRef` | 公開済みの Travel API `v1.0.4`。GHCR イメージを `@sha256:` で固定 |
-| `sourceRevision` | 公開済み教材のコミット SHA。小文字 40 桁の 16 進数で固定 |
-| `participantObjectIdOverride` | 本人が実行する場合は空欄。代理実行や別の人が再デプロイする場合は、参加者本人の Entra オブジェクト ID |
-| `bootstrapRunId` | `1`。初期化を意図的に再実行するときだけ変更 |
-| `enableBootstrapPolicyExclusion` | `true`。承認済みのハンズオン環境向け。除外を利用しない環境では `false` |
+| `travelApiImageRef` | Verified public English API digest in [release artifacts](../../infra/README.md#english-release-artifacts). Upstream `v1.0.4` is historical provenance, not an English release. |
+| `sourceRevision` | Published English source SHA in [release artifacts](../../infra/README.md#english-release-artifacts), pinned to 40 lowercase hexadecimal characters. |
+| `participantObjectIdOverride` | Empty for self-deployment. For deployment on behalf of someone else or redeployment by another person, the intended participant's Entra object ID. |
+| `bootstrapRunId` | `1`. Change only to intentionally rerun initialization. |
+| `enableBootstrapPolicyExclusion` | `true` for approved workshop environments. Set to `false` where exclusions are not used. |
 
-具体的な値を含む全既定値と更新手順は、
-[テンプレートのパラメーター](../../infra/README.md#テンプレートのパラメーター)
-を参照してください。
+See [template parameters](../../infra/README.md#template-parameters) for all defaults,
+their concrete release values, and update instructions. English release values must
+not be invented. The existing Bicep guards reject empty or mutable source / image inputs.
+For each approved release, synchronize the public JnkKnd source SHA, public GHCR
+digest, parameter example, and generated ARM. No additional release flag or parameter
+is used. Publication does not replace full live verification.
 
-### 初期化用のポリシー除外を承認した場合
+### When bootstrap policy exclusion is approved
 
-組織のポリシーが一時 Storage の共有キー認証や公開ネットワーク接続を無効にする場合は、
-まず実際のポリシー定義と、除外を認める運用条件を確認します。
-本教材では、承認済みのハンズオン環境向けに
-**Enable Bootstrap Policy Exclusion** の既定値を **true** としています。
-`SecurityControl=Ignore` の利用が承認されていない環境や、除外が不要な環境では、
-Lab 1 で **false** に変更してください。
+If organizational policy disables shared-key authentication or public networking
+for temporary Storage, first check the actual policy definition and the operational
+conditions under which an exclusion is permitted.
+This workshop defaults **Enable Bootstrap Policy Exclusion** to **true** for
+approved workshop environments. Set it to **false** in Lab 1 where
+`SecurityControl=Ignore` is not approved or an exclusion is unnecessary.
 
-除外タグは初期化用 Deployment Script と、そこから自動作成される補助 Storage / ACI に限定されます。
-RG 全体や共通タグには追加せず、モデル・リージョン・既存の認証設定も変更しません。
-初期化完了までの実環境検証は引き続き必要です。
-適用範囲と再実行時の注意は
-[初期化用の除外タグ](../../infra/README.md#承認済み環境で初期化用の除外タグを使う)を参照してください。
+The exclusion tag is limited to the bootstrap Deployment Script and its automatically
+created helper Storage / ACI. Do not add it to the whole RG or shared tags or change
+models, region, or existing authentication settings.
+Real-environment validation through initialization completion is still required.
+See [bootstrap exclusion tags](../../infra/README.md#using-bootstrap-exclusion-tags-in-approved-environments)
+for scope and rerun considerations.
 
-### 配布内容を更新する場合
+### Updating distribution contents
 
-1. 新しい bootstrap と互換性のある共通 assets、Notebook、source を先に公開します。
-2. モデルのバージョン、イメージのハッシュ、教材の SHA が公開・動作確認済みであることを確認します。
-3. 確認した値を `infra/main.bicep` の既定値に設定します。
-4. 同じ公開済み SHA を、`sourceRevision` と配布する教材の参照先に設定します。
-5. `azuredeploy.parameters.example.json` と関連文書を同期します。
-6. `azuredeploy.json` を再生成して配布します。
+1. First publish shared assets, Notebooks, and source compatible with the new bootstrap.
+2. Verify that model versions, image hashes, and material SHAs are published and operationally verified.
+3. Set verified values as defaults in `infra/main.bicep`.
+4. Use the same public SHA for `sourceRevision` and distributed material references.
+5. Synchronize `azuredeploy.parameters.example.json` and related documentation.
+6. Regenerate and distribute `azuredeploy.json`.
 
-配布リンクには `main` を使います。再現性が必要なbootstrapの参照先は、公開確認後のcommit SHAに固定してください。
-最新版を選ぶのは配布時です。実行時に `latest` やブランチ名へ自動解決しないでください。
+Distribution links may use the approved English branch in JnkKnd's repository.
+For reproducible bootstrap execution, pin to the commit SHA only after confirming
+publication. Select the latest release at distribution time; never automatically
+resolve `latest` or a branch name at runtime.
 
 > [!IMPORTANT]
-> 既定値を設定していても、開催前にモデルの利用可否と利用枠を再確認してください。
+> Even with defaults configured, recheck model availability and quotas before the event.
 
-## 3. 開催前に一連の動作を確認する
+## 3. Verify the complete flow before the event
 
-参加者へ案内する前に、次の流れを最後まで確認します。
+Before directing participants to the materials, verify the following flow to completion:
 
-1. [Lab 1](../../labs/01-setup.md) に従い、**RG を 1 個手動作成してから**テンプレートを開きます。
-  作成済みの RG を選び、**Create new** は使いません。
-2. Deployment Scripts による初期化を含め、デプロイ全体が **Succeeded** になることを確認します。
-3. `workshopContext.setup_status = complete` と `resourceOutputs` を確認します。
-4. [Lab 4](../../labs/04-tools-toolbox.md) の GitHub assets を取得し、
-  `travelApiBaseUrl` を使って OpenAPI に接続できることを確認します。
-5. [Codespaces](../participant/environments/codespaces.md) と同じ Dev Container をローカルで開き、
-  Azure CLI へのサインイン、`00-setup.ipynb`、2 つのカーネル、代表的な Notebook 操作を確認します。
-6. [Lab 9](../../labs/09-observability-cleanup.md) に従い、
-   **保存 → Hosted Agent / versions 削除 → Codespace 停止・削除 → Delete resource group → 削除確認**
-   まで確認します。
+1. Follow [Lab 1](../../labs/01-setup.md), **manually creating 1 RG before** opening
+   the template. Select the existing RG; do not use **Create new**.
+2. Verify that the entire deployment, including Deployment Scripts initialization, is **Succeeded**.
+3. Check `workshopContext.setup_status = complete` and `resourceOutputs`.
+4. Retrieve [Lab 4](../../labs/04-tools-toolbox.md) GitHub assets and verify OpenAPI
+   connectivity using `travelApiBaseUrl`.
+5. Open locally the same Dev Container as [Codespaces](../participant/environments/codespaces.md).
+   Verify Azure CLI sign-in, `00-setup.ipynb`, both kernels, and representative Notebook operations.
+6. Follow [Lab 9](../../labs/09-observability-cleanup.md) through
+   **save → delete Hosted Agent / versions → stop / delete Codespace → Delete resource group → verify deletion**.
 
 > [!WARNING]
-> デプロイ履歴を削除しても、リソースは削除されません。
-> 合成データだけを使用し、削除対象は各参加者の専用 RG に限定してください。
+> Deleting deployment history does not delete resources.
+> Use synthetic data only and limit deletion to each participant's dedicated RG.
 
-構成、権限、初期化処理の詳細は、
-[infra/README.md](https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson/blob/main/infra/README.md)
-を参照してください。
+See [infra/README.md](../../infra/README.md) for architecture, permissions, and initialization details.

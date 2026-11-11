@@ -15,8 +15,8 @@ from dataclasses import dataclass
 from travel_api.domain.trip_estimate import TripEstimateResult, estimate_trip
 
 DISCLAIMER = (
-    "これはハンズオン教材用のシミュレーションであり、実際の承認ではありません。"
-    "実際の出張では Contoso Travel Portal を通じて正式な事前承認を得てください。"
+    "This is a simulation for workshop materials, not actual approval. "
+    "For real travel, obtain formal preapproval through Contoso Travel Portal."
 )
 
 SIMULATED_AUTO_ELIGIBLE = "simulated_auto_eligible"

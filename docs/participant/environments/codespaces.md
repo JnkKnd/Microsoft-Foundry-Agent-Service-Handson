@@ -1,61 +1,62 @@
-# GitHub Codespaces — Labs 7〜8 の準備
+# GitHub Codespaces — Prepare for Labs 7–8
 
-ブラウザーで実施する標準手順です。PC への Docker・Python のインストールは不要です。
-[Lab 1](../../../labs/01-setup.md) の初期化を完了し、Codespaces を利用できる GitHub アカウントを用意します。
+This is the standard browser-based route. No local Docker or Python installation is needed.
+Complete initialization in [Lab 1](../../../labs/01-setup.md) and have a GitHub account with Codespaces access.
 
-## 1. Codespace を作成する
+## 1. Create a Codespace
 
-1. [教材リポジトリ](https://github.com/matayuuu/Microsoft-Foundry-Agent-Service-Handson/tree/main)
-   を開き、ブランチが `main` であることを確認します。
-2. **Code > Codespaces** を開き、作成ボタン
-   （**Create codespace on main** または **＋**）を選びます。
-3. ブラウザー版 VS Code が開き、Dev Container の作成と `postCreateCommand` の完了を待ちます。
-4. Explorer に `notebooks/`、`scripts/`、`src/` があることを確認します。
-   フォルダーのアップロードや、コードの個別ダウンロードは不要です。
+1. Open the [workshop repository](https://github.com/JnkKnd/Microsoft-Foundry-Agent-Service-Handson/tree/English)
+   and verify that the branch is `English`.
+2. Open **Code > Codespaces** and select the creation button
+   (**Create codespace on English** or **＋**).
+3. Wait for browser-based VS Code to open, the Dev Container to be created, and `postCreateCommand` to finish.
+4. Verify that Explorer contains `notebooks/`, `scripts/`, and `src/`.
+   No folder upload or individual code downloads are needed.
 
-同じ Codespace を再開するときは [Your codespaces](https://github.com/codespaces) から開きます。
-ローカルの場合は[ローカル Dev Container](local-dev-container.md)で開いた後、以下へ進みます。
+To resume the same Codespace, open it from [Your codespaces](https://github.com/codespaces).
+For local execution, open the [local Dev Container](local-dev-container.md), then continue below.
 
-## 共通手順
+## Shared steps
 
-### 2. コンテナーで Azure にサインインする
+### 2. Sign in to Azure in the container
 
-VS Code の **Terminal > New Terminal** で、Notebook を実行する前に **1 回**実行します。
+In VS Code, select **Terminal > New Terminal** and run this **once**, before running notebooks:
 
 ```bash
 az login --use-device-code
 ```
 
-表示された案内に従い、自分の Azure アカウントと Lab 1 のサブスクリプションを選びます。
-**GitHub や Azure Portal のログインは、コンテナー内の Azure CLI ログインとは別です。**
-認証が切れた場合だけ再実行し、コードやトークンを Notebook に貼り付けません。
+Follow the displayed instructions and select your Azure account and the subscription used in Lab 1.
+**GitHub and Azure Portal sign-in are separate from Azure CLI sign-in inside the container.**
+Run this again only if authentication expires; do not paste codes or tokens into notebooks.
 
-### 3. 初回 Notebook で接続先を取得する
+### 3. Retrieve connections in the setup notebook
 
-1. [`notebooks/00-setup.ipynb`](../../../notebooks/00-setup.ipynb) を開きます。
-2. 右上の **Select Kernel > Jupyter Kernel... > Python (Foundry Workshop)** を選びます。
-   最近使った候補だけが表示される場合は、**Select Another Kernel...** から進みます。
-   「おすすめ」ではなく、この Notebook 指定のカーネルを選んでください。
-3. **subscription ID** と **RG 名**に、Lab 1 で使った 2 値を入力し、セルを上から実行します。
-4. `.workshop/context.json` が作成され、対象 RG と `setup_status = complete` を確認できれば完了です。
+1. Open [`notebooks/00-setup.ipynb`](../../../notebooks/00-setup.ipynb).
+2. At the top right, select **Select Kernel > Jupyter Kernel... > Python (Foundry Workshop)**.
+   If only recent choices appear, use **Select Another Kernel...**.
+   Choose this notebook's specified kernel, not merely a recommended one.
+3. Enter the **subscription ID** and **RG name** used in Lab 1, then run cells from top to bottom.
+4. Setup is complete when `.workshop/context.json` exists and shows the intended RG and `setup_status = complete`.
 
-Notebook は `scripts/configure_workshop.py` で成功した ARM deployment の `workshopContext` を読みます。
-接続先は schema `2.0` の `resource_outputs.<key>.value` に保存され、モデルや endpoint の転記は不要です。
-候補の曖昧さ・対象違い・初期化未完了で停止した場合は、[困ったとき](../troubleshooting.md)を確認します。
+The notebook uses `scripts/configure_workshop.py` to read `workshopContext` from a successful ARM deployment.
+Connections are saved in schema `2.0` as `resource_outputs.<key>.value`; no model or endpoint transcription is needed.
+If it stops because the deployment is ambiguous, targets a different environment, or initialization is incomplete,
+see [troubleshooting](../troubleshooting.md).
 
-### 4. 演習のカーネルを選ぶ
+### 4. Select the lab kernel
 
-Dev Container の post-create が、チェックアウト外の `~/.venvs/` に独立した環境を準備します。
+Dev Container post-create prepares separate environments in `~/.venvs/`, outside the checkout.
 
-| 用途 | カーネル表示名 | カーネル名 / Python |
+| Purpose | Kernel display name | Kernel name / Python |
 |---|---|---|
-| 初回設定・管理用 | **Python (Foundry Workshop)** | `foundry-workshop` / 3.12 |
-| Labs 7〜8 | **Python (Foundry Hosted Agent)** | `foundry-hosted-agent` / 3.13 |
+| Initial setup and management | **Python (Foundry Workshop)** | `foundry-workshop` / 3.12 |
+| Labs 7–8 | **Python (Foundry Hosted Agent)** | `foundry-hosted-agent` / 3.13 |
 
-依存関係を混在させず、各 Notebook 指定のカーネルを使います。post-create は Azure に認証・デプロイしません。
-VS Code の Notebook を使うため、Jupyter サーバーや公開ポートの追加は不要です。
-出力が **Output is truncated** で省略された場合は、その出力の **scrollable element** を選びます。
-確認のために実行セルを再送しないでください。
+Use the specified kernel for each notebook without mixing dependencies. Post-create does not authenticate to or deploy to Azure.
+VS Code notebooks require no additional Jupyter server or public port.
+If output says **Output is truncated**, select its **scrollable element**.
+Do not resubmit a cell just to inspect its output.
 
-[Lab 7](../../../labs/07-agent-framework-harness.md) へ進みます。
-終了時は [Lab 9](../../../labs/09-observability-cleanup.md) の順に保存・削除してください。
+Continue to [Lab 7](../../../labs/07-agent-framework-harness.md).
+When finished, save and delete resources in the order in [Lab 9](../../../labs/09-observability-cleanup.md).
